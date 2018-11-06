@@ -1,0 +1,123 @@
+// @mixin responsive-visibility($parent) {
+// 	#{$parent} {
+// 		display: block !important;
+// 	}
+// 	table#{$parent}  { display: table !important; }
+// 	tr#{$parent}     { display: table-row !important; }
+// 	th#{$parent},
+// 	td#{$parent}     { display: table-cell !important; }
+// }
+
+//$breakpoint-mobile-max        : 767px;
+//$breakpoint-tablet-min        : 768px;
+// $breakpoint-tablet-max        : 1023px;
+// $breakpoint-desktop-min       : 1024px;
+// $breakpoint-desktop-wide      : 1280px;
+
+.visible-mobile-block,
+.visible-mobile-inline,
+.visible-mobile-inline-block,
+.visible-tablet-block,
+.visible-tablet-inline,
+.visible-tablet-inline-block,
+.visible-desktop-block,
+.visible-desktop-inline,
+.visible-desktop-inline-block {
+	display: none !important;
+}
+
+// [converter] $parent hack
+@mixin responsive-visibility($parent) {
+	#{$parent} {
+		display: block !important;
+	}
+	table#{$parent}  { display: table !important; }
+	tr#{$parent}     { display: table-row !important; }
+
+	th#{$parent},
+	td#{$parent}  { display: table-cell !important; }
+}
+@mixin responsive-invisibility($parent) {
+	#{$parent} {
+		display: none !important;
+	}
+}
+
+.visible-mobile-block {
+	@media (max-width: $breakpoint-mobile-max) {
+		display: block !important;
+	}
+}
+
+.visible-mobile-inline {
+	@media (max-width: $breakpoint-mobile-max) {
+		display: inline !important;
+	}
+}
+
+.visible-mobile-inline-block {
+	@media (max-width: $breakpoint-mobile-max) {
+		display: inline-block !important;
+	}
+}
+
+.visible-tablet-block {
+	@media (min-width: $breakpoint-tablet-min) and (max-width: $breakpoint-tablet-max) {
+		display: block !important;
+	}
+}
+
+.visible-tablet-inline {
+	@media (min-width: $breakpoint-tablet-min) and (max-width: $breakpoint-tablet-max) {
+		display: inline !important;
+	}
+}
+
+.visible-tablet-inline-block {
+	@media (min-width: $breakpoint-tablet-min) and (max-width: $breakpoint-tablet-max) {
+		display: inline-block !important;
+	}
+}
+
+.visible-desktop-block {
+	@media (min-width: $breakpoint-desktop-min) {
+		display: block !important;
+	}
+}
+
+.visible-desktop-inline {
+	@media (min-width: $breakpoint-desktop-min) {
+		display: inline !important;
+	}
+}
+
+.visible-desktop-inline-block {
+	@media (min-width: $breakpoint-desktop-min) {
+		display: inline-block !important;
+	}
+}
+
+@media (max-width: $breakpoint-mobile-max) {
+	@include responsive-invisibility('.hidden-mobile');
+}
+@media (min-width: $breakpoint-tablet-min) and (max-width: $breakpoint-tablet-max) {
+	@include responsive-invisibility('.hidden-tablet');
+}
+@media (min-width: $breakpoint-desktop-min) {
+	@include responsive-invisibility('.hidden-desktop');
+}
+// .visible-xs-block {
+// 	@media (max-width: $screen-xs-max) {
+// 		display: block !important;
+// 	}
+// }
+// .visible-xs-inline {
+// 	@media (max-width: $screen-xs-max) {
+// 		display: inline !important;
+// 	}
+// }
+// .visible-xs-inline-block {
+// 	@media (max-width: $screen-xs-max) {
+// 		display: inline-block !important;
+// 	}
+// }

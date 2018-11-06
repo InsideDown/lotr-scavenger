@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<%- require('./_includes/head.ejs')({
+			title: 'Homepage Title',
+		})%>
+
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css" rel="stylesheet" />
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css" rel="stylesheet" />
+		<link href="/assets/css/home.css" rel="stylesheet" />
+
+	</head>
+	<body class="page-home">
+
+		<%- require('./_includes/header.ejs')({
+			customVar1: 'home data 1',
+			classNavHomeActive: 'nav-active',
+			classNavSubpageActive: '',
+		})%>
+
+		<main id="skip-to-content" class="site-content">
+			<h1 class="container">Homepage</h1>
+
+			<section class="content hidden-mobile">
+				<div class="container">
+					<h2>Example of a content section which disappears on mobile view</h2>
+
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				</div>
+			</section>
+
+			<section class="content visible-mobile-block">
+				<div class="container">
+					<h2>Example of a content section which only appears on mobile view</h2>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				</div>
+			</section>
+
+			<section class="content">
+				<div class="container">
+					<h2>Sample of a grid using classes</h2>
+					<p>mobile: 100% wide columns;<br />tablet: 50% wide columns;<br />desktop+: 25% wide columns.</p>
+					<div class="row">
+						<div class="col-xs-12 col-sm-6 col-md-3 border">Column 1</div>
+						<div class="col-xs-12 col-sm-6 col-md-3 border">Column 2</div>
+						<div class="col-xs-12 col-sm-6 col-md-3 border">Column 3</div>
+						<div class="col-xs-12 col-sm-6 col-md-3 border">Column 4</div>
+						<div class="col-xs-12 col-sm-6 col-md-3 border">Column 5</div>
+						<div class="col-xs-12 col-sm-6 col-md-3 border">Column 6</div>
+						<div class="col-xs-12 col-sm-6 col-md-3 border">Column 7</div>
+						<div class="col-xs-12 col-sm-6 col-md-3 border">Column 8</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="content">
+				<div class="container">
+					<h2>Slick Carousel Example</h2>
+					<div class="slider single-item">
+						<div><h3>1</h3></div>
+						<div><h3>2</h3></div>
+						<div><h3>3</h3></div>
+						<div><h3>4</h3></div>
+						<div><h3>5</h3></div>
+						<div><h3>6</h3></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="content">
+				<div class="container">
+					<p id="draggable"><strong>This text is draggable</strong></p>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas faucibus lorem vel fermentum suscipit. Phasellus aliquet in arcu quis commodo.</p>
+					<p>Cras bibendum efficitur est iaculis interdum. Mauris iaculis arcu felis, id sagittis tortor sollicitudin eget. Proin in leo urna. Vestibulum blandit dignissim sagittis.</p>
+					<p><a href="#" class="button">default button</a> <a href="#" class="button blue">blue button</a></p>
+				</div>
+			</section>
+
+			<section class="content">
+				<div class="container">
+					<p>Aenean molestie consequat urna, ac aliquam lectus ultrices vel. Sed vitae purus sodales, tincidunt ipsum vel, sodales erat. Mauris eu laoreet elit. Duis nec enim ex. Morbi at erat nisi. Maecenas volutpat ligula velit, vel consequat ex accumsan et.</p>
+					<p>Praesent id sodales velit. Integer libero tortor, egestas eu sem vel, laoreet volutpat nulla. Fusce nec congue arcu, ac fermentum tortor. Nam viverra tristique neque, et efficitur justo imperdiet at. Aenean sed urna id nibh pharetra euismod a eu tortor. In vitae tellus eu nunc porta eleifend. Proin scelerisque fringilla euismod. Ut ut lorem feugiat leo ornare laoreet.</p>
+					<p>
+						<img src="/assets/images/big-image.gif" alt="lorem" />
+						<img src="http://via.placeholder.com/400x600" alt="lorem" />
+					</p>
+				</div>
+			</section>
+		</main>
+
+		<%- require('./_includes/footer.ejs')({
+			customVar2: 'home data 2',
+		})%>
+
+		<script type="text/javascript" src="/assets/js/home.js"></script>
+	</body>
+</html>

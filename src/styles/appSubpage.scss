@@ -1,0 +1,10 @@
+
+// Test CSS only output
+// -----------------------------------------------------------------+
+
+@import 'config/variables';
+@import 'config/mixins';
+
+.test-class-name {
+	background: $color-blue;
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<%- require('../../_includes/head.ejs')({
+			title: 'Subpage Child Title',
+		})%>
+		<link href="/assets/css/subpage.css" rel="stylesheet" />
+	</head>
+	<body>
+
+		<%- require('../../_includes/header.ejs')({
+			customVar1: 'subpage child data 1',
+			classNavHomeActive: '',
+			classNavSubpageActive: 'nav-active',
+		})%>
+
+		<section id="skip-to-content" class="site-content">
+			<div class="container">
+				<h1>Subpage Child</h1>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas faucibus lorem vel fermentum suscipit. Phasellus aliquet in arcu quis commodo.</p>
+				<p>Cras bibendum efficitur est iaculis interdum. Mauris iaculis arcu felis, id sagittis tortor sollicitudin eget. Proin in leo urna. Vestibulum blandit dignissim sagittis.</p>
+				<p>
+					<img src="http://via.placeholder.com/400x600" alt="lorem" />
+					<img src="/assets/images/big-image.gif" alt="lorem" />
+				</p>
+				<p>Aenean molestie consequat urna, ac aliquam lectus ultrices vel. Sed vitae purus sodales, tincidunt ipsum vel, sodales erat. Mauris eu laoreet elit. Duis nec enim ex. Morbi at erat nisi. Maecenas volutpat ligula velit, vel consequat ex accumsan et.</p>
+				<p>Praesent id sodales velit. Integer libero tortor, egestas eu sem vel, laoreet volutpat nulla. Fusce nec congue arcu, ac fermentum tortor. Nam viverra tristique neque, et efficitur justo imperdiet at. Aenean sed urna id nibh pharetra euismod a eu tortor. In vitae tellus eu nunc porta eleifend. Proin scelerisque fringilla euismod. Ut ut lorem feugiat leo ornare laoreet.</p>
+			</div>
+		</section>
+
+		<%- require('../../_includes/footer.ejs')({
+			customVar2: 'subpage child data 2',
+		})%>
+
+	</body>
+</html>
