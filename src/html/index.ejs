@@ -4,7 +4,10 @@
 		<%- require('./_includes/head.ejs')({
 			title: 'Homepage Title',
 		})%>
-
+		
+		<link href="./assets/css/base.css" rel="stylesheet" />
+		<!-- <link href="./assets/css/components.css" rel="stylesheet" /> -->
+		<link href="./assets/css/chrome.css" rel="stylesheet" />
 		<link href="./assets/css/home.css" rel="stylesheet" />
 
 	</head>
@@ -14,9 +17,9 @@
 			
 		</main>
 
-		<%- require('./_includes/footer.ejs')({
-			customVar2: 'home data 2',
-		})%>
+		<script type="text/javascript" src="./assets/js/manifest.js"></script>
+		<script type="text/javascript" src="./assets/js/vendor.js"></script>
+		<script type="text/javascript" src="./assets/js/base.js"></script>
 
 		<script type="text/javascript" src="./assets/js/home.js"></script>
 	</body>
