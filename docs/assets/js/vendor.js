@@ -6,7 +6,7 @@ var global = __webpack_require__(2);
 var core = __webpack_require__(22);
 var hide = __webpack_require__(12);
 var redefine = __webpack_require__(13);
-var ctx = __webpack_require__(19);
+var ctx = __webpack_require__(18);
 var PROTOTYPE = 'prototype';
 
 var $export = function (type, name, source) {
@@ -96,7 +96,7 @@ module.exports = function (it) {
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var store = __webpack_require__(53)('wks');
+var store = __webpack_require__(50)('wks');
 var uid = __webpack_require__(33);
 var Symbol = __webpack_require__(2).Symbol;
 var USE_SYMBOL = typeof Symbol == 'function';
@@ -124,7 +124,7 @@ module.exports = !__webpack_require__(3)(function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(1);
-var IE8_DOM_DEFINE = __webpack_require__(97);
+var IE8_DOM_DEFINE = __webpack_require__(95);
 var toPrimitive = __webpack_require__(23);
 var dP = Object.defineProperty;
 
@@ -262,10 +262,116 @@ module.exports = function (NAME, exec) {
 
 /***/ }),
 /* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// to indexed object, toObject with fallback for non-array-like ES3 strings
+var IObject = __webpack_require__(47);
+var defined = __webpack_require__(24);
+module.exports = function (it) {
+  return IObject(defined(it));
+};
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var pIE = __webpack_require__(48);
+var createDesc = __webpack_require__(32);
+var toIObject = __webpack_require__(15);
+var toPrimitive = __webpack_require__(23);
+var has = __webpack_require__(11);
+var IE8_DOM_DEFINE = __webpack_require__(95);
+var gOPD = Object.getOwnPropertyDescriptor;
+
+exports.f = __webpack_require__(6) ? gOPD : function getOwnPropertyDescriptor(O, P) {
+  O = toIObject(O);
+  P = toPrimitive(P, true);
+  if (IE8_DOM_DEFINE) try {
+    return gOPD(O, P);
+  } catch (e) { /* empty */ }
+  if (has(O, P)) return createDesc(!pIE.f.call(O, P), O[P]);
+};
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
+var has = __webpack_require__(11);
+var toObject = __webpack_require__(9);
+var IE_PROTO = __webpack_require__(68)('IE_PROTO');
+var ObjectProto = Object.prototype;
+
+module.exports = Object.getPrototypeOf || function (O) {
+  O = toObject(O);
+  if (has(O, IE_PROTO)) return O[IE_PROTO];
+  if (typeof O.constructor == 'function' && O instanceof O.constructor) {
+    return O.constructor.prototype;
+  } return O instanceof Object ? ObjectProto : null;
+};
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// optional / simple context binding
+var aFunction = __webpack_require__(10);
+module.exports = function (fn, that, length) {
+  aFunction(fn);
+  if (that === undefined) return fn;
+  switch (length) {
+    case 1: return function (a) {
+      return fn.call(that, a);
+    };
+    case 2: return function (a, b) {
+      return fn.call(that, a, b);
+    };
+    case 3: return function (a, b, c) {
+      return fn.call(that, a, b, c);
+    };
+  }
+  return function (/* ...args */) {
+    return fn.apply(that, arguments);
+  };
+};
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports) {
+
+var toString = {}.toString;
+
+module.exports = function (it) {
+  return toString.call(it).slice(8, -1);
+};
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var fails = __webpack_require__(3);
+
+module.exports = function (method, arg) {
+  return !!method && fails(function () {
+    // eslint-disable-next-line no-useless-call
+    arg ? method.call(null, function () { /* empty */ }, 1) : method.call(null);
+  });
+};
+
+
+/***/ }),
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(module, global) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return TweenLite; });
+/* WEBPACK VAR INJECTION */(function(module, global) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return TweenLite; });
 /*!
  * VERSION: 1.20.5
  * DATE: 2018-05-21
@@ -287,7 +393,7 @@ module.exports = function (NAME, exec) {
 	- remove the "export to multiple environments" in Definition().
  */
 const _gsScope = (typeof(window) !== "undefined") ? window : (typeof(module) !== "undefined" && module.exports && typeof(global) !== "undefined") ? global : this;
-/* harmony export (immutable) */ __webpack_exports__["l"] = _gsScope;
+/* harmony export (immutable) */ __webpack_exports__["k"] = _gsScope;
 
 
 const TweenLite = (function(window, moduleName) {
@@ -2234,7 +2340,7 @@ const TweenLite = (function(window, moduleName) {
 const gs = _gsScope.com.greensock;
 
 const SimpleTimeline = gs.core.SimpleTimeline;
-/* harmony export (immutable) */ __webpack_exports__["j"] = SimpleTimeline;
+/* harmony export (immutable) */ __webpack_exports__["i"] = SimpleTimeline;
 
 const Animation = gs.core.Animation;
 /* harmony export (immutable) */ __webpack_exports__["a"] = Animation;
@@ -2242,131 +2348,25 @@ const Animation = gs.core.Animation;
 const {Ease, Linear, Power0, Power1, Power2, Power3, Power4, TweenPlugin} = _gsScope;
 /* harmony export (immutable) */ __webpack_exports__["b"] = Ease;
 
-/* harmony export (immutable) */ __webpack_exports__["d"] = Linear;
+/* harmony export (immutable) */ __webpack_exports__["c"] = Linear;
 
-/* harmony export (immutable) */ __webpack_exports__["e"] = Power0;
+/* harmony export (immutable) */ __webpack_exports__["d"] = Power0;
 
-/* harmony export (immutable) */ __webpack_exports__["f"] = Power1;
+/* harmony export (immutable) */ __webpack_exports__["e"] = Power1;
 
-/* harmony export (immutable) */ __webpack_exports__["g"] = Power2;
+/* harmony export (immutable) */ __webpack_exports__["f"] = Power2;
 
-/* harmony export (immutable) */ __webpack_exports__["h"] = Power3;
+/* harmony export (immutable) */ __webpack_exports__["g"] = Power3;
 
-/* harmony export (immutable) */ __webpack_exports__["i"] = Power4;
+/* harmony export (immutable) */ __webpack_exports__["h"] = Power4;
 
-/* harmony export (immutable) */ __webpack_exports__["k"] = TweenPlugin;
+/* harmony export (immutable) */ __webpack_exports__["j"] = TweenPlugin;
 
 const EventDispatcher = gs.events.EventDispatcher;
-/* harmony export (immutable) */ __webpack_exports__["c"] = EventDispatcher;
+/* unused harmony export EventDispatcher */
 
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(341)(module), __webpack_require__(67)))
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// to indexed object, toObject with fallback for non-array-like ES3 strings
-var IObject = __webpack_require__(48);
-var defined = __webpack_require__(24);
-module.exports = function (it) {
-  return IObject(defined(it));
-};
-
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var pIE = __webpack_require__(49);
-var createDesc = __webpack_require__(32);
-var toIObject = __webpack_require__(16);
-var toPrimitive = __webpack_require__(23);
-var has = __webpack_require__(11);
-var IE8_DOM_DEFINE = __webpack_require__(97);
-var gOPD = Object.getOwnPropertyDescriptor;
-
-exports.f = __webpack_require__(6) ? gOPD : function getOwnPropertyDescriptor(O, P) {
-  O = toIObject(O);
-  P = toPrimitive(P, true);
-  if (IE8_DOM_DEFINE) try {
-    return gOPD(O, P);
-  } catch (e) { /* empty */ }
-  if (has(O, P)) return createDesc(!pIE.f.call(O, P), O[P]);
-};
-
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
-var has = __webpack_require__(11);
-var toObject = __webpack_require__(9);
-var IE_PROTO = __webpack_require__(70)('IE_PROTO');
-var ObjectProto = Object.prototype;
-
-module.exports = Object.getPrototypeOf || function (O) {
-  O = toObject(O);
-  if (has(O, IE_PROTO)) return O[IE_PROTO];
-  if (typeof O.constructor == 'function' && O instanceof O.constructor) {
-    return O.constructor.prototype;
-  } return O instanceof Object ? ObjectProto : null;
-};
-
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// optional / simple context binding
-var aFunction = __webpack_require__(10);
-module.exports = function (fn, that, length) {
-  aFunction(fn);
-  if (that === undefined) return fn;
-  switch (length) {
-    case 1: return function (a) {
-      return fn.call(that, a);
-    };
-    case 2: return function (a, b) {
-      return fn.call(that, a, b);
-    };
-    case 3: return function (a, b, c) {
-      return fn.call(that, a, b, c);
-    };
-  }
-  return function (/* ...args */) {
-    return fn.apply(that, arguments);
-  };
-};
-
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports) {
-
-var toString = {}.toString;
-
-module.exports = function (it) {
-  return toString.call(it).slice(8, -1);
-};
-
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var fails = __webpack_require__(3);
-
-module.exports = function (method, arg) {
-  return !!method && fails(function () {
-    // eslint-disable-next-line no-useless-call
-    arg ? method.call(null, function () { /* empty */ }, 1) : method.call(null);
-  });
-};
-
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(341)(module), __webpack_require__(65)))
 
 /***/ }),
 /* 22 */
@@ -2444,11 +2444,11 @@ module.exports = function (KEY, exec) {
 // 4 -> Array#every
 // 5 -> Array#find
 // 6 -> Array#findIndex
-var ctx = __webpack_require__(19);
-var IObject = __webpack_require__(48);
+var ctx = __webpack_require__(18);
+var IObject = __webpack_require__(47);
 var toObject = __webpack_require__(9);
 var toLength = __webpack_require__(8);
-var asc = __webpack_require__(87);
+var asc = __webpack_require__(85);
 module.exports = function (TYPE, $create) {
   var IS_MAP = TYPE == 1;
   var IS_FILTER = TYPE == 2;
@@ -2494,40 +2494,40 @@ if (__webpack_require__(6)) {
   var global = __webpack_require__(2);
   var fails = __webpack_require__(3);
   var $export = __webpack_require__(0);
-  var $typed = __webpack_require__(63);
-  var $buffer = __webpack_require__(93);
-  var ctx = __webpack_require__(19);
+  var $typed = __webpack_require__(60);
+  var $buffer = __webpack_require__(91);
+  var ctx = __webpack_require__(18);
   var anInstance = __webpack_require__(40);
   var propertyDesc = __webpack_require__(32);
   var hide = __webpack_require__(12);
   var redefineAll = __webpack_require__(42);
   var toInteger = __webpack_require__(25);
   var toLength = __webpack_require__(8);
-  var toIndex = __webpack_require__(123);
+  var toIndex = __webpack_require__(121);
   var toAbsoluteIndex = __webpack_require__(36);
   var toPrimitive = __webpack_require__(23);
   var has = __webpack_require__(11);
-  var classof = __webpack_require__(50);
+  var classof = __webpack_require__(49);
   var isObject = __webpack_require__(4);
   var toObject = __webpack_require__(9);
-  var isArrayIter = __webpack_require__(84);
+  var isArrayIter = __webpack_require__(82);
   var create = __webpack_require__(37);
-  var getPrototypeOf = __webpack_require__(18);
+  var getPrototypeOf = __webpack_require__(17);
   var gOPN = __webpack_require__(38).f;
-  var getIterFn = __webpack_require__(86);
+  var getIterFn = __webpack_require__(84);
   var uid = __webpack_require__(33);
   var wks = __webpack_require__(5);
   var createArrayMethod = __webpack_require__(27);
-  var createArrayIncludes = __webpack_require__(54);
-  var speciesConstructor = __webpack_require__(61);
-  var ArrayIterators = __webpack_require__(89);
+  var createArrayIncludes = __webpack_require__(51);
+  var speciesConstructor = __webpack_require__(58);
+  var ArrayIterators = __webpack_require__(87);
   var Iterators = __webpack_require__(45);
-  var $iterDetect = __webpack_require__(58);
+  var $iterDetect = __webpack_require__(55);
   var setSpecies = __webpack_require__(39);
-  var arrayFill = __webpack_require__(88);
-  var arrayCopyWithin = __webpack_require__(113);
+  var arrayFill = __webpack_require__(86);
+  var arrayCopyWithin = __webpack_require__(111);
   var $DP = __webpack_require__(7);
-  var $GOPD = __webpack_require__(17);
+  var $GOPD = __webpack_require__(16);
   var dP = $DP.f;
   var gOPD = $GOPD.f;
   var RangeError = global.RangeError;
@@ -2974,10 +2974,10 @@ if (__webpack_require__(6)) {
 /* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Map = __webpack_require__(118);
+var Map = __webpack_require__(116);
 var $export = __webpack_require__(0);
-var shared = __webpack_require__(53)('metadata');
-var store = shared.store || (shared.store = new (__webpack_require__(121))());
+var shared = __webpack_require__(50)('metadata');
+var store = shared.store || (shared.store = new (__webpack_require__(119))());
 
 var getOrCreateMetadataMap = function (target, targetKey, create) {
   var targetMetadata = store.get(target);
@@ -3136,8 +3136,8 @@ module.exports = false;
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
-var $keys = __webpack_require__(99);
-var enumBugKeys = __webpack_require__(71);
+var $keys = __webpack_require__(97);
+var enumBugKeys = __webpack_require__(69);
 
 module.exports = Object.keys || function keys(O) {
   return $keys(O, enumBugKeys);
@@ -3163,22 +3163,22 @@ module.exports = function (index, length) {
 
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject = __webpack_require__(1);
-var dPs = __webpack_require__(100);
-var enumBugKeys = __webpack_require__(71);
-var IE_PROTO = __webpack_require__(70)('IE_PROTO');
+var dPs = __webpack_require__(98);
+var enumBugKeys = __webpack_require__(69);
+var IE_PROTO = __webpack_require__(68)('IE_PROTO');
 var Empty = function () { /* empty */ };
 var PROTOTYPE = 'prototype';
 
 // Create object with fake `null` prototype: use iframe Object with cleared prototype
 var createDict = function () {
   // Thrash, waste and sodomy: IE GC bug
-  var iframe = __webpack_require__(68)('iframe');
+  var iframe = __webpack_require__(66)('iframe');
   var i = enumBugKeys.length;
   var lt = '<';
   var gt = '>';
   var iframeDocument;
   iframe.style.display = 'none';
-  __webpack_require__(72).appendChild(iframe);
+  __webpack_require__(70).appendChild(iframe);
   iframe.src = 'javascript:'; // eslint-disable-line no-script-url
   // createDict = iframe.contentWindow.Object;
   // html.removeChild(iframe);
@@ -3209,8 +3209,8 @@ module.exports = Object.create || function create(O, Properties) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
-var $keys = __webpack_require__(99);
-var hiddenKeys = __webpack_require__(71).concat('length', 'prototype');
+var $keys = __webpack_require__(97);
+var hiddenKeys = __webpack_require__(69).concat('length', 'prototype');
 
 exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
   return $keys(O, hiddenKeys);
@@ -3252,12 +3252,12 @@ module.exports = function (it, Constructor, name, forbiddenField) {
 /* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ctx = __webpack_require__(19);
-var call = __webpack_require__(111);
-var isArrayIter = __webpack_require__(84);
+var ctx = __webpack_require__(18);
+var call = __webpack_require__(109);
+var isArrayIter = __webpack_require__(82);
 var anObject = __webpack_require__(1);
 var toLength = __webpack_require__(8);
-var getIterFn = __webpack_require__(86);
+var getIterFn = __webpack_require__(84);
 var BREAK = {};
 var RETURN = {};
 var exports = module.exports = function (iterable, entries, fn, that, ITERATOR) {
@@ -3310,7 +3310,7 @@ module.exports = function (it, tag, stat) {
 var $export = __webpack_require__(0);
 var defined = __webpack_require__(24);
 var fails = __webpack_require__(3);
-var spaces = __webpack_require__(74);
+var spaces = __webpack_require__(72);
 var space = '[' + spaces + ']';
 var non = '\u200b\u0085';
 var ltrim = RegExp('^' + space + space + '*');
@@ -3358,12 +3358,11 @@ module.exports = function (it, TYPE) {
 
 
 /***/ }),
-/* 47 */,
-/* 48 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
-var cof = __webpack_require__(20);
+var cof = __webpack_require__(19);
 // eslint-disable-next-line no-prototype-builtins
 module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
   return cof(it) == 'String' ? it.split('') : Object(it);
@@ -3371,18 +3370,18 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
 
 
 /***/ }),
-/* 49 */
+/* 48 */
 /***/ (function(module, exports) {
 
 exports.f = {}.propertyIsEnumerable;
 
 
 /***/ }),
-/* 50 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // getting tag from 19.1.3.6 Object.prototype.toString()
-var cof = __webpack_require__(20);
+var cof = __webpack_require__(19);
 var TAG = __webpack_require__(5)('toStringTag');
 // ES3 wrong here
 var ARG = cof(function () { return arguments; }()) == 'Arguments';
@@ -3407,7 +3406,3042 @@ module.exports = function (it) {
 
 
 /***/ }),
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(2);
+var SHARED = '__core-js_shared__';
+var store = global[SHARED] || (global[SHARED] = {});
+module.exports = function (key) {
+  return store[key] || (store[key] = {});
+};
+
+
+/***/ }),
 /* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// false -> Array#indexOf
+// true  -> Array#includes
+var toIObject = __webpack_require__(15);
+var toLength = __webpack_require__(8);
+var toAbsoluteIndex = __webpack_require__(36);
+module.exports = function (IS_INCLUDES) {
+  return function ($this, el, fromIndex) {
+    var O = toIObject($this);
+    var length = toLength(O.length);
+    var index = toAbsoluteIndex(fromIndex, length);
+    var value;
+    // Array#includes uses SameValueZero equality algorithm
+    // eslint-disable-next-line no-self-compare
+    if (IS_INCLUDES && el != el) while (length > index) {
+      value = O[index++];
+      // eslint-disable-next-line no-self-compare
+      if (value != value) return true;
+    // Array#indexOf ignores holes, Array#includes - not
+    } else for (;length > index; index++) if (IS_INCLUDES || index in O) {
+      if (O[index] === el) return IS_INCLUDES || index || 0;
+    } return !IS_INCLUDES && -1;
+  };
+};
+
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports) {
+
+exports.f = Object.getOwnPropertySymbols;
+
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 7.2.2 IsArray(argument)
+var cof = __webpack_require__(19);
+module.exports = Array.isArray || function isArray(arg) {
+  return cof(arg) == 'Array';
+};
+
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 7.2.8 IsRegExp(argument)
+var isObject = __webpack_require__(4);
+var cof = __webpack_require__(19);
+var MATCH = __webpack_require__(5)('match');
+module.exports = function (it) {
+  var isRegExp;
+  return isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : cof(it) == 'RegExp');
+};
+
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var ITERATOR = __webpack_require__(5)('iterator');
+var SAFE_CLOSING = false;
+
+try {
+  var riter = [7][ITERATOR]();
+  riter['return'] = function () { SAFE_CLOSING = true; };
+  // eslint-disable-next-line no-throw-literal
+  Array.from(riter, function () { throw 2; });
+} catch (e) { /* empty */ }
+
+module.exports = function (exec, skipClosing) {
+  if (!skipClosing && !SAFE_CLOSING) return false;
+  var safe = false;
+  try {
+    var arr = [7];
+    var iter = arr[ITERATOR]();
+    iter.next = function () { return { done: safe = true }; };
+    arr[ITERATOR] = function () { return iter; };
+    exec(arr);
+  } catch (e) { /* empty */ }
+  return safe;
+};
+
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// 21.2.5.3 get RegExp.prototype.flags
+var anObject = __webpack_require__(1);
+module.exports = function () {
+  var that = anObject(this);
+  var result = '';
+  if (that.global) result += 'g';
+  if (that.ignoreCase) result += 'i';
+  if (that.multiline) result += 'm';
+  if (that.unicode) result += 'u';
+  if (that.sticky) result += 'y';
+  return result;
+};
+
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var hide = __webpack_require__(12);
+var redefine = __webpack_require__(13);
+var fails = __webpack_require__(3);
+var defined = __webpack_require__(24);
+var wks = __webpack_require__(5);
+
+module.exports = function (KEY, length, exec) {
+  var SYMBOL = wks(KEY);
+  var fns = exec(defined, SYMBOL, ''[KEY]);
+  var strfn = fns[0];
+  var rxfn = fns[1];
+  if (fails(function () {
+    var O = {};
+    O[SYMBOL] = function () { return 7; };
+    return ''[KEY](O) != 7;
+  })) {
+    redefine(String.prototype, KEY, strfn);
+    hide(RegExp.prototype, SYMBOL, length == 2
+      // 21.2.5.8 RegExp.prototype[@@replace](string, replaceValue)
+      // 21.2.5.11 RegExp.prototype[@@split](string, limit)
+      ? function (string, arg) { return rxfn.call(string, this, arg); }
+      // 21.2.5.6 RegExp.prototype[@@match](string)
+      // 21.2.5.9 RegExp.prototype[@@search](string)
+      : function (string) { return rxfn.call(string, this); }
+    );
+  }
+};
+
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 7.3.20 SpeciesConstructor(O, defaultConstructor)
+var anObject = __webpack_require__(1);
+var aFunction = __webpack_require__(10);
+var SPECIES = __webpack_require__(5)('species');
+module.exports = function (O, D) {
+  var C = anObject(O).constructor;
+  var S;
+  return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? D : aFunction(S);
+};
+
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var global = __webpack_require__(2);
+var $export = __webpack_require__(0);
+var redefine = __webpack_require__(13);
+var redefineAll = __webpack_require__(42);
+var meta = __webpack_require__(30);
+var forOf = __webpack_require__(41);
+var anInstance = __webpack_require__(40);
+var isObject = __webpack_require__(4);
+var fails = __webpack_require__(3);
+var $iterDetect = __webpack_require__(55);
+var setToStringTag = __webpack_require__(43);
+var inheritIfRequired = __webpack_require__(73);
+
+module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
+  var Base = global[NAME];
+  var C = Base;
+  var ADDER = IS_MAP ? 'set' : 'add';
+  var proto = C && C.prototype;
+  var O = {};
+  var fixMethod = function (KEY) {
+    var fn = proto[KEY];
+    redefine(proto, KEY,
+      KEY == 'delete' ? function (a) {
+        return IS_WEAK && !isObject(a) ? false : fn.call(this, a === 0 ? 0 : a);
+      } : KEY == 'has' ? function has(a) {
+        return IS_WEAK && !isObject(a) ? false : fn.call(this, a === 0 ? 0 : a);
+      } : KEY == 'get' ? function get(a) {
+        return IS_WEAK && !isObject(a) ? undefined : fn.call(this, a === 0 ? 0 : a);
+      } : KEY == 'add' ? function add(a) { fn.call(this, a === 0 ? 0 : a); return this; }
+        : function set(a, b) { fn.call(this, a === 0 ? 0 : a, b); return this; }
+    );
+  };
+  if (typeof C != 'function' || !(IS_WEAK || proto.forEach && !fails(function () {
+    new C().entries().next();
+  }))) {
+    // create collection constructor
+    C = common.getConstructor(wrapper, NAME, IS_MAP, ADDER);
+    redefineAll(C.prototype, methods);
+    meta.NEED = true;
+  } else {
+    var instance = new C();
+    // early implementations not supports chaining
+    var HASNT_CHAINING = instance[ADDER](IS_WEAK ? {} : -0, 1) != instance;
+    // V8 ~  Chromium 40- weak-collections throws on primitives, but should return false
+    var THROWS_ON_PRIMITIVES = fails(function () { instance.has(1); });
+    // most early implementations doesn't supports iterables, most modern - not close it correctly
+    var ACCEPT_ITERABLES = $iterDetect(function (iter) { new C(iter); }); // eslint-disable-line no-new
+    // for early implementations -0 and +0 not the same
+    var BUGGY_ZERO = !IS_WEAK && fails(function () {
+      // V8 ~ Chromium 42- fails only with 5+ elements
+      var $instance = new C();
+      var index = 5;
+      while (index--) $instance[ADDER](index, index);
+      return !$instance.has(-0);
+    });
+    if (!ACCEPT_ITERABLES) {
+      C = wrapper(function (target, iterable) {
+        anInstance(target, C, NAME);
+        var that = inheritIfRequired(new Base(), target, C);
+        if (iterable != undefined) forOf(iterable, IS_MAP, that[ADDER], that);
+        return that;
+      });
+      C.prototype = proto;
+      proto.constructor = C;
+    }
+    if (THROWS_ON_PRIMITIVES || BUGGY_ZERO) {
+      fixMethod('delete');
+      fixMethod('has');
+      IS_MAP && fixMethod('get');
+    }
+    if (BUGGY_ZERO || HASNT_CHAINING) fixMethod(ADDER);
+    // weak collections should not contains .clear method
+    if (IS_WEAK && proto.clear) delete proto.clear;
+  }
+
+  setToStringTag(C, NAME);
+
+  O[NAME] = C;
+  $export($export.G + $export.W + $export.F * (C != Base), O);
+
+  if (!IS_WEAK) common.setStrong(C, NAME, IS_MAP);
+
+  return C;
+};
+
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(2);
+var hide = __webpack_require__(12);
+var uid = __webpack_require__(33);
+var TYPED = uid('typed_array');
+var VIEW = uid('view');
+var ABV = !!(global.ArrayBuffer && global.DataView);
+var CONSTR = ABV;
+var i = 0;
+var l = 9;
+var Typed;
+
+var TypedArrayConstructors = (
+  'Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,Float32Array,Float64Array'
+).split(',');
+
+while (i < l) {
+  if (Typed = global[TypedArrayConstructors[i++]]) {
+    hide(Typed.prototype, TYPED, true);
+    hide(Typed.prototype, VIEW, true);
+  } else CONSTR = false;
+}
+
+module.exports = {
+  ABV: ABV,
+  CONSTR: CONSTR,
+  TYPED: TYPED,
+  VIEW: VIEW
+};
+
+
+/***/ }),
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// Forced replacement prototype accessors methods
+module.exports = __webpack_require__(34) || !__webpack_require__(3)(function () {
+  var K = Math.random();
+  // In FF throws only define methods
+  // eslint-disable-next-line no-undef, no-useless-call
+  __defineSetter__.call(null, K, function () { /* empty */ });
+  delete __webpack_require__(2)[K];
+});
+
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// https://tc39.github.io/proposal-setmap-offrom/
+var $export = __webpack_require__(0);
+
+module.exports = function (COLLECTION) {
+  $export($export.S, COLLECTION, { of: function of() {
+    var length = arguments.length;
+    var A = new Array(length);
+    while (length--) A[length] = arguments[length];
+    return new this(A);
+  } });
+};
+
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// https://tc39.github.io/proposal-setmap-offrom/
+var $export = __webpack_require__(0);
+var aFunction = __webpack_require__(10);
+var ctx = __webpack_require__(18);
+var forOf = __webpack_require__(41);
+
+module.exports = function (COLLECTION) {
+  $export($export.S, COLLECTION, { from: function from(source /* , mapFn, thisArg */) {
+    var mapFn = arguments[1];
+    var mapping, A, n, cb;
+    aFunction(this);
+    mapping = mapFn !== undefined;
+    if (mapping) aFunction(mapFn);
+    if (source == undefined) return new this();
+    A = [];
+    if (mapping) {
+      n = 0;
+      cb = ctx(mapFn, arguments[2], 2);
+      forOf(source, false, function (nextItem) {
+        A.push(cb(nextItem, n++));
+      });
+    } else {
+      forOf(source, false, A.push, A);
+    }
+    return new this(A);
+  } });
+};
+
+
+/***/ }),
+/* 64 */,
+/* 65 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isObject = __webpack_require__(4);
+var document = __webpack_require__(2).document;
+// typeof document.createElement is 'object' in old IE
+var is = isObject(document) && isObject(document.createElement);
+module.exports = function (it) {
+  return is ? document.createElement(it) : {};
+};
+
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(2);
+var core = __webpack_require__(22);
+var LIBRARY = __webpack_require__(34);
+var wksExt = __webpack_require__(96);
+var defineProperty = __webpack_require__(7).f;
+module.exports = function (name) {
+  var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
+  if (name.charAt(0) != '_' && !(name in $Symbol)) defineProperty($Symbol, name, { value: wksExt.f(name) });
+};
+
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var shared = __webpack_require__(50)('keys');
+var uid = __webpack_require__(33);
+module.exports = function (key) {
+  return shared[key] || (shared[key] = uid(key));
+};
+
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports) {
+
+// IE 8- don't enum bug keys
+module.exports = (
+  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
+).split(',');
+
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var document = __webpack_require__(2).document;
+module.exports = document && document.documentElement;
+
+
+/***/ }),
+/* 71 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Works with __proto__ only. Old v8 can't work with null proto objects.
+/* eslint-disable no-proto */
+var isObject = __webpack_require__(4);
+var anObject = __webpack_require__(1);
+var check = function (O, proto) {
+  anObject(O);
+  if (!isObject(proto) && proto !== null) throw TypeError(proto + ": can't set as prototype!");
+};
+module.exports = {
+  set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
+    function (test, buggy, set) {
+      try {
+        set = __webpack_require__(18)(Function.call, __webpack_require__(16).f(Object.prototype, '__proto__').set, 2);
+        set(test, []);
+        buggy = !(test instanceof Array);
+      } catch (e) { buggy = true; }
+      return function setPrototypeOf(O, proto) {
+        check(O, proto);
+        if (buggy) O.__proto__ = proto;
+        else set(O, proto);
+        return O;
+      };
+    }({}, false) : undefined),
+  check: check
+};
+
+
+/***/ }),
+/* 72 */
+/***/ (function(module, exports) {
+
+module.exports = '\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003' +
+  '\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
+
+
+/***/ }),
+/* 73 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isObject = __webpack_require__(4);
+var setPrototypeOf = __webpack_require__(71).set;
+module.exports = function (that, target, C) {
+  var S = target.constructor;
+  var P;
+  if (S !== C && typeof S == 'function' && (P = S.prototype) !== C.prototype && isObject(P) && setPrototypeOf) {
+    setPrototypeOf(that, P);
+  } return that;
+};
+
+
+/***/ }),
+/* 74 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var toInteger = __webpack_require__(25);
+var defined = __webpack_require__(24);
+
+module.exports = function repeat(count) {
+  var str = String(defined(this));
+  var res = '';
+  var n = toInteger(count);
+  if (n < 0 || n == Infinity) throw RangeError("Count can't be negative");
+  for (;n > 0; (n >>>= 1) && (str += str)) if (n & 1) res += str;
+  return res;
+};
+
+
+/***/ }),
+/* 75 */
+/***/ (function(module, exports) {
+
+// 20.2.2.28 Math.sign(x)
+module.exports = Math.sign || function sign(x) {
+  // eslint-disable-next-line no-self-compare
+  return (x = +x) == 0 || x != x ? x : x < 0 ? -1 : 1;
+};
+
+
+/***/ }),
+/* 76 */
+/***/ (function(module, exports) {
+
+// 20.2.2.14 Math.expm1(x)
+var $expm1 = Math.expm1;
+module.exports = (!$expm1
+  // Old FF bug
+  || $expm1(10) > 22025.465794806719 || $expm1(10) < 22025.4657948067165168
+  // Tor Browser bug
+  || $expm1(-2e-17) != -2e-17
+) ? function expm1(x) {
+  return (x = +x) == 0 ? x : x > -1e-6 && x < 1e-6 ? x + x * x / 2 : Math.exp(x) - 1;
+} : $expm1;
+
+
+/***/ }),
+/* 77 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var toInteger = __webpack_require__(25);
+var defined = __webpack_require__(24);
+// true  -> String#at
+// false -> String#codePointAt
+module.exports = function (TO_STRING) {
+  return function (that, pos) {
+    var s = String(defined(that));
+    var i = toInteger(pos);
+    var l = s.length;
+    var a, b;
+    if (i < 0 || i >= l) return TO_STRING ? '' : undefined;
+    a = s.charCodeAt(i);
+    return a < 0xd800 || a > 0xdbff || i + 1 === l || (b = s.charCodeAt(i + 1)) < 0xdc00 || b > 0xdfff
+      ? TO_STRING ? s.charAt(i) : a
+      : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
+  };
+};
+
+
+/***/ }),
+/* 78 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var LIBRARY = __webpack_require__(34);
+var $export = __webpack_require__(0);
+var redefine = __webpack_require__(13);
+var hide = __webpack_require__(12);
+var has = __webpack_require__(11);
+var Iterators = __webpack_require__(45);
+var $iterCreate = __webpack_require__(79);
+var setToStringTag = __webpack_require__(43);
+var getPrototypeOf = __webpack_require__(17);
+var ITERATOR = __webpack_require__(5)('iterator');
+var BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`
+var FF_ITERATOR = '@@iterator';
+var KEYS = 'keys';
+var VALUES = 'values';
+
+var returnThis = function () { return this; };
+
+module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED) {
+  $iterCreate(Constructor, NAME, next);
+  var getMethod = function (kind) {
+    if (!BUGGY && kind in proto) return proto[kind];
+    switch (kind) {
+      case KEYS: return function keys() { return new Constructor(this, kind); };
+      case VALUES: return function values() { return new Constructor(this, kind); };
+    } return function entries() { return new Constructor(this, kind); };
+  };
+  var TAG = NAME + ' Iterator';
+  var DEF_VALUES = DEFAULT == VALUES;
+  var VALUES_BUG = false;
+  var proto = Base.prototype;
+  var $native = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT];
+  var $default = (!BUGGY && $native) || getMethod(DEFAULT);
+  var $entries = DEFAULT ? !DEF_VALUES ? $default : getMethod('entries') : undefined;
+  var $anyNative = NAME == 'Array' ? proto.entries || $native : $native;
+  var methods, key, IteratorPrototype;
+  // Fix native
+  if ($anyNative) {
+    IteratorPrototype = getPrototypeOf($anyNative.call(new Base()));
+    if (IteratorPrototype !== Object.prototype && IteratorPrototype.next) {
+      // Set @@toStringTag to native iterators
+      setToStringTag(IteratorPrototype, TAG, true);
+      // fix for some old engines
+      if (!LIBRARY && !has(IteratorPrototype, ITERATOR)) hide(IteratorPrototype, ITERATOR, returnThis);
+    }
+  }
+  // fix Array#{values, @@iterator}.name in V8 / FF
+  if (DEF_VALUES && $native && $native.name !== VALUES) {
+    VALUES_BUG = true;
+    $default = function values() { return $native.call(this); };
+  }
+  // Define iterator
+  if ((!LIBRARY || FORCED) && (BUGGY || VALUES_BUG || !proto[ITERATOR])) {
+    hide(proto, ITERATOR, $default);
+  }
+  // Plug for library
+  Iterators[NAME] = $default;
+  Iterators[TAG] = returnThis;
+  if (DEFAULT) {
+    methods = {
+      values: DEF_VALUES ? $default : getMethod(VALUES),
+      keys: IS_SET ? $default : getMethod(KEYS),
+      entries: $entries
+    };
+    if (FORCED) for (key in methods) {
+      if (!(key in proto)) redefine(proto, key, methods[key]);
+    } else $export($export.P + $export.F * (BUGGY || VALUES_BUG), NAME, methods);
+  }
+  return methods;
+};
+
+
+/***/ }),
+/* 79 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var create = __webpack_require__(37);
+var descriptor = __webpack_require__(32);
+var setToStringTag = __webpack_require__(43);
+var IteratorPrototype = {};
+
+// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
+__webpack_require__(12)(IteratorPrototype, __webpack_require__(5)('iterator'), function () { return this; });
+
+module.exports = function (Constructor, NAME, next) {
+  Constructor.prototype = create(IteratorPrototype, { next: descriptor(1, next) });
+  setToStringTag(Constructor, NAME + ' Iterator');
+};
+
+
+/***/ }),
+/* 80 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// helper for String#{startsWith, endsWith, includes}
+var isRegExp = __webpack_require__(54);
+var defined = __webpack_require__(24);
+
+module.exports = function (that, searchString, NAME) {
+  if (isRegExp(searchString)) throw TypeError('String#' + NAME + " doesn't accept regex!");
+  return String(defined(that));
+};
+
+
+/***/ }),
+/* 81 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var MATCH = __webpack_require__(5)('match');
+module.exports = function (KEY) {
+  var re = /./;
+  try {
+    '/./'[KEY](re);
+  } catch (e) {
+    try {
+      re[MATCH] = false;
+      return !'/./'[KEY](re);
+    } catch (f) { /* empty */ }
+  } return true;
+};
+
+
+/***/ }),
+/* 82 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// check on default Array iterator
+var Iterators = __webpack_require__(45);
+var ITERATOR = __webpack_require__(5)('iterator');
+var ArrayProto = Array.prototype;
+
+module.exports = function (it) {
+  return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
+};
+
+
+/***/ }),
+/* 83 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var $defineProperty = __webpack_require__(7);
+var createDesc = __webpack_require__(32);
+
+module.exports = function (object, index, value) {
+  if (index in object) $defineProperty.f(object, index, createDesc(0, value));
+  else object[index] = value;
+};
+
+
+/***/ }),
+/* 84 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var classof = __webpack_require__(49);
+var ITERATOR = __webpack_require__(5)('iterator');
+var Iterators = __webpack_require__(45);
+module.exports = __webpack_require__(22).getIteratorMethod = function (it) {
+  if (it != undefined) return it[ITERATOR]
+    || it['@@iterator']
+    || Iterators[classof(it)];
+};
+
+
+/***/ }),
+/* 85 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 9.4.2.3 ArraySpeciesCreate(originalArray, length)
+var speciesConstructor = __webpack_require__(230);
+
+module.exports = function (original, length) {
+  return new (speciesConstructor(original))(length);
+};
+
+
+/***/ }),
+/* 86 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+// 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
+
+var toObject = __webpack_require__(9);
+var toAbsoluteIndex = __webpack_require__(36);
+var toLength = __webpack_require__(8);
+module.exports = function fill(value /* , start = 0, end = @length */) {
+  var O = toObject(this);
+  var length = toLength(O.length);
+  var aLen = arguments.length;
+  var index = toAbsoluteIndex(aLen > 1 ? arguments[1] : undefined, length);
+  var end = aLen > 2 ? arguments[2] : undefined;
+  var endPos = end === undefined ? length : toAbsoluteIndex(end, length);
+  while (endPos > index) O[index++] = value;
+  return O;
+};
+
+
+/***/ }),
+/* 87 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var addToUnscopables = __webpack_require__(31);
+var step = __webpack_require__(112);
+var Iterators = __webpack_require__(45);
+var toIObject = __webpack_require__(15);
+
+// 22.1.3.4 Array.prototype.entries()
+// 22.1.3.13 Array.prototype.keys()
+// 22.1.3.29 Array.prototype.values()
+// 22.1.3.30 Array.prototype[@@iterator]()
+module.exports = __webpack_require__(78)(Array, 'Array', function (iterated, kind) {
+  this._t = toIObject(iterated); // target
+  this._i = 0;                   // next index
+  this._k = kind;                // kind
+// 22.1.5.2.1 %ArrayIteratorPrototype%.next()
+}, function () {
+  var O = this._t;
+  var kind = this._k;
+  var index = this._i++;
+  if (!O || index >= O.length) {
+    this._t = undefined;
+    return step(1);
+  }
+  if (kind == 'keys') return step(0, index);
+  if (kind == 'values') return step(0, O[index]);
+  return step(0, [index, O[index]]);
+}, 'values');
+
+// argumentsList[@@iterator] is %ArrayProto_values% (9.4.4.6, 9.4.4.7)
+Iterators.Arguments = Iterators.Array;
+
+addToUnscopables('keys');
+addToUnscopables('values');
+addToUnscopables('entries');
+
+
+/***/ }),
+/* 88 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var ctx = __webpack_require__(18);
+var invoke = __webpack_require__(102);
+var html = __webpack_require__(70);
+var cel = __webpack_require__(66);
+var global = __webpack_require__(2);
+var process = global.process;
+var setTask = global.setImmediate;
+var clearTask = global.clearImmediate;
+var MessageChannel = global.MessageChannel;
+var Dispatch = global.Dispatch;
+var counter = 0;
+var queue = {};
+var ONREADYSTATECHANGE = 'onreadystatechange';
+var defer, channel, port;
+var run = function () {
+  var id = +this;
+  // eslint-disable-next-line no-prototype-builtins
+  if (queue.hasOwnProperty(id)) {
+    var fn = queue[id];
+    delete queue[id];
+    fn();
+  }
+};
+var listener = function (event) {
+  run.call(event.data);
+};
+// Node.js 0.9+ & IE10+ has setImmediate, otherwise:
+if (!setTask || !clearTask) {
+  setTask = function setImmediate(fn) {
+    var args = [];
+    var i = 1;
+    while (arguments.length > i) args.push(arguments[i++]);
+    queue[++counter] = function () {
+      // eslint-disable-next-line no-new-func
+      invoke(typeof fn == 'function' ? fn : Function(fn), args);
+    };
+    defer(counter);
+    return counter;
+  };
+  clearTask = function clearImmediate(id) {
+    delete queue[id];
+  };
+  // Node.js 0.8-
+  if (__webpack_require__(19)(process) == 'process') {
+    defer = function (id) {
+      process.nextTick(ctx(run, id, 1));
+    };
+  // Sphere (JS game engine) Dispatch API
+  } else if (Dispatch && Dispatch.now) {
+    defer = function (id) {
+      Dispatch.now(ctx(run, id, 1));
+    };
+  // Browsers with MessageChannel, includes WebWorkers
+  } else if (MessageChannel) {
+    channel = new MessageChannel();
+    port = channel.port2;
+    channel.port1.onmessage = listener;
+    defer = ctx(port.postMessage, port, 1);
+  // Browsers with postMessage, skip WebWorkers
+  // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'
+  } else if (global.addEventListener && typeof postMessage == 'function' && !global.importScripts) {
+    defer = function (id) {
+      global.postMessage(id + '', '*');
+    };
+    global.addEventListener('message', listener, false);
+  // IE8-
+  } else if (ONREADYSTATECHANGE in cel('script')) {
+    defer = function (id) {
+      html.appendChild(cel('script'))[ONREADYSTATECHANGE] = function () {
+        html.removeChild(this);
+        run.call(id);
+      };
+    };
+  // Rest old browsers
+  } else {
+    defer = function (id) {
+      setTimeout(ctx(run, id, 1), 0);
+    };
+  }
+}
+module.exports = {
+  set: setTask,
+  clear: clearTask
+};
+
+
+/***/ }),
+/* 89 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(2);
+var macrotask = __webpack_require__(88).set;
+var Observer = global.MutationObserver || global.WebKitMutationObserver;
+var process = global.process;
+var Promise = global.Promise;
+var isNode = __webpack_require__(19)(process) == 'process';
+
+module.exports = function () {
+  var head, last, notify;
+
+  var flush = function () {
+    var parent, fn;
+    if (isNode && (parent = process.domain)) parent.exit();
+    while (head) {
+      fn = head.fn;
+      head = head.next;
+      try {
+        fn();
+      } catch (e) {
+        if (head) notify();
+        else last = undefined;
+        throw e;
+      }
+    } last = undefined;
+    if (parent) parent.enter();
+  };
+
+  // Node.js
+  if (isNode) {
+    notify = function () {
+      process.nextTick(flush);
+    };
+  // browsers with MutationObserver, except iOS Safari - https://github.com/zloirock/core-js/issues/339
+  } else if (Observer && !(global.navigator && global.navigator.standalone)) {
+    var toggle = true;
+    var node = document.createTextNode('');
+    new Observer(flush).observe(node, { characterData: true }); // eslint-disable-line no-new
+    notify = function () {
+      node.data = toggle = !toggle;
+    };
+  // environments with maybe non-completely correct, but existent Promise
+  } else if (Promise && Promise.resolve) {
+    var promise = Promise.resolve();
+    notify = function () {
+      promise.then(flush);
+    };
+  // for other environments - macrotask based on:
+  // - setImmediate
+  // - MessageChannel
+  // - window.postMessag
+  // - onreadystatechange
+  // - setTimeout
+  } else {
+    notify = function () {
+      // strange IE + webpack dev server bug - use .call(global)
+      macrotask.call(global, flush);
+    };
+  }
+
+  return function (fn) {
+    var task = { fn: fn, next: undefined };
+    if (last) last.next = task;
+    if (!head) {
+      head = task;
+      notify();
+    } last = task;
+  };
+};
+
+
+/***/ }),
+/* 90 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// 25.4.1.5 NewPromiseCapability(C)
+var aFunction = __webpack_require__(10);
+
+function PromiseCapability(C) {
+  var resolve, reject;
+  this.promise = new C(function ($$resolve, $$reject) {
+    if (resolve !== undefined || reject !== undefined) throw TypeError('Bad Promise constructor');
+    resolve = $$resolve;
+    reject = $$reject;
+  });
+  this.resolve = aFunction(resolve);
+  this.reject = aFunction(reject);
+}
+
+module.exports.f = function (C) {
+  return new PromiseCapability(C);
+};
+
+
+/***/ }),
+/* 91 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var global = __webpack_require__(2);
+var DESCRIPTORS = __webpack_require__(6);
+var LIBRARY = __webpack_require__(34);
+var $typed = __webpack_require__(60);
+var hide = __webpack_require__(12);
+var redefineAll = __webpack_require__(42);
+var fails = __webpack_require__(3);
+var anInstance = __webpack_require__(40);
+var toInteger = __webpack_require__(25);
+var toLength = __webpack_require__(8);
+var toIndex = __webpack_require__(121);
+var gOPN = __webpack_require__(38).f;
+var dP = __webpack_require__(7).f;
+var arrayFill = __webpack_require__(86);
+var setToStringTag = __webpack_require__(43);
+var ARRAY_BUFFER = 'ArrayBuffer';
+var DATA_VIEW = 'DataView';
+var PROTOTYPE = 'prototype';
+var WRONG_LENGTH = 'Wrong length!';
+var WRONG_INDEX = 'Wrong index!';
+var $ArrayBuffer = global[ARRAY_BUFFER];
+var $DataView = global[DATA_VIEW];
+var Math = global.Math;
+var RangeError = global.RangeError;
+// eslint-disable-next-line no-shadow-restricted-names
+var Infinity = global.Infinity;
+var BaseBuffer = $ArrayBuffer;
+var abs = Math.abs;
+var pow = Math.pow;
+var floor = Math.floor;
+var log = Math.log;
+var LN2 = Math.LN2;
+var BUFFER = 'buffer';
+var BYTE_LENGTH = 'byteLength';
+var BYTE_OFFSET = 'byteOffset';
+var $BUFFER = DESCRIPTORS ? '_b' : BUFFER;
+var $LENGTH = DESCRIPTORS ? '_l' : BYTE_LENGTH;
+var $OFFSET = DESCRIPTORS ? '_o' : BYTE_OFFSET;
+
+// IEEE754 conversions based on https://github.com/feross/ieee754
+function packIEEE754(value, mLen, nBytes) {
+  var buffer = new Array(nBytes);
+  var eLen = nBytes * 8 - mLen - 1;
+  var eMax = (1 << eLen) - 1;
+  var eBias = eMax >> 1;
+  var rt = mLen === 23 ? pow(2, -24) - pow(2, -77) : 0;
+  var i = 0;
+  var s = value < 0 || value === 0 && 1 / value < 0 ? 1 : 0;
+  var e, m, c;
+  value = abs(value);
+  // eslint-disable-next-line no-self-compare
+  if (value != value || value === Infinity) {
+    // eslint-disable-next-line no-self-compare
+    m = value != value ? 1 : 0;
+    e = eMax;
+  } else {
+    e = floor(log(value) / LN2);
+    if (value * (c = pow(2, -e)) < 1) {
+      e--;
+      c *= 2;
+    }
+    if (e + eBias >= 1) {
+      value += rt / c;
+    } else {
+      value += rt * pow(2, 1 - eBias);
+    }
+    if (value * c >= 2) {
+      e++;
+      c /= 2;
+    }
+    if (e + eBias >= eMax) {
+      m = 0;
+      e = eMax;
+    } else if (e + eBias >= 1) {
+      m = (value * c - 1) * pow(2, mLen);
+      e = e + eBias;
+    } else {
+      m = value * pow(2, eBias - 1) * pow(2, mLen);
+      e = 0;
+    }
+  }
+  for (; mLen >= 8; buffer[i++] = m & 255, m /= 256, mLen -= 8);
+  e = e << mLen | m;
+  eLen += mLen;
+  for (; eLen > 0; buffer[i++] = e & 255, e /= 256, eLen -= 8);
+  buffer[--i] |= s * 128;
+  return buffer;
+}
+function unpackIEEE754(buffer, mLen, nBytes) {
+  var eLen = nBytes * 8 - mLen - 1;
+  var eMax = (1 << eLen) - 1;
+  var eBias = eMax >> 1;
+  var nBits = eLen - 7;
+  var i = nBytes - 1;
+  var s = buffer[i--];
+  var e = s & 127;
+  var m;
+  s >>= 7;
+  for (; nBits > 0; e = e * 256 + buffer[i], i--, nBits -= 8);
+  m = e & (1 << -nBits) - 1;
+  e >>= -nBits;
+  nBits += mLen;
+  for (; nBits > 0; m = m * 256 + buffer[i], i--, nBits -= 8);
+  if (e === 0) {
+    e = 1 - eBias;
+  } else if (e === eMax) {
+    return m ? NaN : s ? -Infinity : Infinity;
+  } else {
+    m = m + pow(2, mLen);
+    e = e - eBias;
+  } return (s ? -1 : 1) * m * pow(2, e - mLen);
+}
+
+function unpackI32(bytes) {
+  return bytes[3] << 24 | bytes[2] << 16 | bytes[1] << 8 | bytes[0];
+}
+function packI8(it) {
+  return [it & 0xff];
+}
+function packI16(it) {
+  return [it & 0xff, it >> 8 & 0xff];
+}
+function packI32(it) {
+  return [it & 0xff, it >> 8 & 0xff, it >> 16 & 0xff, it >> 24 & 0xff];
+}
+function packF64(it) {
+  return packIEEE754(it, 52, 8);
+}
+function packF32(it) {
+  return packIEEE754(it, 23, 4);
+}
+
+function addGetter(C, key, internal) {
+  dP(C[PROTOTYPE], key, { get: function () { return this[internal]; } });
+}
+
+function get(view, bytes, index, isLittleEndian) {
+  var numIndex = +index;
+  var intIndex = toIndex(numIndex);
+  if (intIndex + bytes > view[$LENGTH]) throw RangeError(WRONG_INDEX);
+  var store = view[$BUFFER]._b;
+  var start = intIndex + view[$OFFSET];
+  var pack = store.slice(start, start + bytes);
+  return isLittleEndian ? pack : pack.reverse();
+}
+function set(view, bytes, index, conversion, value, isLittleEndian) {
+  var numIndex = +index;
+  var intIndex = toIndex(numIndex);
+  if (intIndex + bytes > view[$LENGTH]) throw RangeError(WRONG_INDEX);
+  var store = view[$BUFFER]._b;
+  var start = intIndex + view[$OFFSET];
+  var pack = conversion(+value);
+  for (var i = 0; i < bytes; i++) store[start + i] = pack[isLittleEndian ? i : bytes - i - 1];
+}
+
+if (!$typed.ABV) {
+  $ArrayBuffer = function ArrayBuffer(length) {
+    anInstance(this, $ArrayBuffer, ARRAY_BUFFER);
+    var byteLength = toIndex(length);
+    this._b = arrayFill.call(new Array(byteLength), 0);
+    this[$LENGTH] = byteLength;
+  };
+
+  $DataView = function DataView(buffer, byteOffset, byteLength) {
+    anInstance(this, $DataView, DATA_VIEW);
+    anInstance(buffer, $ArrayBuffer, DATA_VIEW);
+    var bufferLength = buffer[$LENGTH];
+    var offset = toInteger(byteOffset);
+    if (offset < 0 || offset > bufferLength) throw RangeError('Wrong offset!');
+    byteLength = byteLength === undefined ? bufferLength - offset : toLength(byteLength);
+    if (offset + byteLength > bufferLength) throw RangeError(WRONG_LENGTH);
+    this[$BUFFER] = buffer;
+    this[$OFFSET] = offset;
+    this[$LENGTH] = byteLength;
+  };
+
+  if (DESCRIPTORS) {
+    addGetter($ArrayBuffer, BYTE_LENGTH, '_l');
+    addGetter($DataView, BUFFER, '_b');
+    addGetter($DataView, BYTE_LENGTH, '_l');
+    addGetter($DataView, BYTE_OFFSET, '_o');
+  }
+
+  redefineAll($DataView[PROTOTYPE], {
+    getInt8: function getInt8(byteOffset) {
+      return get(this, 1, byteOffset)[0] << 24 >> 24;
+    },
+    getUint8: function getUint8(byteOffset) {
+      return get(this, 1, byteOffset)[0];
+    },
+    getInt16: function getInt16(byteOffset /* , littleEndian */) {
+      var bytes = get(this, 2, byteOffset, arguments[1]);
+      return (bytes[1] << 8 | bytes[0]) << 16 >> 16;
+    },
+    getUint16: function getUint16(byteOffset /* , littleEndian */) {
+      var bytes = get(this, 2, byteOffset, arguments[1]);
+      return bytes[1] << 8 | bytes[0];
+    },
+    getInt32: function getInt32(byteOffset /* , littleEndian */) {
+      return unpackI32(get(this, 4, byteOffset, arguments[1]));
+    },
+    getUint32: function getUint32(byteOffset /* , littleEndian */) {
+      return unpackI32(get(this, 4, byteOffset, arguments[1])) >>> 0;
+    },
+    getFloat32: function getFloat32(byteOffset /* , littleEndian */) {
+      return unpackIEEE754(get(this, 4, byteOffset, arguments[1]), 23, 4);
+    },
+    getFloat64: function getFloat64(byteOffset /* , littleEndian */) {
+      return unpackIEEE754(get(this, 8, byteOffset, arguments[1]), 52, 8);
+    },
+    setInt8: function setInt8(byteOffset, value) {
+      set(this, 1, byteOffset, packI8, value);
+    },
+    setUint8: function setUint8(byteOffset, value) {
+      set(this, 1, byteOffset, packI8, value);
+    },
+    setInt16: function setInt16(byteOffset, value /* , littleEndian */) {
+      set(this, 2, byteOffset, packI16, value, arguments[2]);
+    },
+    setUint16: function setUint16(byteOffset, value /* , littleEndian */) {
+      set(this, 2, byteOffset, packI16, value, arguments[2]);
+    },
+    setInt32: function setInt32(byteOffset, value /* , littleEndian */) {
+      set(this, 4, byteOffset, packI32, value, arguments[2]);
+    },
+    setUint32: function setUint32(byteOffset, value /* , littleEndian */) {
+      set(this, 4, byteOffset, packI32, value, arguments[2]);
+    },
+    setFloat32: function setFloat32(byteOffset, value /* , littleEndian */) {
+      set(this, 4, byteOffset, packF32, value, arguments[2]);
+    },
+    setFloat64: function setFloat64(byteOffset, value /* , littleEndian */) {
+      set(this, 8, byteOffset, packF64, value, arguments[2]);
+    }
+  });
+} else {
+  if (!fails(function () {
+    $ArrayBuffer(1);
+  }) || !fails(function () {
+    new $ArrayBuffer(-1); // eslint-disable-line no-new
+  }) || fails(function () {
+    new $ArrayBuffer(); // eslint-disable-line no-new
+    new $ArrayBuffer(1.5); // eslint-disable-line no-new
+    new $ArrayBuffer(NaN); // eslint-disable-line no-new
+    return $ArrayBuffer.name != ARRAY_BUFFER;
+  })) {
+    $ArrayBuffer = function ArrayBuffer(length) {
+      anInstance(this, $ArrayBuffer);
+      return new BaseBuffer(toIndex(length));
+    };
+    var ArrayBufferProto = $ArrayBuffer[PROTOTYPE] = BaseBuffer[PROTOTYPE];
+    for (var keys = gOPN(BaseBuffer), j = 0, key; keys.length > j;) {
+      if (!((key = keys[j++]) in $ArrayBuffer)) hide($ArrayBuffer, key, BaseBuffer[key]);
+    }
+    if (!LIBRARY) ArrayBufferProto.constructor = $ArrayBuffer;
+  }
+  // iOS Safari 7.x bug
+  var view = new $DataView(new $ArrayBuffer(2));
+  var $setInt8 = $DataView[PROTOTYPE].setInt8;
+  view.setInt8(0, 2147483648);
+  view.setInt8(1, 2147483649);
+  if (view.getInt8(0) || !view.getInt8(1)) redefineAll($DataView[PROTOTYPE], {
+    setInt8: function setInt8(byteOffset, value) {
+      $setInt8.call(this, byteOffset, value << 24 >> 24);
+    },
+    setUint8: function setUint8(byteOffset, value) {
+      $setInt8.call(this, byteOffset, value << 24 >> 24);
+    }
+  }, true);
+}
+setToStringTag($ArrayBuffer, ARRAY_BUFFER);
+setToStringTag($DataView, DATA_VIEW);
+hide($DataView[PROTOTYPE], $typed.VIEW, true);
+exports[ARRAY_BUFFER] = $ArrayBuffer;
+exports[DATA_VIEW] = $DataView;
+
+
+/***/ }),
+/* 92 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(2);
+var navigator = global.navigator;
+
+module.exports = navigator && navigator.userAgent || '';
+
+
+/***/ }),
+/* 93 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TimelineLite; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(21);
+/*!
+ * VERSION: 1.20.5
+ * DATE: 2018-05-21
+ * UPDATES AND DOCS AT: http://greensock.com
+ *
+ * @license Copyright (c) 2008-2018, GreenSock. All rights reserved.
+ * This work is subject to the terms at http://greensock.com/standard-license or for
+ * Club GreenSock members, the software agreement that was issued with your membership.
+ * 
+ * @author: Jack Doyle, jack@greensock.com
+ */
+
+
+__WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */]._gsDefine("TimelineLite", ["core.Animation","core.SimpleTimeline","TweenLite"], function() {
+
+		var TimelineLite = function(vars) {
+				__WEBPACK_IMPORTED_MODULE_0__TweenLite__["i" /* SimpleTimeline */].call(this, vars);
+				this._labels = {};
+				this.autoRemoveChildren = (this.vars.autoRemoveChildren === true);
+				this.smoothChildTiming = (this.vars.smoothChildTiming === true);
+				this._sortChildren = true;
+				this._onUpdate = this.vars.onUpdate;
+				var v = this.vars,
+					val, p;
+				for (p in v) {
+					val = v[p];
+					if (_isArray(val)) if (val.join("").indexOf("{self}") !== -1) {
+						v[p] = this._swapSelfInParams(val);
+					}
+				}
+				if (_isArray(v.tweens)) {
+					this.add(v.tweens, 0, v.align, v.stagger);
+				}
+			},
+			_tinyNum = 0.0000000001,
+			TweenLiteInternals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */]._internals,
+			_internals = TimelineLite._internals = {},
+			_isSelector = TweenLiteInternals.isSelector,
+			_isArray = TweenLiteInternals.isArray,
+			_lazyTweens = TweenLiteInternals.lazyTweens,
+			_lazyRender = TweenLiteInternals.lazyRender,
+			_globals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */]._gsDefine.globals,
+			_copy = function(vars) {
+				var copy = {}, p;
+				for (p in vars) {
+					copy[p] = vars[p];
+				}
+				return copy;
+			},
+			_applyCycle = function(vars, targets, i) {
+				var alt = vars.cycle,
+					p, val;
+				for (p in alt) {
+					val = alt[p];
+					vars[p] = (typeof(val) === "function") ? val(i, targets[i]) : val[i % val.length];
+				}
+				delete vars.cycle;
+			},
+			_pauseCallback = _internals.pauseCallback = function() {},
+			_slice = function(a) { //don't use [].slice because that doesn't work in IE8 with a NodeList that's returned by querySelectorAll()
+				var b = [],
+					l = a.length,
+					i;
+				for (i = 0; i !== l; b.push(a[i++]));
+				return b;
+			},
+			p = TimelineLite.prototype = new __WEBPACK_IMPORTED_MODULE_0__TweenLite__["i" /* SimpleTimeline */]();
+
+		TimelineLite.version = "1.20.5";
+		p.constructor = TimelineLite;
+		p.kill()._gc = p._forcingPlayhead = p._hasPause = false;
+
+		/* might use later...
+		//translates a local time inside an animation to the corresponding time on the root/global timeline, factoring in all nesting and timeScales.
+		function localToGlobal(time, animation) {
+			while (animation) {
+				time = (time / animation._timeScale) + animation._startTime;
+				animation = animation.timeline;
+			}
+			return time;
+		}
+
+		//translates the supplied time on the root/global timeline into the corresponding local time inside a particular animation, factoring in all nesting and timeScales
+		function globalToLocal(time, animation) {
+			var scale = 1;
+			time -= localToGlobal(0, animation);
+			while (animation) {
+				scale *= animation._timeScale;
+				animation = animation.timeline;
+			}
+			return time * scale;
+		}
+		*/
+
+		p.to = function(target, duration, vars, position) {
+			var Engine = (vars.repeat && _globals.TweenMax) || __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */];
+			return duration ? this.add( new Engine(target, duration, vars), position) : this.set(target, vars, position);
+		};
+
+		p.from = function(target, duration, vars, position) {
+			return this.add( ((vars.repeat && _globals.TweenMax) || __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */]).from(target, duration, vars), position);
+		};
+
+		p.fromTo = function(target, duration, fromVars, toVars, position) {
+			var Engine = (toVars.repeat && _globals.TweenMax) || __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */];
+			return duration ? this.add( Engine.fromTo(target, duration, fromVars, toVars), position) : this.set(target, toVars, position);
+		};
+
+		p.staggerTo = function(targets, duration, vars, stagger, position, onCompleteAll, onCompleteAllParams, onCompleteAllScope) {
+			var tl = new TimelineLite({onComplete:onCompleteAll, onCompleteParams:onCompleteAllParams, callbackScope:onCompleteAllScope, smoothChildTiming:this.smoothChildTiming}),
+				cycle = vars.cycle,
+				copy, i;
+			if (typeof(targets) === "string") {
+				targets = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].selector(targets) || targets;
+			}
+			targets = targets || [];
+			if (_isSelector(targets)) { //senses if the targets object is a selector. If it is, we should translate it into an array.
+				targets = _slice(targets);
+			}
+			stagger = stagger || 0;
+			if (stagger < 0) {
+				targets = _slice(targets);
+				targets.reverse();
+				stagger *= -1;
+			}
+			for (i = 0; i < targets.length; i++) {
+				copy = _copy(vars);
+				if (copy.startAt) {
+					copy.startAt = _copy(copy.startAt);
+					if (copy.startAt.cycle) {
+						_applyCycle(copy.startAt, targets, i);
+					}
+				}
+				if (cycle) {
+					_applyCycle(copy, targets, i);
+					if (copy.duration != null) {
+						duration = copy.duration;
+						delete copy.duration;
+					}
+				}
+				tl.to(targets[i], duration, copy, i * stagger);
+			}
+			return this.add(tl, position);
+		};
+
+		p.staggerFrom = function(targets, duration, vars, stagger, position, onCompleteAll, onCompleteAllParams, onCompleteAllScope) {
+			vars.immediateRender = (vars.immediateRender != false);
+			vars.runBackwards = true;
+			return this.staggerTo(targets, duration, vars, stagger, position, onCompleteAll, onCompleteAllParams, onCompleteAllScope);
+		};
+
+		p.staggerFromTo = function(targets, duration, fromVars, toVars, stagger, position, onCompleteAll, onCompleteAllParams, onCompleteAllScope) {
+			toVars.startAt = fromVars;
+			toVars.immediateRender = (toVars.immediateRender != false && fromVars.immediateRender != false);
+			return this.staggerTo(targets, duration, toVars, stagger, position, onCompleteAll, onCompleteAllParams, onCompleteAllScope);
+		};
+
+		p.call = function(callback, params, scope, position) {
+			return this.add( __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].delayedCall(0, callback, params, scope), position);
+		};
+
+		p.set = function(target, vars, position) {
+			position = this._parseTimeOrLabel(position, 0, true);
+			if (vars.immediateRender == null) {
+				vars.immediateRender = (position === this._time && !this._paused);
+			}
+			return this.add( new __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */](target, 0, vars), position);
+		};
+
+		TimelineLite.exportRoot = function(vars, ignoreDelayedCalls) {
+			vars = vars || {};
+			if (vars.smoothChildTiming == null) {
+				vars.smoothChildTiming = true;
+			}
+			var tl = new TimelineLite(vars),
+				root = tl._timeline,
+				hasNegativeStart, time,	tween, next;
+			if (ignoreDelayedCalls == null) {
+				ignoreDelayedCalls = true;
+			}
+			root._remove(tl, true);
+			tl._startTime = 0;
+			tl._rawPrevTime = tl._time = tl._totalTime = root._time;
+			tween = root._first;
+			while (tween) {
+				next = tween._next;
+				if (!ignoreDelayedCalls || !(tween instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */] && tween.target === tween.vars.onComplete)) {
+					time = tween._startTime - tween._delay;
+					if (time < 0) {
+						hasNegativeStart = 1;
+					}
+					tl.add(tween, time);
+				}
+				tween = next;
+			}
+			root.add(tl, 0);
+			if (hasNegativeStart) { //calling totalDuration() will force the adjustment necessary to shift the children forward so none of them start before zero, and moves the timeline backwards the same amount, so the playhead is still aligned where it should be globally, but the timeline doesn't have illegal children that start before zero.
+				tl.totalDuration();
+			}
+			return tl;
+		};
+
+		p.add = function(value, position, align, stagger) {
+			var curTime, l, i, child, tl, beforeRawTime;
+			if (typeof(position) !== "number") {
+				position = this._parseTimeOrLabel(position, 0, true, value);
+			}
+			if (!(value instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */])) {
+				if ((value instanceof Array) || (value && value.push && _isArray(value))) {
+					align = align || "normal";
+					stagger = stagger || 0;
+					curTime = position;
+					l = value.length;
+					for (i = 0; i < l; i++) {
+						if (_isArray(child = value[i])) {
+							child = new TimelineLite({tweens:child});
+						}
+						this.add(child, curTime);
+						if (typeof(child) !== "string" && typeof(child) !== "function") {
+							if (align === "sequence") {
+								curTime = child._startTime + (child.totalDuration() / child._timeScale);
+							} else if (align === "start") {
+								child._startTime -= child.delay();
+							}
+						}
+						curTime += stagger;
+					}
+					return this._uncache(true);
+				} else if (typeof(value) === "string") {
+					return this.addLabel(value, position);
+				} else if (typeof(value) === "function") {
+					value = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].delayedCall(0, value);
+				} else {
+					throw("Cannot add " + value + " into the timeline; it is not a tween, timeline, function, or string.");
+				}
+			}
+
+			__WEBPACK_IMPORTED_MODULE_0__TweenLite__["i" /* SimpleTimeline */].prototype.add.call(this, value, position);
+
+			if (value._time) { //in case, for example, the _startTime is moved on a tween that has already rendered. Imagine it's at its end state, then the startTime is moved WAY later (after the end of this timeline), it should render at its beginning.
+				value.render((this.rawTime() - value._startTime) * value._timeScale, false, false);
+			}
+
+			//if the timeline has already ended but the inserted tween/timeline extends the duration, we should enable this timeline again so that it renders properly. We should also align the playhead with the parent timeline's when appropriate.
+			if (this._gc || this._time === this._duration) if (!this._paused) if (this._duration < this.duration()) {
+				//in case any of the ancestors had completed but should now be enabled...
+				tl = this;
+				beforeRawTime = (tl.rawTime() > value._startTime); //if the tween is placed on the timeline so that it starts BEFORE the current rawTime, we should align the playhead (move the timeline). This is because sometimes users will create a timeline, let it finish, and much later append a tween and expect it to run instead of jumping to its end state. While technically one could argue that it should jump to its end state, that's not what users intuitively expect.
+				while (tl._timeline) {
+					if (beforeRawTime && tl._timeline.smoothChildTiming) {
+						tl.totalTime(tl._totalTime, true); //moves the timeline (shifts its startTime) if necessary, and also enables it.
+					} else if (tl._gc) {
+						tl._enabled(true, false);
+					}
+					tl = tl._timeline;
+				}
+			}
+
+			return this;
+		};
+
+		p.remove = function(value) {
+			if (value instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */]) {
+				this._remove(value, false);
+				var tl = value._timeline = value.vars.useFrames ? __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */]._rootFramesTimeline : __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */]._rootTimeline; //now that it's removed, default it to the root timeline so that if it gets played again, it doesn't jump back into this timeline.
+				value._startTime = (value._paused ? value._pauseTime : tl._time) - ((!value._reversed ? value._totalTime : value.totalDuration() - value._totalTime) / value._timeScale); //ensure that if it gets played again, the timing is correct.
+				return this;
+			} else if (value instanceof Array || (value && value.push && _isArray(value))) {
+				var i = value.length;
+				while (--i > -1) {
+					this.remove(value[i]);
+				}
+				return this;
+			} else if (typeof(value) === "string") {
+				return this.removeLabel(value);
+			}
+			return this.kill(null, value);
+		};
+
+		p._remove = function(tween, skipDisable) {
+			__WEBPACK_IMPORTED_MODULE_0__TweenLite__["i" /* SimpleTimeline */].prototype._remove.call(this, tween, skipDisable);
+			var last = this._last;
+			if (!last) {
+				this._time = this._totalTime = this._duration = this._totalDuration = 0;
+			} else if (this._time > this.duration()) {
+				this._time = this._duration;
+				this._totalTime = this._totalDuration;
+			}
+			return this;
+		};
+
+		p.append = function(value, offsetOrLabel) {
+			return this.add(value, this._parseTimeOrLabel(null, offsetOrLabel, true, value));
+		};
+
+		p.insert = p.insertMultiple = function(value, position, align, stagger) {
+			return this.add(value, position || 0, align, stagger);
+		};
+
+		p.appendMultiple = function(tweens, offsetOrLabel, align, stagger) {
+			return this.add(tweens, this._parseTimeOrLabel(null, offsetOrLabel, true, tweens), align, stagger);
+		};
+
+		p.addLabel = function(label, position) {
+			this._labels[label] = this._parseTimeOrLabel(position);
+			return this;
+		};
+
+		p.addPause = function(position, callback, params, scope) {
+			var t = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].delayedCall(0, _pauseCallback, params, scope || this);
+			t.vars.onComplete = t.vars.onReverseComplete = callback;
+			t.data = "isPause";
+			this._hasPause = true;
+			return this.add(t, position);
+		};
+
+		p.removeLabel = function(label) {
+			delete this._labels[label];
+			return this;
+		};
+
+		p.getLabelTime = function(label) {
+			return (this._labels[label] != null) ? this._labels[label] : -1;
+		};
+
+		p._parseTimeOrLabel = function(timeOrLabel, offsetOrLabel, appendIfAbsent, ignore) {
+			var clippedDuration, i;
+			//if we're about to add a tween/timeline (or an array of them) that's already a child of this timeline, we should remove it first so that it doesn't contaminate the duration().
+			if (ignore instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */] && ignore.timeline === this) {
+				this.remove(ignore);
+			} else if (ignore && ((ignore instanceof Array) || (ignore.push && _isArray(ignore)))) {
+				i = ignore.length;
+				while (--i > -1) {
+					if (ignore[i] instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */] && ignore[i].timeline === this) {
+						this.remove(ignore[i]);
+					}
+				}
+			}
+			clippedDuration = (typeof(timeOrLabel) === "number" && !offsetOrLabel) ? 0 : (this.duration() > 99999999999) ? this.recent().endTime(false) : this._duration; //in case there's a child that infinitely repeats, users almost never intend for the insertion point of a new child to be based on a SUPER long value like that so we clip it and assume the most recently-added child's endTime should be used instead.
+			if (typeof(offsetOrLabel) === "string") {
+				return this._parseTimeOrLabel(offsetOrLabel, (appendIfAbsent && typeof(timeOrLabel) === "number" && this._labels[offsetOrLabel] == null) ? timeOrLabel - clippedDuration : 0, appendIfAbsent);
+			}
+			offsetOrLabel = offsetOrLabel || 0;
+			if (typeof(timeOrLabel) === "string" && (isNaN(timeOrLabel) || this._labels[timeOrLabel] != null)) { //if the string is a number like "1", check to see if there's a label with that name, otherwise interpret it as a number (absolute value).
+				i = timeOrLabel.indexOf("=");
+				if (i === -1) {
+					if (this._labels[timeOrLabel] == null) {
+						return appendIfAbsent ? (this._labels[timeOrLabel] = clippedDuration + offsetOrLabel) : offsetOrLabel;
+					}
+					return this._labels[timeOrLabel] + offsetOrLabel;
+				}
+				offsetOrLabel = parseInt(timeOrLabel.charAt(i-1) + "1", 10) * Number(timeOrLabel.substr(i+1));
+				timeOrLabel = (i > 1) ? this._parseTimeOrLabel(timeOrLabel.substr(0, i-1), 0, appendIfAbsent) : clippedDuration;
+			} else if (timeOrLabel == null) {
+				timeOrLabel = clippedDuration;
+			}
+			return Number(timeOrLabel) + offsetOrLabel;
+		};
+
+		p.seek = function(position, suppressEvents) {
+			return this.totalTime((typeof(position) === "number") ? position : this._parseTimeOrLabel(position), (suppressEvents !== false));
+		};
+
+		p.stop = function() {
+			return this.paused(true);
+		};
+
+		p.gotoAndPlay = function(position, suppressEvents) {
+			return this.play(position, suppressEvents);
+		};
+
+		p.gotoAndStop = function(position, suppressEvents) {
+			return this.pause(position, suppressEvents);
+		};
+
+		p.render = function(time, suppressEvents, force) {
+			if (this._gc) {
+				this._enabled(true, false);
+			}
+			var prevTime = this._time,
+				totalDur = (!this._dirty) ? this._totalDuration : this.totalDuration(),
+				prevStart = this._startTime,
+				prevTimeScale = this._timeScale,
+				prevPaused = this._paused,
+				tween, isComplete, next, callback, internalForce, pauseTween, curTime;
+			if (prevTime !== this._time) { //if totalDuration() finds a child with a negative startTime and smoothChildTiming is true, things get shifted around internally so we need to adjust the time accordingly. For example, if a tween starts at -30 we must shift EVERYTHING forward 30 seconds and move this timeline's startTime backward by 30 seconds so that things align with the playhead (no jump).
+				time += this._time - prevTime;
+			}
+			if (time >= totalDur - 0.0000001 && time >= 0) { //to work around occasional floating point math artifacts.
+				this._totalTime = this._time = totalDur;
+				if (!this._reversed) if (!this._hasPausedChild()) {
+					isComplete = true;
+					callback = "onComplete";
+					internalForce = !!this._timeline.autoRemoveChildren; //otherwise, if the animation is unpaused/activated after it's already finished, it doesn't get removed from the parent timeline.
+					if (this._duration === 0) if ((time <= 0 && time >= -0.0000001) || this._rawPrevTime < 0 || this._rawPrevTime === _tinyNum) if (this._rawPrevTime !== time && this._first) {
+						internalForce = true;
+						if (this._rawPrevTime > _tinyNum) {
+							callback = "onReverseComplete";
+						}
+					}
+				}
+				this._rawPrevTime = (this._duration || !suppressEvents || time || this._rawPrevTime === time) ? time : _tinyNum; //when the playhead arrives at EXACTLY time 0 (right on top) of a zero-duration timeline or tween, we need to discern if events are suppressed so that when the playhead moves again (next time), it'll trigger the callback. If events are NOT suppressed, obviously the callback would be triggered in this render. Basically, the callback should fire either when the playhead ARRIVES or LEAVES this exact spot, not both. Imagine doing a timeline.seek(0) and there's a callback that sits at 0. Since events are suppressed on that seek() by default, nothing will fire, but when the playhead moves off of that position, the callback should fire. This behavior is what people intuitively expect. We set the _rawPrevTime to be a precise tiny number to indicate this scenario rather than using another property/variable which would increase memory usage. This technique is less readable, but more efficient.
+				time = totalDur + 0.0001; //to avoid occasional floating point rounding errors - sometimes child tweens/timelines were not being fully completed (their progress might be 0.999999999999998 instead of 1 because when _time - tween._startTime is performed, floating point errors would return a value that was SLIGHTLY off). Try (999999999999.7 - 999999999999) * 1 = 0.699951171875 instead of 0.7.
+
+			} else if (time < 0.0000001) { //to work around occasional floating point math artifacts, round super small values to 0.
+				this._totalTime = this._time = 0;
+				if (prevTime !== 0 || (this._duration === 0 && this._rawPrevTime !== _tinyNum && (this._rawPrevTime > 0 || (time < 0 && this._rawPrevTime >= 0)))) {
+					callback = "onReverseComplete";
+					isComplete = this._reversed;
+				}
+				if (time < 0) {
+					this._active = false;
+					if (this._timeline.autoRemoveChildren && this._reversed) { //ensures proper GC if a timeline is resumed after it's finished reversing.
+						internalForce = isComplete = true;
+						callback = "onReverseComplete";
+					} else if (this._rawPrevTime >= 0 && this._first) { //when going back beyond the start, force a render so that zero-duration tweens that sit at the very beginning render their start values properly. Otherwise, if the parent timeline's playhead lands exactly at this timeline's startTime, and then moves backwards, the zero-duration tweens at the beginning would still be at their end state.
+						internalForce = true;
+					}
+					this._rawPrevTime = time;
+				} else {
+					this._rawPrevTime = (this._duration || !suppressEvents || time || this._rawPrevTime === time) ? time : _tinyNum; //when the playhead arrives at EXACTLY time 0 (right on top) of a zero-duration timeline or tween, we need to discern if events are suppressed so that when the playhead moves again (next time), it'll trigger the callback. If events are NOT suppressed, obviously the callback would be triggered in this render. Basically, the callback should fire either when the playhead ARRIVES or LEAVES this exact spot, not both. Imagine doing a timeline.seek(0) and there's a callback that sits at 0. Since events are suppressed on that seek() by default, nothing will fire, but when the playhead moves off of that position, the callback should fire. This behavior is what people intuitively expect. We set the _rawPrevTime to be a precise tiny number to indicate this scenario rather than using another property/variable which would increase memory usage. This technique is less readable, but more efficient.
+					if (time === 0 && isComplete) { //if there's a zero-duration tween at the very beginning of a timeline and the playhead lands EXACTLY at time 0, that tween will correctly render its end values, but we need to keep the timeline alive for one more render so that the beginning values render properly as the parent's playhead keeps moving beyond the begining. Imagine obj.x starts at 0 and then we do tl.set(obj, {x:100}).to(obj, 1, {x:200}) and then later we tl.reverse()...the goal is to have obj.x revert to 0. If the playhead happens to land on exactly 0, without this chunk of code, it'd complete the timeline and remove it from the rendering queue (not good).
+						tween = this._first;
+						while (tween && tween._startTime === 0) {
+							if (!tween._duration) {
+								isComplete = false;
+							}
+							tween = tween._next;
+						}
+					}
+					time = 0; //to avoid occasional floating point rounding errors (could cause problems especially with zero-duration tweens at the very beginning of the timeline)
+					if (!this._initted) {
+						internalForce = true;
+					}
+				}
+
+			} else {
+
+				if (this._hasPause && !this._forcingPlayhead && !suppressEvents) {
+					if (time >= prevTime) {
+						tween = this._first;
+						while (tween && tween._startTime <= time && !pauseTween) {
+							if (!tween._duration) if (tween.data === "isPause" && !tween.ratio && !(tween._startTime === 0 && this._rawPrevTime === 0)) {
+								pauseTween = tween;
+							}
+							tween = tween._next;
+						}
+					} else {
+						tween = this._last;
+						while (tween && tween._startTime >= time && !pauseTween) {
+							if (!tween._duration) if (tween.data === "isPause" && tween._rawPrevTime > 0) {
+								pauseTween = tween;
+							}
+							tween = tween._prev;
+						}
+					}
+					if (pauseTween) {
+						this._time = time = pauseTween._startTime;
+						this._totalTime = time + (this._cycle * (this._totalDuration + this._repeatDelay));
+					}
+				}
+
+				this._totalTime = this._time = this._rawPrevTime = time;
+			}
+			if ((this._time === prevTime || !this._first) && !force && !internalForce && !pauseTween) {
+				return;
+			} else if (!this._initted) {
+				this._initted = true;
+			}
+
+			if (!this._active) if (!this._paused && this._time !== prevTime && time > 0) {
+				this._active = true;  //so that if the user renders the timeline (as opposed to the parent timeline rendering it), it is forced to re-render and align it with the proper time/frame on the next rendering cycle. Maybe the timeline already finished but the user manually re-renders it as halfway done, for example.
+			}
+
+			if (prevTime === 0) if (this.vars.onStart) if (this._time !== 0 || !this._duration) if (!suppressEvents) {
+				this._callback("onStart");
+			}
+
+			curTime = this._time;
+			if (curTime >= prevTime) {
+				tween = this._first;
+				while (tween) {
+					next = tween._next; //record it here because the value could change after rendering...
+					if (curTime !== this._time || (this._paused && !prevPaused)) { //in case a tween pauses or seeks the timeline when rendering, like inside of an onUpdate/onComplete
+						break;
+					} else if (tween._active || (tween._startTime <= curTime && !tween._paused && !tween._gc)) {
+						if (pauseTween === tween) {
+							this.pause();
+						}
+						if (!tween._reversed) {
+							tween.render((time - tween._startTime) * tween._timeScale, suppressEvents, force);
+						} else {
+							tween.render(((!tween._dirty) ? tween._totalDuration : tween.totalDuration()) - ((time - tween._startTime) * tween._timeScale), suppressEvents, force);
+						}
+					}
+					tween = next;
+				}
+			} else {
+				tween = this._last;
+				while (tween) {
+					next = tween._prev; //record it here because the value could change after rendering...
+					if (curTime !== this._time || (this._paused && !prevPaused)) { //in case a tween pauses or seeks the timeline when rendering, like inside of an onUpdate/onComplete
+						break;
+					} else if (tween._active || (tween._startTime <= prevTime && !tween._paused && !tween._gc)) {
+						if (pauseTween === tween) {
+							pauseTween = tween._prev; //the linked list is organized by _startTime, thus it's possible that a tween could start BEFORE the pause and end after it, in which case it would be positioned before the pause tween in the linked list, but we should render it before we pause() the timeline and cease rendering. This is only a concern when going in reverse.
+							while (pauseTween && pauseTween.endTime() > this._time) {
+								pauseTween.render( (pauseTween._reversed ? pauseTween.totalDuration() - ((time - pauseTween._startTime) * pauseTween._timeScale) : (time - pauseTween._startTime) * pauseTween._timeScale), suppressEvents, force);
+								pauseTween = pauseTween._prev;
+							}
+							pauseTween = null;
+							this.pause();
+						}
+						if (!tween._reversed) {
+							tween.render((time - tween._startTime) * tween._timeScale, suppressEvents, force);
+						} else {
+							tween.render(((!tween._dirty) ? tween._totalDuration : tween.totalDuration()) - ((time - tween._startTime) * tween._timeScale), suppressEvents, force);
+						}
+					}
+					tween = next;
+				}
+			}
+
+			if (this._onUpdate) if (!suppressEvents) {
+				if (_lazyTweens.length) { //in case rendering caused any tweens to lazy-init, we should render them because typically when a timeline finishes, users expect things to have rendered fully. Imagine an onUpdate on a timeline that reports/checks tweened values.
+					_lazyRender();
+				}
+				this._callback("onUpdate");
+			}
+
+			if (callback) if (!this._gc) if (prevStart === this._startTime || prevTimeScale !== this._timeScale) if (this._time === 0 || totalDur >= this.totalDuration()) { //if one of the tweens that was rendered altered this timeline's startTime (like if an onComplete reversed the timeline), it probably isn't complete. If it is, don't worry, because whatever call altered the startTime would complete if it was necessary at the new time. The only exception is the timeScale property. Also check _gc because there's a chance that kill() could be called in an onUpdate
+				if (isComplete) {
+					if (_lazyTweens.length) { //in case rendering caused any tweens to lazy-init, we should render them because typically when a timeline finishes, users expect things to have rendered fully. Imagine an onComplete on a timeline that reports/checks tweened values.
+						_lazyRender();
+					}
+					if (this._timeline.autoRemoveChildren) {
+						this._enabled(false, false);
+					}
+					this._active = false;
+				}
+				if (!suppressEvents && this.vars[callback]) {
+					this._callback(callback);
+				}
+			}
+		};
+
+		p._hasPausedChild = function() {
+			var tween = this._first;
+			while (tween) {
+				if (tween._paused || ((tween instanceof TimelineLite) && tween._hasPausedChild())) {
+					return true;
+				}
+				tween = tween._next;
+			}
+			return false;
+		};
+
+		p.getChildren = function(nested, tweens, timelines, ignoreBeforeTime) {
+			ignoreBeforeTime = ignoreBeforeTime || -9999999999;
+			var a = [],
+				tween = this._first,
+				cnt = 0;
+			while (tween) {
+				if (tween._startTime < ignoreBeforeTime) {
+					//do nothing
+				} else if (tween instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */]) {
+					if (tweens !== false) {
+						a[cnt++] = tween;
+					}
+				} else {
+					if (timelines !== false) {
+						a[cnt++] = tween;
+					}
+					if (nested !== false) {
+						a = a.concat(tween.getChildren(true, tweens, timelines));
+						cnt = a.length;
+					}
+				}
+				tween = tween._next;
+			}
+			return a;
+		};
+
+		p.getTweensOf = function(target, nested) {
+			var disabled = this._gc,
+				a = [],
+				cnt = 0,
+				tweens, i;
+			if (disabled) {
+				this._enabled(true, true); //getTweensOf() filters out disabled tweens, and we have to mark them as _gc = true when the timeline completes in order to allow clean garbage collection, so temporarily re-enable the timeline here.
+			}
+			tweens = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].getTweensOf(target);
+			i = tweens.length;
+			while (--i > -1) {
+				if (tweens[i].timeline === this || (nested && this._contains(tweens[i]))) {
+					a[cnt++] = tweens[i];
+				}
+			}
+			if (disabled) {
+				this._enabled(false, true);
+			}
+			return a;
+		};
+
+		p.recent = function() {
+			return this._recent;
+		};
+
+		p._contains = function(tween) {
+			var tl = tween.timeline;
+			while (tl) {
+				if (tl === this) {
+					return true;
+				}
+				tl = tl.timeline;
+			}
+			return false;
+		};
+
+		p.shiftChildren = function(amount, adjustLabels, ignoreBeforeTime) {
+			ignoreBeforeTime = ignoreBeforeTime || 0;
+			var tween = this._first,
+				labels = this._labels,
+				p;
+			while (tween) {
+				if (tween._startTime >= ignoreBeforeTime) {
+					tween._startTime += amount;
+				}
+				tween = tween._next;
+			}
+			if (adjustLabels) {
+				for (p in labels) {
+					if (labels[p] >= ignoreBeforeTime) {
+						labels[p] += amount;
+					}
+				}
+			}
+			return this._uncache(true);
+		};
+
+		p._kill = function(vars, target) {
+			if (!vars && !target) {
+				return this._enabled(false, false);
+			}
+			var tweens = (!target) ? this.getChildren(true, true, false) : this.getTweensOf(target),
+				i = tweens.length,
+				changed = false;
+			while (--i > -1) {
+				if (tweens[i]._kill(vars, target)) {
+					changed = true;
+				}
+			}
+			return changed;
+		};
+
+		p.clear = function(labels) {
+			var tweens = this.getChildren(false, true, true),
+				i = tweens.length;
+			this._time = this._totalTime = 0;
+			while (--i > -1) {
+				tweens[i]._enabled(false, false);
+			}
+			if (labels !== false) {
+				this._labels = {};
+			}
+			return this._uncache(true);
+		};
+
+		p.invalidate = function() {
+			var tween = this._first;
+			while (tween) {
+				tween.invalidate();
+				tween = tween._next;
+			}
+			return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */].prototype.invalidate.call(this);;
+		};
+
+		p._enabled = function(enabled, ignoreTimeline) {
+			if (enabled === this._gc) {
+				var tween = this._first;
+				while (tween) {
+					tween._enabled(enabled, true);
+					tween = tween._next;
+				}
+			}
+			return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["i" /* SimpleTimeline */].prototype._enabled.call(this, enabled, ignoreTimeline);
+		};
+
+		p.totalTime = function(time, suppressEvents, uncapped) {
+			this._forcingPlayhead = true;
+			var val = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */].prototype.totalTime.apply(this, arguments);
+			this._forcingPlayhead = false;
+			return val;
+		};
+
+		p.duration = function(value) {
+			if (!arguments.length) {
+				if (this._dirty) {
+					this.totalDuration(); //just triggers recalculation
+				}
+				return this._duration;
+			}
+			if (this.duration() !== 0 && value !== 0) {
+				this.timeScale(this._duration / value);
+			}
+			return this;
+		};
+
+		p.totalDuration = function(value) {
+			if (!arguments.length) {
+				if (this._dirty) {
+					var max = 0,
+						tween = this._last,
+						prevStart = 999999999999,
+						prev, end;
+					while (tween) {
+						prev = tween._prev; //record it here in case the tween changes position in the sequence...
+						if (tween._dirty) {
+							tween.totalDuration(); //could change the tween._startTime, so make sure the tween's cache is clean before analyzing it.
+						}
+						if (tween._startTime > prevStart && this._sortChildren && !tween._paused && !this._calculatingDuration) { //in case one of the tweens shifted out of order, it needs to be re-inserted into the correct position in the sequence
+							this._calculatingDuration = 1; //prevent endless recursive calls - there are methods that get triggered that check duration/totalDuration when we add(), like _parseTimeOrLabel().
+							this.add(tween, tween._startTime - tween._delay);
+							this._calculatingDuration = 0;
+						} else {
+							prevStart = tween._startTime;
+						}
+						if (tween._startTime < 0 && !tween._paused) { //children aren't allowed to have negative startTimes unless smoothChildTiming is true, so adjust here if one is found.
+							max -= tween._startTime;
+							if (this._timeline.smoothChildTiming) {
+								this._startTime += tween._startTime / this._timeScale;
+								this._time -= tween._startTime;
+								this._totalTime -= tween._startTime;
+								this._rawPrevTime -= tween._startTime;
+							}
+							this.shiftChildren(-tween._startTime, false, -9999999999);
+							prevStart = 0;
+						}
+						end = tween._startTime + (tween._totalDuration / tween._timeScale);
+						if (end > max) {
+							max = end;
+						}
+						tween = prev;
+					}
+					this._duration = this._totalDuration = max;
+					this._dirty = false;
+				}
+				return this._totalDuration;
+			}
+			return (value && this.totalDuration()) ? this.timeScale(this._totalDuration / value) : this;
+		};
+
+		p.paused = function(value) {
+			if (!value) { //if there's a pause directly at the spot from where we're unpausing, skip it.
+				var tween = this._first,
+					time = this._time;
+				while (tween) {
+					if (tween._startTime === time && tween.data === "isPause") {
+						tween._rawPrevTime = 0; //remember, _rawPrevTime is how zero-duration tweens/callbacks sense directionality and determine whether or not to fire. If _rawPrevTime is the same as _startTime on the next render, it won't fire.
+					}
+					tween = tween._next;
+				}
+			}
+			return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */].prototype.paused.apply(this, arguments);
+		};
+
+		p.usesFrames = function() {
+			var tl = this._timeline;
+			while (tl._timeline) {
+				tl = tl._timeline;
+			}
+			return (tl === __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */]._rootFramesTimeline);
+		};
+
+		p.rawTime = function(wrapRepeats) {
+			return (wrapRepeats && (this._paused || (this._repeat && this.time() > 0 && this.totalProgress() < 1))) ? this._totalTime % (this._duration + this._repeatDelay) : this._paused ? this._totalTime : (this._timeline.rawTime(wrapRepeats) - this._startTime) * this._timeScale;
+		};
+
+		return TimelineLite;
+
+	}, true);
+
+const TimelineLite = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].TimelineLite;
+/* unused harmony export TimelineLite */
+
+
+
+
+/***/ }),
+/* 94 */,
+/* 95 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = !__webpack_require__(6) && !__webpack_require__(3)(function () {
+  return Object.defineProperty(__webpack_require__(66)('div'), 'a', { get: function () { return 7; } }).a != 7;
+});
+
+
+/***/ }),
+/* 96 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports.f = __webpack_require__(5);
+
+
+/***/ }),
+/* 97 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var has = __webpack_require__(11);
+var toIObject = __webpack_require__(15);
+var arrayIndexOf = __webpack_require__(51)(false);
+var IE_PROTO = __webpack_require__(68)('IE_PROTO');
+
+module.exports = function (object, names) {
+  var O = toIObject(object);
+  var i = 0;
+  var result = [];
+  var key;
+  for (key in O) if (key != IE_PROTO) has(O, key) && result.push(key);
+  // Don't enum bug & hidden keys
+  while (names.length > i) if (has(O, key = names[i++])) {
+    ~arrayIndexOf(result, key) || result.push(key);
+  }
+  return result;
+};
+
+
+/***/ }),
+/* 98 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var dP = __webpack_require__(7);
+var anObject = __webpack_require__(1);
+var getKeys = __webpack_require__(35);
+
+module.exports = __webpack_require__(6) ? Object.defineProperties : function defineProperties(O, Properties) {
+  anObject(O);
+  var keys = getKeys(Properties);
+  var length = keys.length;
+  var i = 0;
+  var P;
+  while (length > i) dP.f(O, P = keys[i++], Properties[P]);
+  return O;
+};
+
+
+/***/ }),
+/* 99 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
+var toIObject = __webpack_require__(15);
+var gOPN = __webpack_require__(38).f;
+var toString = {}.toString;
+
+var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
+  ? Object.getOwnPropertyNames(window) : [];
+
+var getWindowNames = function (it) {
+  try {
+    return gOPN(it);
+  } catch (e) {
+    return windowNames.slice();
+  }
+};
+
+module.exports.f = function getOwnPropertyNames(it) {
+  return windowNames && toString.call(it) == '[object Window]' ? getWindowNames(it) : gOPN(toIObject(it));
+};
+
+
+/***/ }),
+/* 100 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// 19.1.2.1 Object.assign(target, source, ...)
+var getKeys = __webpack_require__(35);
+var gOPS = __webpack_require__(52);
+var pIE = __webpack_require__(48);
+var toObject = __webpack_require__(9);
+var IObject = __webpack_require__(47);
+var $assign = Object.assign;
+
+// should work with symbols and should have deterministic property order (V8 bug)
+module.exports = !$assign || __webpack_require__(3)(function () {
+  var A = {};
+  var B = {};
+  // eslint-disable-next-line no-undef
+  var S = Symbol();
+  var K = 'abcdefghijklmnopqrst';
+  A[S] = 7;
+  K.split('').forEach(function (k) { B[k] = k; });
+  return $assign({}, A)[S] != 7 || Object.keys($assign({}, B)).join('') != K;
+}) ? function assign(target, source) { // eslint-disable-line no-unused-vars
+  var T = toObject(target);
+  var aLen = arguments.length;
+  var index = 1;
+  var getSymbols = gOPS.f;
+  var isEnum = pIE.f;
+  while (aLen > index) {
+    var S = IObject(arguments[index++]);
+    var keys = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S);
+    var length = keys.length;
+    var j = 0;
+    var key;
+    while (length > j) if (isEnum.call(S, key = keys[j++])) T[key] = S[key];
+  } return T;
+} : $assign;
+
+
+/***/ }),
+/* 101 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var aFunction = __webpack_require__(10);
+var isObject = __webpack_require__(4);
+var invoke = __webpack_require__(102);
+var arraySlice = [].slice;
+var factories = {};
+
+var construct = function (F, len, args) {
+  if (!(len in factories)) {
+    for (var n = [], i = 0; i < len; i++) n[i] = 'a[' + i + ']';
+    // eslint-disable-next-line no-new-func
+    factories[len] = Function('F,a', 'return new F(' + n.join(',') + ')');
+  } return factories[len](F, args);
+};
+
+module.exports = Function.bind || function bind(that /* , ...args */) {
+  var fn = aFunction(this);
+  var partArgs = arraySlice.call(arguments, 1);
+  var bound = function (/* args... */) {
+    var args = partArgs.concat(arraySlice.call(arguments));
+    return this instanceof bound ? construct(fn, args.length, args) : invoke(fn, args, that);
+  };
+  if (isObject(fn.prototype)) bound.prototype = fn.prototype;
+  return bound;
+};
+
+
+/***/ }),
+/* 102 */
+/***/ (function(module, exports) {
+
+// fast apply, http://jsperf.lnkit.com/fast-apply/5
+module.exports = function (fn, args, that) {
+  var un = that === undefined;
+  switch (args.length) {
+    case 0: return un ? fn()
+                      : fn.call(that);
+    case 1: return un ? fn(args[0])
+                      : fn.call(that, args[0]);
+    case 2: return un ? fn(args[0], args[1])
+                      : fn.call(that, args[0], args[1]);
+    case 3: return un ? fn(args[0], args[1], args[2])
+                      : fn.call(that, args[0], args[1], args[2]);
+    case 4: return un ? fn(args[0], args[1], args[2], args[3])
+                      : fn.call(that, args[0], args[1], args[2], args[3]);
+  } return fn.apply(that, args);
+};
+
+
+/***/ }),
+/* 103 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $parseInt = __webpack_require__(2).parseInt;
+var $trim = __webpack_require__(44).trim;
+var ws = __webpack_require__(72);
+var hex = /^[-+]?0[xX]/;
+
+module.exports = $parseInt(ws + '08') !== 8 || $parseInt(ws + '0x16') !== 22 ? function parseInt(str, radix) {
+  var string = $trim(String(str), 3);
+  return $parseInt(string, (radix >>> 0) || (hex.test(string) ? 16 : 10));
+} : $parseInt;
+
+
+/***/ }),
+/* 104 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $parseFloat = __webpack_require__(2).parseFloat;
+var $trim = __webpack_require__(44).trim;
+
+module.exports = 1 / $parseFloat(__webpack_require__(72) + '-0') !== -Infinity ? function parseFloat(str) {
+  var string = $trim(String(str), 3);
+  var result = $parseFloat(string);
+  return result === 0 && string.charAt(0) == '-' ? -0 : result;
+} : $parseFloat;
+
+
+/***/ }),
+/* 105 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var cof = __webpack_require__(19);
+module.exports = function (it, msg) {
+  if (typeof it != 'number' && cof(it) != 'Number') throw TypeError(msg);
+  return +it;
+};
+
+
+/***/ }),
+/* 106 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 20.1.2.3 Number.isInteger(number)
+var isObject = __webpack_require__(4);
+var floor = Math.floor;
+module.exports = function isInteger(it) {
+  return !isObject(it) && isFinite(it) && floor(it) === it;
+};
+
+
+/***/ }),
+/* 107 */
+/***/ (function(module, exports) {
+
+// 20.2.2.20 Math.log1p(x)
+module.exports = Math.log1p || function log1p(x) {
+  return (x = +x) > -1e-8 && x < 1e-8 ? x - x * x / 2 : Math.log(1 + x);
+};
+
+
+/***/ }),
+/* 108 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 20.2.2.16 Math.fround(x)
+var sign = __webpack_require__(75);
+var pow = Math.pow;
+var EPSILON = pow(2, -52);
+var EPSILON32 = pow(2, -23);
+var MAX32 = pow(2, 127) * (2 - EPSILON32);
+var MIN32 = pow(2, -126);
+
+var roundTiesToEven = function (n) {
+  return n + 1 / EPSILON - 1 / EPSILON;
+};
+
+module.exports = Math.fround || function fround(x) {
+  var $abs = Math.abs(x);
+  var $sign = sign(x);
+  var a, result;
+  if ($abs < MIN32) return $sign * roundTiesToEven($abs / MIN32 / EPSILON32) * MIN32 * EPSILON32;
+  a = (1 + EPSILON32 / EPSILON) * $abs;
+  result = a - (a - $abs);
+  // eslint-disable-next-line no-self-compare
+  if (result > MAX32 || result != result) return $sign * Infinity;
+  return $sign * result;
+};
+
+
+/***/ }),
+/* 109 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// call something on iterator step with safe closing on error
+var anObject = __webpack_require__(1);
+module.exports = function (iterator, fn, value, entries) {
+  try {
+    return entries ? fn(anObject(value)[0], value[1]) : fn(value);
+  // 7.4.6 IteratorClose(iterator, completion)
+  } catch (e) {
+    var ret = iterator['return'];
+    if (ret !== undefined) anObject(ret.call(iterator));
+    throw e;
+  }
+};
+
+
+/***/ }),
+/* 110 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var aFunction = __webpack_require__(10);
+var toObject = __webpack_require__(9);
+var IObject = __webpack_require__(47);
+var toLength = __webpack_require__(8);
+
+module.exports = function (that, callbackfn, aLen, memo, isRight) {
+  aFunction(callbackfn);
+  var O = toObject(that);
+  var self = IObject(O);
+  var length = toLength(O.length);
+  var index = isRight ? length - 1 : 0;
+  var i = isRight ? -1 : 1;
+  if (aLen < 2) for (;;) {
+    if (index in self) {
+      memo = self[index];
+      index += i;
+      break;
+    }
+    index += i;
+    if (isRight ? index < 0 : length <= index) {
+      throw TypeError('Reduce of empty array with no initial value');
+    }
+  }
+  for (;isRight ? index >= 0 : length > index; index += i) if (index in self) {
+    memo = callbackfn(memo, self[index], index, O);
+  }
+  return memo;
+};
+
+
+/***/ }),
+/* 111 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+// 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
+
+var toObject = __webpack_require__(9);
+var toAbsoluteIndex = __webpack_require__(36);
+var toLength = __webpack_require__(8);
+
+module.exports = [].copyWithin || function copyWithin(target /* = 0 */, start /* = 0, end = @length */) {
+  var O = toObject(this);
+  var len = toLength(O.length);
+  var to = toAbsoluteIndex(target, len);
+  var from = toAbsoluteIndex(start, len);
+  var end = arguments.length > 2 ? arguments[2] : undefined;
+  var count = Math.min((end === undefined ? len : toAbsoluteIndex(end, len)) - from, len - to);
+  var inc = 1;
+  if (from < to && to < from + count) {
+    inc = -1;
+    from += count - 1;
+    to += count - 1;
+  }
+  while (count-- > 0) {
+    if (from in O) O[to] = O[from];
+    else delete O[to];
+    to += inc;
+    from += inc;
+  } return O;
+};
+
+
+/***/ }),
+/* 112 */
+/***/ (function(module, exports) {
+
+module.exports = function (done, value) {
+  return { value: value, done: !!done };
+};
+
+
+/***/ }),
+/* 113 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 21.2.5.3 get RegExp.prototype.flags()
+if (__webpack_require__(6) && /./g.flags != 'g') __webpack_require__(7).f(RegExp.prototype, 'flags', {
+  configurable: true,
+  get: __webpack_require__(56)
+});
+
+
+/***/ }),
+/* 114 */
+/***/ (function(module, exports) {
+
+module.exports = function (exec) {
+  try {
+    return { e: false, v: exec() };
+  } catch (e) {
+    return { e: true, v: e };
+  }
+};
+
+
+/***/ }),
+/* 115 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var anObject = __webpack_require__(1);
+var isObject = __webpack_require__(4);
+var newPromiseCapability = __webpack_require__(90);
+
+module.exports = function (C, x) {
+  anObject(C);
+  if (isObject(x) && x.constructor === C) return x;
+  var promiseCapability = newPromiseCapability.f(C);
+  var resolve = promiseCapability.resolve;
+  resolve(x);
+  return promiseCapability.promise;
+};
+
+
+/***/ }),
+/* 116 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var strong = __webpack_require__(117);
+var validate = __webpack_require__(46);
+var MAP = 'Map';
+
+// 23.1 Map Objects
+module.exports = __webpack_require__(59)(MAP, function (get) {
+  return function Map() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
+}, {
+  // 23.1.3.6 Map.prototype.get(key)
+  get: function get(key) {
+    var entry = strong.getEntry(validate(this, MAP), key);
+    return entry && entry.v;
+  },
+  // 23.1.3.9 Map.prototype.set(key, value)
+  set: function set(key, value) {
+    return strong.def(validate(this, MAP), key === 0 ? 0 : key, value);
+  }
+}, strong, true);
+
+
+/***/ }),
+/* 117 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var dP = __webpack_require__(7).f;
+var create = __webpack_require__(37);
+var redefineAll = __webpack_require__(42);
+var ctx = __webpack_require__(18);
+var anInstance = __webpack_require__(40);
+var forOf = __webpack_require__(41);
+var $iterDefine = __webpack_require__(78);
+var step = __webpack_require__(112);
+var setSpecies = __webpack_require__(39);
+var DESCRIPTORS = __webpack_require__(6);
+var fastKey = __webpack_require__(30).fastKey;
+var validate = __webpack_require__(46);
+var SIZE = DESCRIPTORS ? '_s' : 'size';
+
+var getEntry = function (that, key) {
+  // fast case
+  var index = fastKey(key);
+  var entry;
+  if (index !== 'F') return that._i[index];
+  // frozen object case
+  for (entry = that._f; entry; entry = entry.n) {
+    if (entry.k == key) return entry;
+  }
+};
+
+module.exports = {
+  getConstructor: function (wrapper, NAME, IS_MAP, ADDER) {
+    var C = wrapper(function (that, iterable) {
+      anInstance(that, C, NAME, '_i');
+      that._t = NAME;         // collection type
+      that._i = create(null); // index
+      that._f = undefined;    // first entry
+      that._l = undefined;    // last entry
+      that[SIZE] = 0;         // size
+      if (iterable != undefined) forOf(iterable, IS_MAP, that[ADDER], that);
+    });
+    redefineAll(C.prototype, {
+      // 23.1.3.1 Map.prototype.clear()
+      // 23.2.3.2 Set.prototype.clear()
+      clear: function clear() {
+        for (var that = validate(this, NAME), data = that._i, entry = that._f; entry; entry = entry.n) {
+          entry.r = true;
+          if (entry.p) entry.p = entry.p.n = undefined;
+          delete data[entry.i];
+        }
+        that._f = that._l = undefined;
+        that[SIZE] = 0;
+      },
+      // 23.1.3.3 Map.prototype.delete(key)
+      // 23.2.3.4 Set.prototype.delete(value)
+      'delete': function (key) {
+        var that = validate(this, NAME);
+        var entry = getEntry(that, key);
+        if (entry) {
+          var next = entry.n;
+          var prev = entry.p;
+          delete that._i[entry.i];
+          entry.r = true;
+          if (prev) prev.n = next;
+          if (next) next.p = prev;
+          if (that._f == entry) that._f = next;
+          if (that._l == entry) that._l = prev;
+          that[SIZE]--;
+        } return !!entry;
+      },
+      // 23.2.3.6 Set.prototype.forEach(callbackfn, thisArg = undefined)
+      // 23.1.3.5 Map.prototype.forEach(callbackfn, thisArg = undefined)
+      forEach: function forEach(callbackfn /* , that = undefined */) {
+        validate(this, NAME);
+        var f = ctx(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
+        var entry;
+        while (entry = entry ? entry.n : this._f) {
+          f(entry.v, entry.k, this);
+          // revert to the last existing entry
+          while (entry && entry.r) entry = entry.p;
+        }
+      },
+      // 23.1.3.7 Map.prototype.has(key)
+      // 23.2.3.7 Set.prototype.has(value)
+      has: function has(key) {
+        return !!getEntry(validate(this, NAME), key);
+      }
+    });
+    if (DESCRIPTORS) dP(C.prototype, 'size', {
+      get: function () {
+        return validate(this, NAME)[SIZE];
+      }
+    });
+    return C;
+  },
+  def: function (that, key, value) {
+    var entry = getEntry(that, key);
+    var prev, index;
+    // change existing entry
+    if (entry) {
+      entry.v = value;
+    // create new entry
+    } else {
+      that._l = entry = {
+        i: index = fastKey(key, true), // <- index
+        k: key,                        // <- key
+        v: value,                      // <- value
+        p: prev = that._l,             // <- previous entry
+        n: undefined,                  // <- next entry
+        r: false                       // <- removed
+      };
+      if (!that._f) that._f = entry;
+      if (prev) prev.n = entry;
+      that[SIZE]++;
+      // add to index
+      if (index !== 'F') that._i[index] = entry;
+    } return that;
+  },
+  getEntry: getEntry,
+  setStrong: function (C, NAME, IS_MAP) {
+    // add .keys, .values, .entries, [@@iterator]
+    // 23.1.3.4, 23.1.3.8, 23.1.3.11, 23.1.3.12, 23.2.3.5, 23.2.3.8, 23.2.3.10, 23.2.3.11
+    $iterDefine(C, NAME, function (iterated, kind) {
+      this._t = validate(iterated, NAME); // target
+      this._k = kind;                     // kind
+      this._l = undefined;                // previous
+    }, function () {
+      var that = this;
+      var kind = that._k;
+      var entry = that._l;
+      // revert to the last existing entry
+      while (entry && entry.r) entry = entry.p;
+      // get next entry
+      if (!that._t || !(that._l = entry = entry ? entry.n : that._t._f)) {
+        // or finish the iteration
+        that._t = undefined;
+        return step(1);
+      }
+      // return step by kind
+      if (kind == 'keys') return step(0, entry.k);
+      if (kind == 'values') return step(0, entry.v);
+      return step(0, [entry.k, entry.v]);
+    }, IS_MAP ? 'entries' : 'values', !IS_MAP, true);
+
+    // add [@@species], 23.1.2.2, 23.2.2.2
+    setSpecies(NAME);
+  }
+};
+
+
+/***/ }),
+/* 118 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var strong = __webpack_require__(117);
+var validate = __webpack_require__(46);
+var SET = 'Set';
+
+// 23.2 Set Objects
+module.exports = __webpack_require__(59)(SET, function (get) {
+  return function Set() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
+}, {
+  // 23.2.3.1 Set.prototype.add(value)
+  add: function add(value) {
+    return strong.def(validate(this, SET), value = value === 0 ? 0 : value, value);
+  }
+}, strong);
+
+
+/***/ }),
+/* 119 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var each = __webpack_require__(27)(0);
+var redefine = __webpack_require__(13);
+var meta = __webpack_require__(30);
+var assign = __webpack_require__(100);
+var weak = __webpack_require__(120);
+var isObject = __webpack_require__(4);
+var fails = __webpack_require__(3);
+var validate = __webpack_require__(46);
+var WEAK_MAP = 'WeakMap';
+var getWeak = meta.getWeak;
+var isExtensible = Object.isExtensible;
+var uncaughtFrozenStore = weak.ufstore;
+var tmp = {};
+var InternalMap;
+
+var wrapper = function (get) {
+  return function WeakMap() {
+    return get(this, arguments.length > 0 ? arguments[0] : undefined);
+  };
+};
+
+var methods = {
+  // 23.3.3.3 WeakMap.prototype.get(key)
+  get: function get(key) {
+    if (isObject(key)) {
+      var data = getWeak(key);
+      if (data === true) return uncaughtFrozenStore(validate(this, WEAK_MAP)).get(key);
+      return data ? data[this._i] : undefined;
+    }
+  },
+  // 23.3.3.5 WeakMap.prototype.set(key, value)
+  set: function set(key, value) {
+    return weak.def(validate(this, WEAK_MAP), key, value);
+  }
+};
+
+// 23.3 WeakMap Objects
+var $WeakMap = module.exports = __webpack_require__(59)(WEAK_MAP, wrapper, methods, weak, true, true);
+
+// IE11 WeakMap frozen keys fix
+if (fails(function () { return new $WeakMap().set((Object.freeze || Object)(tmp), 7).get(tmp) != 7; })) {
+  InternalMap = weak.getConstructor(wrapper, WEAK_MAP);
+  assign(InternalMap.prototype, methods);
+  meta.NEED = true;
+  each(['delete', 'has', 'get', 'set'], function (key) {
+    var proto = $WeakMap.prototype;
+    var method = proto[key];
+    redefine(proto, key, function (a, b) {
+      // store frozen objects on internal weakmap shim
+      if (isObject(a) && !isExtensible(a)) {
+        if (!this._f) this._f = new InternalMap();
+        var result = this._f[key](a, b);
+        return key == 'set' ? this : result;
+      // store all the rest on native weakmap
+      } return method.call(this, a, b);
+    });
+  });
+}
+
+
+/***/ }),
+/* 120 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var redefineAll = __webpack_require__(42);
+var getWeak = __webpack_require__(30).getWeak;
+var anObject = __webpack_require__(1);
+var isObject = __webpack_require__(4);
+var anInstance = __webpack_require__(40);
+var forOf = __webpack_require__(41);
+var createArrayMethod = __webpack_require__(27);
+var $has = __webpack_require__(11);
+var validate = __webpack_require__(46);
+var arrayFind = createArrayMethod(5);
+var arrayFindIndex = createArrayMethod(6);
+var id = 0;
+
+// fallback for uncaught frozen keys
+var uncaughtFrozenStore = function (that) {
+  return that._l || (that._l = new UncaughtFrozenStore());
+};
+var UncaughtFrozenStore = function () {
+  this.a = [];
+};
+var findUncaughtFrozen = function (store, key) {
+  return arrayFind(store.a, function (it) {
+    return it[0] === key;
+  });
+};
+UncaughtFrozenStore.prototype = {
+  get: function (key) {
+    var entry = findUncaughtFrozen(this, key);
+    if (entry) return entry[1];
+  },
+  has: function (key) {
+    return !!findUncaughtFrozen(this, key);
+  },
+  set: function (key, value) {
+    var entry = findUncaughtFrozen(this, key);
+    if (entry) entry[1] = value;
+    else this.a.push([key, value]);
+  },
+  'delete': function (key) {
+    var index = arrayFindIndex(this.a, function (it) {
+      return it[0] === key;
+    });
+    if (~index) this.a.splice(index, 1);
+    return !!~index;
+  }
+};
+
+module.exports = {
+  getConstructor: function (wrapper, NAME, IS_MAP, ADDER) {
+    var C = wrapper(function (that, iterable) {
+      anInstance(that, C, NAME, '_i');
+      that._t = NAME;      // collection type
+      that._i = id++;      // collection id
+      that._l = undefined; // leak store for uncaught frozen objects
+      if (iterable != undefined) forOf(iterable, IS_MAP, that[ADDER], that);
+    });
+    redefineAll(C.prototype, {
+      // 23.3.3.2 WeakMap.prototype.delete(key)
+      // 23.4.3.3 WeakSet.prototype.delete(value)
+      'delete': function (key) {
+        if (!isObject(key)) return false;
+        var data = getWeak(key);
+        if (data === true) return uncaughtFrozenStore(validate(this, NAME))['delete'](key);
+        return data && $has(data, this._i) && delete data[this._i];
+      },
+      // 23.3.3.4 WeakMap.prototype.has(key)
+      // 23.4.3.4 WeakSet.prototype.has(value)
+      has: function has(key) {
+        if (!isObject(key)) return false;
+        var data = getWeak(key);
+        if (data === true) return uncaughtFrozenStore(validate(this, NAME)).has(key);
+        return data && $has(data, this._i);
+      }
+    });
+    return C;
+  },
+  def: function (that, key, value) {
+    var data = getWeak(anObject(key), true);
+    if (data === true) uncaughtFrozenStore(that).set(key, value);
+    else data[that._i] = value;
+    return that;
+  },
+  ufstore: uncaughtFrozenStore
+};
+
+
+/***/ }),
+/* 121 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://tc39.github.io/ecma262/#sec-toindex
+var toInteger = __webpack_require__(25);
+var toLength = __webpack_require__(8);
+module.exports = function (it) {
+  if (it === undefined) return 0;
+  var number = toInteger(it);
+  var length = toLength(number);
+  if (number !== length) throw RangeError('Wrong length!');
+  return length;
+};
+
+
+/***/ }),
+/* 122 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// all object keys, includes non-enumerable and symbols
+var gOPN = __webpack_require__(38);
+var gOPS = __webpack_require__(52);
+var anObject = __webpack_require__(1);
+var Reflect = __webpack_require__(2).Reflect;
+module.exports = Reflect && Reflect.ownKeys || function ownKeys(it) {
+  var keys = gOPN.f(anObject(it));
+  var getSymbols = gOPS.f;
+  return getSymbols ? keys.concat(getSymbols(it)) : keys;
+};
+
+
+/***/ }),
+/* 123 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// https://tc39.github.io/proposal-flatMap/#sec-FlattenIntoArray
+var isArray = __webpack_require__(53);
+var isObject = __webpack_require__(4);
+var toLength = __webpack_require__(8);
+var ctx = __webpack_require__(18);
+var IS_CONCAT_SPREADABLE = __webpack_require__(5)('isConcatSpreadable');
+
+function flattenIntoArray(target, original, source, sourceLen, start, depth, mapper, thisArg) {
+  var targetIndex = start;
+  var sourceIndex = 0;
+  var mapFn = mapper ? ctx(mapper, thisArg, 3) : false;
+  var element, spreadable;
+
+  while (sourceIndex < sourceLen) {
+    if (sourceIndex in source) {
+      element = mapFn ? mapFn(source[sourceIndex], sourceIndex, original) : source[sourceIndex];
+
+      spreadable = false;
+      if (isObject(element)) {
+        spreadable = element[IS_CONCAT_SPREADABLE];
+        spreadable = spreadable !== undefined ? !!spreadable : isArray(element);
+      }
+
+      if (spreadable && depth > 0) {
+        targetIndex = flattenIntoArray(target, original, element, toLength(element.length), targetIndex, depth - 1) - 1;
+      } else {
+        if (targetIndex >= 0x1fffffffffffff) throw TypeError();
+        target[targetIndex] = element;
+      }
+
+      targetIndex++;
+    }
+    sourceIndex++;
+  }
+  return targetIndex;
+}
+
+module.exports = flattenIntoArray;
+
+
+/***/ }),
+/* 124 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://github.com/tc39/proposal-string-pad-start-end
+var toLength = __webpack_require__(8);
+var repeat = __webpack_require__(74);
+var defined = __webpack_require__(24);
+
+module.exports = function (that, maxLength, fillString, left) {
+  var S = String(defined(that));
+  var stringLength = S.length;
+  var fillStr = fillString === undefined ? ' ' : String(fillString);
+  var intMaxLength = toLength(maxLength);
+  if (intMaxLength <= stringLength || fillStr == '') return S;
+  var fillLen = intMaxLength - stringLength;
+  var stringFiller = repeat.call(fillStr, Math.ceil(fillLen / fillStr.length));
+  if (stringFiller.length > fillLen) stringFiller = stringFiller.slice(0, fillLen);
+  return left ? stringFiller + S : S + stringFiller;
+};
+
+
+/***/ }),
+/* 125 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getKeys = __webpack_require__(35);
+var toIObject = __webpack_require__(15);
+var isEnum = __webpack_require__(48).f;
+module.exports = function (isEntries) {
+  return function (it) {
+    var O = toIObject(it);
+    var keys = getKeys(O);
+    var length = keys.length;
+    var i = 0;
+    var result = [];
+    var key;
+    while (length > i) if (isEnum.call(O, key = keys[i++])) {
+      result.push(isEntries ? [key, O[key]] : O[key]);
+    } return result;
+  };
+};
+
+
+/***/ }),
+/* 126 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://github.com/DavidBruant/Map-Set.prototype.toJSON
+var classof = __webpack_require__(49);
+var from = __webpack_require__(127);
+module.exports = function (NAME) {
+  return function toJSON() {
+    if (classof(this) != NAME) throw TypeError(NAME + "#toJSON isn't generic");
+    return from(this);
+  };
+};
+
+
+/***/ }),
+/* 127 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var forOf = __webpack_require__(41);
+
+module.exports = function (iter, ITERATOR) {
+  var result = [];
+  forOf(iter, false, result.push, result, ITERATOR);
+  return result;
+};
+
+
+/***/ }),
+/* 128 */
+/***/ (function(module, exports) {
+
+// https://rwaldron.github.io/proposal-math-extensions/
+module.exports = Math.scale || function scale(x, inLow, inHigh, outLow, outHigh) {
+  if (
+    arguments.length === 0
+      // eslint-disable-next-line no-self-compare
+      || x != x
+      // eslint-disable-next-line no-self-compare
+      || inLow != inLow
+      // eslint-disable-next-line no-self-compare
+      || inHigh != inHigh
+      // eslint-disable-next-line no-self-compare
+      || outLow != outLow
+      // eslint-disable-next-line no-self-compare
+      || outHigh != outHigh
+  ) return NaN;
+  if (x === Infinity || x === -Infinity) return x;
+  return (x - inLow) * (outHigh - outLow) / (inHigh - inLow) + outLow;
+};
+
+
+/***/ }),
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -13778,1316 +16812,14 @@ return jQuery;
 
 
 /***/ }),
-/* 52 */,
-/* 53 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(2);
-var SHARED = '__core-js_shared__';
-var store = global[SHARED] || (global[SHARED] = {});
-module.exports = function (key) {
-  return store[key] || (store[key] = {});
-};
-
-
-/***/ }),
-/* 54 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// false -> Array#indexOf
-// true  -> Array#includes
-var toIObject = __webpack_require__(16);
-var toLength = __webpack_require__(8);
-var toAbsoluteIndex = __webpack_require__(36);
-module.exports = function (IS_INCLUDES) {
-  return function ($this, el, fromIndex) {
-    var O = toIObject($this);
-    var length = toLength(O.length);
-    var index = toAbsoluteIndex(fromIndex, length);
-    var value;
-    // Array#includes uses SameValueZero equality algorithm
-    // eslint-disable-next-line no-self-compare
-    if (IS_INCLUDES && el != el) while (length > index) {
-      value = O[index++];
-      // eslint-disable-next-line no-self-compare
-      if (value != value) return true;
-    // Array#indexOf ignores holes, Array#includes - not
-    } else for (;length > index; index++) if (IS_INCLUDES || index in O) {
-      if (O[index] === el) return IS_INCLUDES || index || 0;
-    } return !IS_INCLUDES && -1;
-  };
-};
-
-
-/***/ }),
-/* 55 */
-/***/ (function(module, exports) {
-
-exports.f = Object.getOwnPropertySymbols;
-
-
-/***/ }),
-/* 56 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 7.2.2 IsArray(argument)
-var cof = __webpack_require__(20);
-module.exports = Array.isArray || function isArray(arg) {
-  return cof(arg) == 'Array';
-};
-
-
-/***/ }),
-/* 57 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 7.2.8 IsRegExp(argument)
-var isObject = __webpack_require__(4);
-var cof = __webpack_require__(20);
-var MATCH = __webpack_require__(5)('match');
-module.exports = function (it) {
-  var isRegExp;
-  return isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : cof(it) == 'RegExp');
-};
-
-
-/***/ }),
-/* 58 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var ITERATOR = __webpack_require__(5)('iterator');
-var SAFE_CLOSING = false;
-
-try {
-  var riter = [7][ITERATOR]();
-  riter['return'] = function () { SAFE_CLOSING = true; };
-  // eslint-disable-next-line no-throw-literal
-  Array.from(riter, function () { throw 2; });
-} catch (e) { /* empty */ }
-
-module.exports = function (exec, skipClosing) {
-  if (!skipClosing && !SAFE_CLOSING) return false;
-  var safe = false;
-  try {
-    var arr = [7];
-    var iter = arr[ITERATOR]();
-    iter.next = function () { return { done: safe = true }; };
-    arr[ITERATOR] = function () { return iter; };
-    exec(arr);
-  } catch (e) { /* empty */ }
-  return safe;
-};
-
-
-/***/ }),
-/* 59 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-// 21.2.5.3 get RegExp.prototype.flags
-var anObject = __webpack_require__(1);
-module.exports = function () {
-  var that = anObject(this);
-  var result = '';
-  if (that.global) result += 'g';
-  if (that.ignoreCase) result += 'i';
-  if (that.multiline) result += 'm';
-  if (that.unicode) result += 'u';
-  if (that.sticky) result += 'y';
-  return result;
-};
-
-
-/***/ }),
-/* 60 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var hide = __webpack_require__(12);
-var redefine = __webpack_require__(13);
-var fails = __webpack_require__(3);
-var defined = __webpack_require__(24);
-var wks = __webpack_require__(5);
-
-module.exports = function (KEY, length, exec) {
-  var SYMBOL = wks(KEY);
-  var fns = exec(defined, SYMBOL, ''[KEY]);
-  var strfn = fns[0];
-  var rxfn = fns[1];
-  if (fails(function () {
-    var O = {};
-    O[SYMBOL] = function () { return 7; };
-    return ''[KEY](O) != 7;
-  })) {
-    redefine(String.prototype, KEY, strfn);
-    hide(RegExp.prototype, SYMBOL, length == 2
-      // 21.2.5.8 RegExp.prototype[@@replace](string, replaceValue)
-      // 21.2.5.11 RegExp.prototype[@@split](string, limit)
-      ? function (string, arg) { return rxfn.call(string, this, arg); }
-      // 21.2.5.6 RegExp.prototype[@@match](string)
-      // 21.2.5.9 RegExp.prototype[@@search](string)
-      : function (string) { return rxfn.call(string, this); }
-    );
-  }
-};
-
-
-/***/ }),
-/* 61 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 7.3.20 SpeciesConstructor(O, defaultConstructor)
-var anObject = __webpack_require__(1);
-var aFunction = __webpack_require__(10);
-var SPECIES = __webpack_require__(5)('species');
-module.exports = function (O, D) {
-  var C = anObject(O).constructor;
-  var S;
-  return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? D : aFunction(S);
-};
-
-
-/***/ }),
-/* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var global = __webpack_require__(2);
-var $export = __webpack_require__(0);
-var redefine = __webpack_require__(13);
-var redefineAll = __webpack_require__(42);
-var meta = __webpack_require__(30);
-var forOf = __webpack_require__(41);
-var anInstance = __webpack_require__(40);
-var isObject = __webpack_require__(4);
-var fails = __webpack_require__(3);
-var $iterDetect = __webpack_require__(58);
-var setToStringTag = __webpack_require__(43);
-var inheritIfRequired = __webpack_require__(75);
-
-module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
-  var Base = global[NAME];
-  var C = Base;
-  var ADDER = IS_MAP ? 'set' : 'add';
-  var proto = C && C.prototype;
-  var O = {};
-  var fixMethod = function (KEY) {
-    var fn = proto[KEY];
-    redefine(proto, KEY,
-      KEY == 'delete' ? function (a) {
-        return IS_WEAK && !isObject(a) ? false : fn.call(this, a === 0 ? 0 : a);
-      } : KEY == 'has' ? function has(a) {
-        return IS_WEAK && !isObject(a) ? false : fn.call(this, a === 0 ? 0 : a);
-      } : KEY == 'get' ? function get(a) {
-        return IS_WEAK && !isObject(a) ? undefined : fn.call(this, a === 0 ? 0 : a);
-      } : KEY == 'add' ? function add(a) { fn.call(this, a === 0 ? 0 : a); return this; }
-        : function set(a, b) { fn.call(this, a === 0 ? 0 : a, b); return this; }
-    );
-  };
-  if (typeof C != 'function' || !(IS_WEAK || proto.forEach && !fails(function () {
-    new C().entries().next();
-  }))) {
-    // create collection constructor
-    C = common.getConstructor(wrapper, NAME, IS_MAP, ADDER);
-    redefineAll(C.prototype, methods);
-    meta.NEED = true;
-  } else {
-    var instance = new C();
-    // early implementations not supports chaining
-    var HASNT_CHAINING = instance[ADDER](IS_WEAK ? {} : -0, 1) != instance;
-    // V8 ~  Chromium 40- weak-collections throws on primitives, but should return false
-    var THROWS_ON_PRIMITIVES = fails(function () { instance.has(1); });
-    // most early implementations doesn't supports iterables, most modern - not close it correctly
-    var ACCEPT_ITERABLES = $iterDetect(function (iter) { new C(iter); }); // eslint-disable-line no-new
-    // for early implementations -0 and +0 not the same
-    var BUGGY_ZERO = !IS_WEAK && fails(function () {
-      // V8 ~ Chromium 42- fails only with 5+ elements
-      var $instance = new C();
-      var index = 5;
-      while (index--) $instance[ADDER](index, index);
-      return !$instance.has(-0);
-    });
-    if (!ACCEPT_ITERABLES) {
-      C = wrapper(function (target, iterable) {
-        anInstance(target, C, NAME);
-        var that = inheritIfRequired(new Base(), target, C);
-        if (iterable != undefined) forOf(iterable, IS_MAP, that[ADDER], that);
-        return that;
-      });
-      C.prototype = proto;
-      proto.constructor = C;
-    }
-    if (THROWS_ON_PRIMITIVES || BUGGY_ZERO) {
-      fixMethod('delete');
-      fixMethod('has');
-      IS_MAP && fixMethod('get');
-    }
-    if (BUGGY_ZERO || HASNT_CHAINING) fixMethod(ADDER);
-    // weak collections should not contains .clear method
-    if (IS_WEAK && proto.clear) delete proto.clear;
-  }
-
-  setToStringTag(C, NAME);
-
-  O[NAME] = C;
-  $export($export.G + $export.W + $export.F * (C != Base), O);
-
-  if (!IS_WEAK) common.setStrong(C, NAME, IS_MAP);
-
-  return C;
-};
-
-
-/***/ }),
-/* 63 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(2);
-var hide = __webpack_require__(12);
-var uid = __webpack_require__(33);
-var TYPED = uid('typed_array');
-var VIEW = uid('view');
-var ABV = !!(global.ArrayBuffer && global.DataView);
-var CONSTR = ABV;
-var i = 0;
-var l = 9;
-var Typed;
-
-var TypedArrayConstructors = (
-  'Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,Float32Array,Float64Array'
-).split(',');
-
-while (i < l) {
-  if (Typed = global[TypedArrayConstructors[i++]]) {
-    hide(Typed.prototype, TYPED, true);
-    hide(Typed.prototype, VIEW, true);
-  } else CONSTR = false;
-}
-
-module.exports = {
-  ABV: ABV,
-  CONSTR: CONSTR,
-  TYPED: TYPED,
-  VIEW: VIEW
-};
-
-
-/***/ }),
-/* 64 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-// Forced replacement prototype accessors methods
-module.exports = __webpack_require__(34) || !__webpack_require__(3)(function () {
-  var K = Math.random();
-  // In FF throws only define methods
-  // eslint-disable-next-line no-undef, no-useless-call
-  __defineSetter__.call(null, K, function () { /* empty */ });
-  delete __webpack_require__(2)[K];
-});
-
-
-/***/ }),
-/* 65 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-// https://tc39.github.io/proposal-setmap-offrom/
-var $export = __webpack_require__(0);
-
-module.exports = function (COLLECTION) {
-  $export($export.S, COLLECTION, { of: function of() {
-    var length = arguments.length;
-    var A = new Array(length);
-    while (length--) A[length] = arguments[length];
-    return new this(A);
-  } });
-};
-
-
-/***/ }),
-/* 66 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-// https://tc39.github.io/proposal-setmap-offrom/
-var $export = __webpack_require__(0);
-var aFunction = __webpack_require__(10);
-var ctx = __webpack_require__(19);
-var forOf = __webpack_require__(41);
-
-module.exports = function (COLLECTION) {
-  $export($export.S, COLLECTION, { from: function from(source /* , mapFn, thisArg */) {
-    var mapFn = arguments[1];
-    var mapping, A, n, cb;
-    aFunction(this);
-    mapping = mapFn !== undefined;
-    if (mapping) aFunction(mapFn);
-    if (source == undefined) return new this();
-    A = [];
-    if (mapping) {
-      n = 0;
-      cb = ctx(mapFn, arguments[2], 2);
-      forOf(source, false, function (nextItem) {
-        A.push(cb(nextItem, n++));
-      });
-    } else {
-      forOf(source, false, A.push, A);
-    }
-    return new this(A);
-  } });
-};
-
-
-/***/ }),
-/* 67 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 68 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var isObject = __webpack_require__(4);
-var document = __webpack_require__(2).document;
-// typeof document.createElement is 'object' in old IE
-var is = isObject(document) && isObject(document.createElement);
-module.exports = function (it) {
-  return is ? document.createElement(it) : {};
-};
-
-
-/***/ }),
-/* 69 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(2);
-var core = __webpack_require__(22);
-var LIBRARY = __webpack_require__(34);
-var wksExt = __webpack_require__(98);
-var defineProperty = __webpack_require__(7).f;
-module.exports = function (name) {
-  var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
-  if (name.charAt(0) != '_' && !(name in $Symbol)) defineProperty($Symbol, name, { value: wksExt.f(name) });
-};
-
-
-/***/ }),
-/* 70 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var shared = __webpack_require__(53)('keys');
-var uid = __webpack_require__(33);
-module.exports = function (key) {
-  return shared[key] || (shared[key] = uid(key));
-};
-
-
-/***/ }),
-/* 71 */
-/***/ (function(module, exports) {
-
-// IE 8- don't enum bug keys
-module.exports = (
-  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
-).split(',');
-
-
-/***/ }),
-/* 72 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var document = __webpack_require__(2).document;
-module.exports = document && document.documentElement;
-
-
-/***/ }),
-/* 73 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Works with __proto__ only. Old v8 can't work with null proto objects.
-/* eslint-disable no-proto */
-var isObject = __webpack_require__(4);
-var anObject = __webpack_require__(1);
-var check = function (O, proto) {
-  anObject(O);
-  if (!isObject(proto) && proto !== null) throw TypeError(proto + ": can't set as prototype!");
-};
-module.exports = {
-  set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
-    function (test, buggy, set) {
-      try {
-        set = __webpack_require__(19)(Function.call, __webpack_require__(17).f(Object.prototype, '__proto__').set, 2);
-        set(test, []);
-        buggy = !(test instanceof Array);
-      } catch (e) { buggy = true; }
-      return function setPrototypeOf(O, proto) {
-        check(O, proto);
-        if (buggy) O.__proto__ = proto;
-        else set(O, proto);
-        return O;
-      };
-    }({}, false) : undefined),
-  check: check
-};
-
-
-/***/ }),
-/* 74 */
-/***/ (function(module, exports) {
-
-module.exports = '\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003' +
-  '\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
-
-
-/***/ }),
-/* 75 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var isObject = __webpack_require__(4);
-var setPrototypeOf = __webpack_require__(73).set;
-module.exports = function (that, target, C) {
-  var S = target.constructor;
-  var P;
-  if (S !== C && typeof S == 'function' && (P = S.prototype) !== C.prototype && isObject(P) && setPrototypeOf) {
-    setPrototypeOf(that, P);
-  } return that;
-};
-
-
-/***/ }),
-/* 76 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var toInteger = __webpack_require__(25);
-var defined = __webpack_require__(24);
-
-module.exports = function repeat(count) {
-  var str = String(defined(this));
-  var res = '';
-  var n = toInteger(count);
-  if (n < 0 || n == Infinity) throw RangeError("Count can't be negative");
-  for (;n > 0; (n >>>= 1) && (str += str)) if (n & 1) res += str;
-  return res;
-};
-
-
-/***/ }),
-/* 77 */
-/***/ (function(module, exports) {
-
-// 20.2.2.28 Math.sign(x)
-module.exports = Math.sign || function sign(x) {
-  // eslint-disable-next-line no-self-compare
-  return (x = +x) == 0 || x != x ? x : x < 0 ? -1 : 1;
-};
-
-
-/***/ }),
-/* 78 */
-/***/ (function(module, exports) {
-
-// 20.2.2.14 Math.expm1(x)
-var $expm1 = Math.expm1;
-module.exports = (!$expm1
-  // Old FF bug
-  || $expm1(10) > 22025.465794806719 || $expm1(10) < 22025.4657948067165168
-  // Tor Browser bug
-  || $expm1(-2e-17) != -2e-17
-) ? function expm1(x) {
-  return (x = +x) == 0 ? x : x > -1e-6 && x < 1e-6 ? x + x * x / 2 : Math.exp(x) - 1;
-} : $expm1;
-
-
-/***/ }),
-/* 79 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var toInteger = __webpack_require__(25);
-var defined = __webpack_require__(24);
-// true  -> String#at
-// false -> String#codePointAt
-module.exports = function (TO_STRING) {
-  return function (that, pos) {
-    var s = String(defined(that));
-    var i = toInteger(pos);
-    var l = s.length;
-    var a, b;
-    if (i < 0 || i >= l) return TO_STRING ? '' : undefined;
-    a = s.charCodeAt(i);
-    return a < 0xd800 || a > 0xdbff || i + 1 === l || (b = s.charCodeAt(i + 1)) < 0xdc00 || b > 0xdfff
-      ? TO_STRING ? s.charAt(i) : a
-      : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
-  };
-};
-
-
-/***/ }),
-/* 80 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var LIBRARY = __webpack_require__(34);
-var $export = __webpack_require__(0);
-var redefine = __webpack_require__(13);
-var hide = __webpack_require__(12);
-var has = __webpack_require__(11);
-var Iterators = __webpack_require__(45);
-var $iterCreate = __webpack_require__(81);
-var setToStringTag = __webpack_require__(43);
-var getPrototypeOf = __webpack_require__(18);
-var ITERATOR = __webpack_require__(5)('iterator');
-var BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`
-var FF_ITERATOR = '@@iterator';
-var KEYS = 'keys';
-var VALUES = 'values';
-
-var returnThis = function () { return this; };
-
-module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED) {
-  $iterCreate(Constructor, NAME, next);
-  var getMethod = function (kind) {
-    if (!BUGGY && kind in proto) return proto[kind];
-    switch (kind) {
-      case KEYS: return function keys() { return new Constructor(this, kind); };
-      case VALUES: return function values() { return new Constructor(this, kind); };
-    } return function entries() { return new Constructor(this, kind); };
-  };
-  var TAG = NAME + ' Iterator';
-  var DEF_VALUES = DEFAULT == VALUES;
-  var VALUES_BUG = false;
-  var proto = Base.prototype;
-  var $native = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT];
-  var $default = (!BUGGY && $native) || getMethod(DEFAULT);
-  var $entries = DEFAULT ? !DEF_VALUES ? $default : getMethod('entries') : undefined;
-  var $anyNative = NAME == 'Array' ? proto.entries || $native : $native;
-  var methods, key, IteratorPrototype;
-  // Fix native
-  if ($anyNative) {
-    IteratorPrototype = getPrototypeOf($anyNative.call(new Base()));
-    if (IteratorPrototype !== Object.prototype && IteratorPrototype.next) {
-      // Set @@toStringTag to native iterators
-      setToStringTag(IteratorPrototype, TAG, true);
-      // fix for some old engines
-      if (!LIBRARY && !has(IteratorPrototype, ITERATOR)) hide(IteratorPrototype, ITERATOR, returnThis);
-    }
-  }
-  // fix Array#{values, @@iterator}.name in V8 / FF
-  if (DEF_VALUES && $native && $native.name !== VALUES) {
-    VALUES_BUG = true;
-    $default = function values() { return $native.call(this); };
-  }
-  // Define iterator
-  if ((!LIBRARY || FORCED) && (BUGGY || VALUES_BUG || !proto[ITERATOR])) {
-    hide(proto, ITERATOR, $default);
-  }
-  // Plug for library
-  Iterators[NAME] = $default;
-  Iterators[TAG] = returnThis;
-  if (DEFAULT) {
-    methods = {
-      values: DEF_VALUES ? $default : getMethod(VALUES),
-      keys: IS_SET ? $default : getMethod(KEYS),
-      entries: $entries
-    };
-    if (FORCED) for (key in methods) {
-      if (!(key in proto)) redefine(proto, key, methods[key]);
-    } else $export($export.P + $export.F * (BUGGY || VALUES_BUG), NAME, methods);
-  }
-  return methods;
-};
-
-
-/***/ }),
-/* 81 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var create = __webpack_require__(37);
-var descriptor = __webpack_require__(32);
-var setToStringTag = __webpack_require__(43);
-var IteratorPrototype = {};
-
-// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-__webpack_require__(12)(IteratorPrototype, __webpack_require__(5)('iterator'), function () { return this; });
-
-module.exports = function (Constructor, NAME, next) {
-  Constructor.prototype = create(IteratorPrototype, { next: descriptor(1, next) });
-  setToStringTag(Constructor, NAME + ' Iterator');
-};
-
-
-/***/ }),
-/* 82 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// helper for String#{startsWith, endsWith, includes}
-var isRegExp = __webpack_require__(57);
-var defined = __webpack_require__(24);
-
-module.exports = function (that, searchString, NAME) {
-  if (isRegExp(searchString)) throw TypeError('String#' + NAME + " doesn't accept regex!");
-  return String(defined(that));
-};
-
-
-/***/ }),
-/* 83 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var MATCH = __webpack_require__(5)('match');
-module.exports = function (KEY) {
-  var re = /./;
-  try {
-    '/./'[KEY](re);
-  } catch (e) {
-    try {
-      re[MATCH] = false;
-      return !'/./'[KEY](re);
-    } catch (f) { /* empty */ }
-  } return true;
-};
-
-
-/***/ }),
-/* 84 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// check on default Array iterator
-var Iterators = __webpack_require__(45);
-var ITERATOR = __webpack_require__(5)('iterator');
-var ArrayProto = Array.prototype;
-
-module.exports = function (it) {
-  return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
-};
-
-
-/***/ }),
-/* 85 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var $defineProperty = __webpack_require__(7);
-var createDesc = __webpack_require__(32);
-
-module.exports = function (object, index, value) {
-  if (index in object) $defineProperty.f(object, index, createDesc(0, value));
-  else object[index] = value;
-};
-
-
-/***/ }),
-/* 86 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var classof = __webpack_require__(50);
-var ITERATOR = __webpack_require__(5)('iterator');
-var Iterators = __webpack_require__(45);
-module.exports = __webpack_require__(22).getIteratorMethod = function (it) {
-  if (it != undefined) return it[ITERATOR]
-    || it['@@iterator']
-    || Iterators[classof(it)];
-};
-
-
-/***/ }),
-/* 87 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 9.4.2.3 ArraySpeciesCreate(originalArray, length)
-var speciesConstructor = __webpack_require__(230);
-
-module.exports = function (original, length) {
-  return new (speciesConstructor(original))(length);
-};
-
-
-/***/ }),
-/* 88 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-// 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
-
-var toObject = __webpack_require__(9);
-var toAbsoluteIndex = __webpack_require__(36);
-var toLength = __webpack_require__(8);
-module.exports = function fill(value /* , start = 0, end = @length */) {
-  var O = toObject(this);
-  var length = toLength(O.length);
-  var aLen = arguments.length;
-  var index = toAbsoluteIndex(aLen > 1 ? arguments[1] : undefined, length);
-  var end = aLen > 2 ? arguments[2] : undefined;
-  var endPos = end === undefined ? length : toAbsoluteIndex(end, length);
-  while (endPos > index) O[index++] = value;
-  return O;
-};
-
-
-/***/ }),
-/* 89 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var addToUnscopables = __webpack_require__(31);
-var step = __webpack_require__(114);
-var Iterators = __webpack_require__(45);
-var toIObject = __webpack_require__(16);
-
-// 22.1.3.4 Array.prototype.entries()
-// 22.1.3.13 Array.prototype.keys()
-// 22.1.3.29 Array.prototype.values()
-// 22.1.3.30 Array.prototype[@@iterator]()
-module.exports = __webpack_require__(80)(Array, 'Array', function (iterated, kind) {
-  this._t = toIObject(iterated); // target
-  this._i = 0;                   // next index
-  this._k = kind;                // kind
-// 22.1.5.2.1 %ArrayIteratorPrototype%.next()
-}, function () {
-  var O = this._t;
-  var kind = this._k;
-  var index = this._i++;
-  if (!O || index >= O.length) {
-    this._t = undefined;
-    return step(1);
-  }
-  if (kind == 'keys') return step(0, index);
-  if (kind == 'values') return step(0, O[index]);
-  return step(0, [index, O[index]]);
-}, 'values');
-
-// argumentsList[@@iterator] is %ArrayProto_values% (9.4.4.6, 9.4.4.7)
-Iterators.Arguments = Iterators.Array;
-
-addToUnscopables('keys');
-addToUnscopables('values');
-addToUnscopables('entries');
-
-
-/***/ }),
-/* 90 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var ctx = __webpack_require__(19);
-var invoke = __webpack_require__(104);
-var html = __webpack_require__(72);
-var cel = __webpack_require__(68);
-var global = __webpack_require__(2);
-var process = global.process;
-var setTask = global.setImmediate;
-var clearTask = global.clearImmediate;
-var MessageChannel = global.MessageChannel;
-var Dispatch = global.Dispatch;
-var counter = 0;
-var queue = {};
-var ONREADYSTATECHANGE = 'onreadystatechange';
-var defer, channel, port;
-var run = function () {
-  var id = +this;
-  // eslint-disable-next-line no-prototype-builtins
-  if (queue.hasOwnProperty(id)) {
-    var fn = queue[id];
-    delete queue[id];
-    fn();
-  }
-};
-var listener = function (event) {
-  run.call(event.data);
-};
-// Node.js 0.9+ & IE10+ has setImmediate, otherwise:
-if (!setTask || !clearTask) {
-  setTask = function setImmediate(fn) {
-    var args = [];
-    var i = 1;
-    while (arguments.length > i) args.push(arguments[i++]);
-    queue[++counter] = function () {
-      // eslint-disable-next-line no-new-func
-      invoke(typeof fn == 'function' ? fn : Function(fn), args);
-    };
-    defer(counter);
-    return counter;
-  };
-  clearTask = function clearImmediate(id) {
-    delete queue[id];
-  };
-  // Node.js 0.8-
-  if (__webpack_require__(20)(process) == 'process') {
-    defer = function (id) {
-      process.nextTick(ctx(run, id, 1));
-    };
-  // Sphere (JS game engine) Dispatch API
-  } else if (Dispatch && Dispatch.now) {
-    defer = function (id) {
-      Dispatch.now(ctx(run, id, 1));
-    };
-  // Browsers with MessageChannel, includes WebWorkers
-  } else if (MessageChannel) {
-    channel = new MessageChannel();
-    port = channel.port2;
-    channel.port1.onmessage = listener;
-    defer = ctx(port.postMessage, port, 1);
-  // Browsers with postMessage, skip WebWorkers
-  // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'
-  } else if (global.addEventListener && typeof postMessage == 'function' && !global.importScripts) {
-    defer = function (id) {
-      global.postMessage(id + '', '*');
-    };
-    global.addEventListener('message', listener, false);
-  // IE8-
-  } else if (ONREADYSTATECHANGE in cel('script')) {
-    defer = function (id) {
-      html.appendChild(cel('script'))[ONREADYSTATECHANGE] = function () {
-        html.removeChild(this);
-        run.call(id);
-      };
-    };
-  // Rest old browsers
-  } else {
-    defer = function (id) {
-      setTimeout(ctx(run, id, 1), 0);
-    };
-  }
-}
-module.exports = {
-  set: setTask,
-  clear: clearTask
-};
-
-
-/***/ }),
-/* 91 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(2);
-var macrotask = __webpack_require__(90).set;
-var Observer = global.MutationObserver || global.WebKitMutationObserver;
-var process = global.process;
-var Promise = global.Promise;
-var isNode = __webpack_require__(20)(process) == 'process';
-
-module.exports = function () {
-  var head, last, notify;
-
-  var flush = function () {
-    var parent, fn;
-    if (isNode && (parent = process.domain)) parent.exit();
-    while (head) {
-      fn = head.fn;
-      head = head.next;
-      try {
-        fn();
-      } catch (e) {
-        if (head) notify();
-        else last = undefined;
-        throw e;
-      }
-    } last = undefined;
-    if (parent) parent.enter();
-  };
-
-  // Node.js
-  if (isNode) {
-    notify = function () {
-      process.nextTick(flush);
-    };
-  // browsers with MutationObserver, except iOS Safari - https://github.com/zloirock/core-js/issues/339
-  } else if (Observer && !(global.navigator && global.navigator.standalone)) {
-    var toggle = true;
-    var node = document.createTextNode('');
-    new Observer(flush).observe(node, { characterData: true }); // eslint-disable-line no-new
-    notify = function () {
-      node.data = toggle = !toggle;
-    };
-  // environments with maybe non-completely correct, but existent Promise
-  } else if (Promise && Promise.resolve) {
-    var promise = Promise.resolve();
-    notify = function () {
-      promise.then(flush);
-    };
-  // for other environments - macrotask based on:
-  // - setImmediate
-  // - MessageChannel
-  // - window.postMessag
-  // - onreadystatechange
-  // - setTimeout
-  } else {
-    notify = function () {
-      // strange IE + webpack dev server bug - use .call(global)
-      macrotask.call(global, flush);
-    };
-  }
-
-  return function (fn) {
-    var task = { fn: fn, next: undefined };
-    if (last) last.next = task;
-    if (!head) {
-      head = task;
-      notify();
-    } last = task;
-  };
-};
-
-
-/***/ }),
-/* 92 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-// 25.4.1.5 NewPromiseCapability(C)
-var aFunction = __webpack_require__(10);
-
-function PromiseCapability(C) {
-  var resolve, reject;
-  this.promise = new C(function ($$resolve, $$reject) {
-    if (resolve !== undefined || reject !== undefined) throw TypeError('Bad Promise constructor');
-    resolve = $$resolve;
-    reject = $$reject;
-  });
-  this.resolve = aFunction(resolve);
-  this.reject = aFunction(reject);
-}
-
-module.exports.f = function (C) {
-  return new PromiseCapability(C);
-};
-
-
-/***/ }),
-/* 93 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var global = __webpack_require__(2);
-var DESCRIPTORS = __webpack_require__(6);
-var LIBRARY = __webpack_require__(34);
-var $typed = __webpack_require__(63);
-var hide = __webpack_require__(12);
-var redefineAll = __webpack_require__(42);
-var fails = __webpack_require__(3);
-var anInstance = __webpack_require__(40);
-var toInteger = __webpack_require__(25);
-var toLength = __webpack_require__(8);
-var toIndex = __webpack_require__(123);
-var gOPN = __webpack_require__(38).f;
-var dP = __webpack_require__(7).f;
-var arrayFill = __webpack_require__(88);
-var setToStringTag = __webpack_require__(43);
-var ARRAY_BUFFER = 'ArrayBuffer';
-var DATA_VIEW = 'DataView';
-var PROTOTYPE = 'prototype';
-var WRONG_LENGTH = 'Wrong length!';
-var WRONG_INDEX = 'Wrong index!';
-var $ArrayBuffer = global[ARRAY_BUFFER];
-var $DataView = global[DATA_VIEW];
-var Math = global.Math;
-var RangeError = global.RangeError;
-// eslint-disable-next-line no-shadow-restricted-names
-var Infinity = global.Infinity;
-var BaseBuffer = $ArrayBuffer;
-var abs = Math.abs;
-var pow = Math.pow;
-var floor = Math.floor;
-var log = Math.log;
-var LN2 = Math.LN2;
-var BUFFER = 'buffer';
-var BYTE_LENGTH = 'byteLength';
-var BYTE_OFFSET = 'byteOffset';
-var $BUFFER = DESCRIPTORS ? '_b' : BUFFER;
-var $LENGTH = DESCRIPTORS ? '_l' : BYTE_LENGTH;
-var $OFFSET = DESCRIPTORS ? '_o' : BYTE_OFFSET;
-
-// IEEE754 conversions based on https://github.com/feross/ieee754
-function packIEEE754(value, mLen, nBytes) {
-  var buffer = new Array(nBytes);
-  var eLen = nBytes * 8 - mLen - 1;
-  var eMax = (1 << eLen) - 1;
-  var eBias = eMax >> 1;
-  var rt = mLen === 23 ? pow(2, -24) - pow(2, -77) : 0;
-  var i = 0;
-  var s = value < 0 || value === 0 && 1 / value < 0 ? 1 : 0;
-  var e, m, c;
-  value = abs(value);
-  // eslint-disable-next-line no-self-compare
-  if (value != value || value === Infinity) {
-    // eslint-disable-next-line no-self-compare
-    m = value != value ? 1 : 0;
-    e = eMax;
-  } else {
-    e = floor(log(value) / LN2);
-    if (value * (c = pow(2, -e)) < 1) {
-      e--;
-      c *= 2;
-    }
-    if (e + eBias >= 1) {
-      value += rt / c;
-    } else {
-      value += rt * pow(2, 1 - eBias);
-    }
-    if (value * c >= 2) {
-      e++;
-      c /= 2;
-    }
-    if (e + eBias >= eMax) {
-      m = 0;
-      e = eMax;
-    } else if (e + eBias >= 1) {
-      m = (value * c - 1) * pow(2, mLen);
-      e = e + eBias;
-    } else {
-      m = value * pow(2, eBias - 1) * pow(2, mLen);
-      e = 0;
-    }
-  }
-  for (; mLen >= 8; buffer[i++] = m & 255, m /= 256, mLen -= 8);
-  e = e << mLen | m;
-  eLen += mLen;
-  for (; eLen > 0; buffer[i++] = e & 255, e /= 256, eLen -= 8);
-  buffer[--i] |= s * 128;
-  return buffer;
-}
-function unpackIEEE754(buffer, mLen, nBytes) {
-  var eLen = nBytes * 8 - mLen - 1;
-  var eMax = (1 << eLen) - 1;
-  var eBias = eMax >> 1;
-  var nBits = eLen - 7;
-  var i = nBytes - 1;
-  var s = buffer[i--];
-  var e = s & 127;
-  var m;
-  s >>= 7;
-  for (; nBits > 0; e = e * 256 + buffer[i], i--, nBits -= 8);
-  m = e & (1 << -nBits) - 1;
-  e >>= -nBits;
-  nBits += mLen;
-  for (; nBits > 0; m = m * 256 + buffer[i], i--, nBits -= 8);
-  if (e === 0) {
-    e = 1 - eBias;
-  } else if (e === eMax) {
-    return m ? NaN : s ? -Infinity : Infinity;
-  } else {
-    m = m + pow(2, mLen);
-    e = e - eBias;
-  } return (s ? -1 : 1) * m * pow(2, e - mLen);
-}
-
-function unpackI32(bytes) {
-  return bytes[3] << 24 | bytes[2] << 16 | bytes[1] << 8 | bytes[0];
-}
-function packI8(it) {
-  return [it & 0xff];
-}
-function packI16(it) {
-  return [it & 0xff, it >> 8 & 0xff];
-}
-function packI32(it) {
-  return [it & 0xff, it >> 8 & 0xff, it >> 16 & 0xff, it >> 24 & 0xff];
-}
-function packF64(it) {
-  return packIEEE754(it, 52, 8);
-}
-function packF32(it) {
-  return packIEEE754(it, 23, 4);
-}
-
-function addGetter(C, key, internal) {
-  dP(C[PROTOTYPE], key, { get: function () { return this[internal]; } });
-}
-
-function get(view, bytes, index, isLittleEndian) {
-  var numIndex = +index;
-  var intIndex = toIndex(numIndex);
-  if (intIndex + bytes > view[$LENGTH]) throw RangeError(WRONG_INDEX);
-  var store = view[$BUFFER]._b;
-  var start = intIndex + view[$OFFSET];
-  var pack = store.slice(start, start + bytes);
-  return isLittleEndian ? pack : pack.reverse();
-}
-function set(view, bytes, index, conversion, value, isLittleEndian) {
-  var numIndex = +index;
-  var intIndex = toIndex(numIndex);
-  if (intIndex + bytes > view[$LENGTH]) throw RangeError(WRONG_INDEX);
-  var store = view[$BUFFER]._b;
-  var start = intIndex + view[$OFFSET];
-  var pack = conversion(+value);
-  for (var i = 0; i < bytes; i++) store[start + i] = pack[isLittleEndian ? i : bytes - i - 1];
-}
-
-if (!$typed.ABV) {
-  $ArrayBuffer = function ArrayBuffer(length) {
-    anInstance(this, $ArrayBuffer, ARRAY_BUFFER);
-    var byteLength = toIndex(length);
-    this._b = arrayFill.call(new Array(byteLength), 0);
-    this[$LENGTH] = byteLength;
-  };
-
-  $DataView = function DataView(buffer, byteOffset, byteLength) {
-    anInstance(this, $DataView, DATA_VIEW);
-    anInstance(buffer, $ArrayBuffer, DATA_VIEW);
-    var bufferLength = buffer[$LENGTH];
-    var offset = toInteger(byteOffset);
-    if (offset < 0 || offset > bufferLength) throw RangeError('Wrong offset!');
-    byteLength = byteLength === undefined ? bufferLength - offset : toLength(byteLength);
-    if (offset + byteLength > bufferLength) throw RangeError(WRONG_LENGTH);
-    this[$BUFFER] = buffer;
-    this[$OFFSET] = offset;
-    this[$LENGTH] = byteLength;
-  };
-
-  if (DESCRIPTORS) {
-    addGetter($ArrayBuffer, BYTE_LENGTH, '_l');
-    addGetter($DataView, BUFFER, '_b');
-    addGetter($DataView, BYTE_LENGTH, '_l');
-    addGetter($DataView, BYTE_OFFSET, '_o');
-  }
-
-  redefineAll($DataView[PROTOTYPE], {
-    getInt8: function getInt8(byteOffset) {
-      return get(this, 1, byteOffset)[0] << 24 >> 24;
-    },
-    getUint8: function getUint8(byteOffset) {
-      return get(this, 1, byteOffset)[0];
-    },
-    getInt16: function getInt16(byteOffset /* , littleEndian */) {
-      var bytes = get(this, 2, byteOffset, arguments[1]);
-      return (bytes[1] << 8 | bytes[0]) << 16 >> 16;
-    },
-    getUint16: function getUint16(byteOffset /* , littleEndian */) {
-      var bytes = get(this, 2, byteOffset, arguments[1]);
-      return bytes[1] << 8 | bytes[0];
-    },
-    getInt32: function getInt32(byteOffset /* , littleEndian */) {
-      return unpackI32(get(this, 4, byteOffset, arguments[1]));
-    },
-    getUint32: function getUint32(byteOffset /* , littleEndian */) {
-      return unpackI32(get(this, 4, byteOffset, arguments[1])) >>> 0;
-    },
-    getFloat32: function getFloat32(byteOffset /* , littleEndian */) {
-      return unpackIEEE754(get(this, 4, byteOffset, arguments[1]), 23, 4);
-    },
-    getFloat64: function getFloat64(byteOffset /* , littleEndian */) {
-      return unpackIEEE754(get(this, 8, byteOffset, arguments[1]), 52, 8);
-    },
-    setInt8: function setInt8(byteOffset, value) {
-      set(this, 1, byteOffset, packI8, value);
-    },
-    setUint8: function setUint8(byteOffset, value) {
-      set(this, 1, byteOffset, packI8, value);
-    },
-    setInt16: function setInt16(byteOffset, value /* , littleEndian */) {
-      set(this, 2, byteOffset, packI16, value, arguments[2]);
-    },
-    setUint16: function setUint16(byteOffset, value /* , littleEndian */) {
-      set(this, 2, byteOffset, packI16, value, arguments[2]);
-    },
-    setInt32: function setInt32(byteOffset, value /* , littleEndian */) {
-      set(this, 4, byteOffset, packI32, value, arguments[2]);
-    },
-    setUint32: function setUint32(byteOffset, value /* , littleEndian */) {
-      set(this, 4, byteOffset, packI32, value, arguments[2]);
-    },
-    setFloat32: function setFloat32(byteOffset, value /* , littleEndian */) {
-      set(this, 4, byteOffset, packF32, value, arguments[2]);
-    },
-    setFloat64: function setFloat64(byteOffset, value /* , littleEndian */) {
-      set(this, 8, byteOffset, packF64, value, arguments[2]);
-    }
-  });
-} else {
-  if (!fails(function () {
-    $ArrayBuffer(1);
-  }) || !fails(function () {
-    new $ArrayBuffer(-1); // eslint-disable-line no-new
-  }) || fails(function () {
-    new $ArrayBuffer(); // eslint-disable-line no-new
-    new $ArrayBuffer(1.5); // eslint-disable-line no-new
-    new $ArrayBuffer(NaN); // eslint-disable-line no-new
-    return $ArrayBuffer.name != ARRAY_BUFFER;
-  })) {
-    $ArrayBuffer = function ArrayBuffer(length) {
-      anInstance(this, $ArrayBuffer);
-      return new BaseBuffer(toIndex(length));
-    };
-    var ArrayBufferProto = $ArrayBuffer[PROTOTYPE] = BaseBuffer[PROTOTYPE];
-    for (var keys = gOPN(BaseBuffer), j = 0, key; keys.length > j;) {
-      if (!((key = keys[j++]) in $ArrayBuffer)) hide($ArrayBuffer, key, BaseBuffer[key]);
-    }
-    if (!LIBRARY) ArrayBufferProto.constructor = $ArrayBuffer;
-  }
-  // iOS Safari 7.x bug
-  var view = new $DataView(new $ArrayBuffer(2));
-  var $setInt8 = $DataView[PROTOTYPE].setInt8;
-  view.setInt8(0, 2147483648);
-  view.setInt8(1, 2147483649);
-  if (view.getInt8(0) || !view.getInt8(1)) redefineAll($DataView[PROTOTYPE], {
-    setInt8: function setInt8(byteOffset, value) {
-      $setInt8.call(this, byteOffset, value << 24 >> 24);
-    },
-    setUint8: function setUint8(byteOffset, value) {
-      $setInt8.call(this, byteOffset, value << 24 >> 24);
-    }
-  }, true);
-}
-setToStringTag($ArrayBuffer, ARRAY_BUFFER);
-setToStringTag($DataView, DATA_VIEW);
-hide($DataView[PROTOTYPE], $typed.VIEW, true);
-exports[ARRAY_BUFFER] = $ArrayBuffer;
-exports[DATA_VIEW] = $DataView;
-
-
-/***/ }),
-/* 94 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(2);
-var navigator = global.navigator;
-
-module.exports = navigator && navigator.userAgent || '';
-
-
-/***/ }),
-/* 95 */
+/* 130 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TimelineLite; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(15);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TimelineMax; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TimelineLite__ = __webpack_require__(93);
+/* unused harmony reexport TimelineLite */
 /*!
  * VERSION: 1.20.5
  * DATE: 2018-05-21
@@ -15101,414 +16833,158 @@ module.exports = navigator && navigator.userAgent || '';
  */
 
 
-__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TimelineLite", ["core.Animation","core.SimpleTimeline","TweenLite"], function() {
 
-		var TimelineLite = function(vars) {
-				__WEBPACK_IMPORTED_MODULE_0__TweenLite__["j" /* SimpleTimeline */].call(this, vars);
-				this._labels = {};
-				this.autoRemoveChildren = (this.vars.autoRemoveChildren === true);
-				this.smoothChildTiming = (this.vars.smoothChildTiming === true);
-				this._sortChildren = true;
-				this._onUpdate = this.vars.onUpdate;
-				var v = this.vars,
-					val, p;
-				for (p in v) {
-					val = v[p];
-					if (_isArray(val)) if (val.join("").indexOf("{self}") !== -1) {
-						v[p] = this._swapSelfInParams(val);
-					}
-				}
-				if (_isArray(v.tweens)) {
-					this.add(v.tweens, 0, v.align, v.stagger);
-				}
+
+__WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */]._gsDefine("TimelineMax", ["TimelineLite","TweenLite","easing.Ease"], function() {
+		
+		var TimelineMax = function(vars) {
+				__WEBPACK_IMPORTED_MODULE_1__TimelineLite__["a" /* default */].call(this, vars);
+				this._repeat = this.vars.repeat || 0;
+				this._repeatDelay = this.vars.repeatDelay || 0;
+				this._cycle = 0;
+				this._yoyo = (this.vars.yoyo === true);
+				this._dirty = true;
 			},
 			_tinyNum = 0.0000000001,
-			TweenLiteInternals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */]._internals,
-			_internals = TimelineLite._internals = {},
-			_isSelector = TweenLiteInternals.isSelector,
-			_isArray = TweenLiteInternals.isArray,
+			TweenLiteInternals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */]._internals,
 			_lazyTweens = TweenLiteInternals.lazyTweens,
 			_lazyRender = TweenLiteInternals.lazyRender,
-			_globals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine.globals,
-			_copy = function(vars) {
-				var copy = {}, p;
-				for (p in vars) {
-					copy[p] = vars[p];
-				}
-				return copy;
-			},
-			_applyCycle = function(vars, targets, i) {
-				var alt = vars.cycle,
-					p, val;
-				for (p in alt) {
-					val = alt[p];
-					vars[p] = (typeof(val) === "function") ? val(i, targets[i]) : val[i % val.length];
-				}
-				delete vars.cycle;
-			},
-			_pauseCallback = _internals.pauseCallback = function() {},
-			_slice = function(a) { //don't use [].slice because that doesn't work in IE8 with a NodeList that's returned by querySelectorAll()
-				var b = [],
-					l = a.length,
-					i;
-				for (i = 0; i !== l; b.push(a[i++]));
-				return b;
-			},
-			p = TimelineLite.prototype = new __WEBPACK_IMPORTED_MODULE_0__TweenLite__["j" /* SimpleTimeline */]();
-
-		TimelineLite.version = "1.20.5";
-		p.constructor = TimelineLite;
-		p.kill()._gc = p._forcingPlayhead = p._hasPause = false;
-
-		/* might use later...
-		//translates a local time inside an animation to the corresponding time on the root/global timeline, factoring in all nesting and timeScales.
-		function localToGlobal(time, animation) {
-			while (animation) {
-				time = (time / animation._timeScale) + animation._startTime;
-				animation = animation.timeline;
-			}
-			return time;
-		}
-
-		//translates the supplied time on the root/global timeline into the corresponding local time inside a particular animation, factoring in all nesting and timeScales
-		function globalToLocal(time, animation) {
-			var scale = 1;
-			time -= localToGlobal(0, animation);
-			while (animation) {
-				scale *= animation._timeScale;
-				animation = animation.timeline;
-			}
-			return time * scale;
-		}
-		*/
-
-		p.to = function(target, duration, vars, position) {
-			var Engine = (vars.repeat && _globals.TweenMax) || __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */];
-			return duration ? this.add( new Engine(target, duration, vars), position) : this.set(target, vars, position);
+			_globals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */]._gsDefine.globals,
+			_easeNone = new __WEBPACK_IMPORTED_MODULE_0__TweenLite__["b" /* Ease */](null, null, 1, 0),
+			p = TimelineMax.prototype = new __WEBPACK_IMPORTED_MODULE_1__TimelineLite__["a" /* default */]();
+			
+		p.constructor = TimelineMax;
+		p.kill()._gc = false;
+		TimelineMax.version = "1.20.5";
+		
+		p.invalidate = function() {
+			this._yoyo = (this.vars.yoyo === true);
+			this._repeat = this.vars.repeat || 0;
+			this._repeatDelay = this.vars.repeatDelay || 0;
+			this._uncache(true);
+			return __WEBPACK_IMPORTED_MODULE_1__TimelineLite__["a" /* default */].prototype.invalidate.call(this);
 		};
-
-		p.from = function(target, duration, vars, position) {
-			return this.add( ((vars.repeat && _globals.TweenMax) || __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */]).from(target, duration, vars), position);
+		
+		p.addCallback = function(callback, position, params, scope) {
+			return this.add( __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].delayedCall(0, callback, params, scope), position);
 		};
-
-		p.fromTo = function(target, duration, fromVars, toVars, position) {
-			var Engine = (toVars.repeat && _globals.TweenMax) || __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */];
-			return duration ? this.add( Engine.fromTo(target, duration, fromVars, toVars), position) : this.set(target, toVars, position);
-		};
-
-		p.staggerTo = function(targets, duration, vars, stagger, position, onCompleteAll, onCompleteAllParams, onCompleteAllScope) {
-			var tl = new TimelineLite({onComplete:onCompleteAll, onCompleteParams:onCompleteAllParams, callbackScope:onCompleteAllScope, smoothChildTiming:this.smoothChildTiming}),
-				cycle = vars.cycle,
-				copy, i;
-			if (typeof(targets) === "string") {
-				targets = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].selector(targets) || targets;
-			}
-			targets = targets || [];
-			if (_isSelector(targets)) { //senses if the targets object is a selector. If it is, we should translate it into an array.
-				targets = _slice(targets);
-			}
-			stagger = stagger || 0;
-			if (stagger < 0) {
-				targets = _slice(targets);
-				targets.reverse();
-				stagger *= -1;
-			}
-			for (i = 0; i < targets.length; i++) {
-				copy = _copy(vars);
-				if (copy.startAt) {
-					copy.startAt = _copy(copy.startAt);
-					if (copy.startAt.cycle) {
-						_applyCycle(copy.startAt, targets, i);
-					}
-				}
-				if (cycle) {
-					_applyCycle(copy, targets, i);
-					if (copy.duration != null) {
-						duration = copy.duration;
-						delete copy.duration;
-					}
-				}
-				tl.to(targets[i], duration, copy, i * stagger);
-			}
-			return this.add(tl, position);
-		};
-
-		p.staggerFrom = function(targets, duration, vars, stagger, position, onCompleteAll, onCompleteAllParams, onCompleteAllScope) {
-			vars.immediateRender = (vars.immediateRender != false);
-			vars.runBackwards = true;
-			return this.staggerTo(targets, duration, vars, stagger, position, onCompleteAll, onCompleteAllParams, onCompleteAllScope);
-		};
-
-		p.staggerFromTo = function(targets, duration, fromVars, toVars, stagger, position, onCompleteAll, onCompleteAllParams, onCompleteAllScope) {
-			toVars.startAt = fromVars;
-			toVars.immediateRender = (toVars.immediateRender != false && fromVars.immediateRender != false);
-			return this.staggerTo(targets, duration, toVars, stagger, position, onCompleteAll, onCompleteAllParams, onCompleteAllScope);
-		};
-
-		p.call = function(callback, params, scope, position) {
-			return this.add( __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].delayedCall(0, callback, params, scope), position);
-		};
-
-		p.set = function(target, vars, position) {
-			position = this._parseTimeOrLabel(position, 0, true);
-			if (vars.immediateRender == null) {
-				vars.immediateRender = (position === this._time && !this._paused);
-			}
-			return this.add( new __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */](target, 0, vars), position);
-		};
-
-		TimelineLite.exportRoot = function(vars, ignoreDelayedCalls) {
-			vars = vars || {};
-			if (vars.smoothChildTiming == null) {
-				vars.smoothChildTiming = true;
-			}
-			var tl = new TimelineLite(vars),
-				root = tl._timeline,
-				hasNegativeStart, time,	tween, next;
-			if (ignoreDelayedCalls == null) {
-				ignoreDelayedCalls = true;
-			}
-			root._remove(tl, true);
-			tl._startTime = 0;
-			tl._rawPrevTime = tl._time = tl._totalTime = root._time;
-			tween = root._first;
-			while (tween) {
-				next = tween._next;
-				if (!ignoreDelayedCalls || !(tween instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */] && tween.target === tween.vars.onComplete)) {
-					time = tween._startTime - tween._delay;
-					if (time < 0) {
-						hasNegativeStart = 1;
-					}
-					tl.add(tween, time);
-				}
-				tween = next;
-			}
-			root.add(tl, 0);
-			if (hasNegativeStart) { //calling totalDuration() will force the adjustment necessary to shift the children forward so none of them start before zero, and moves the timeline backwards the same amount, so the playhead is still aligned where it should be globally, but the timeline doesn't have illegal children that start before zero.
-				tl.totalDuration();
-			}
-			return tl;
-		};
-
-		p.add = function(value, position, align, stagger) {
-			var curTime, l, i, child, tl, beforeRawTime;
-			if (typeof(position) !== "number") {
-				position = this._parseTimeOrLabel(position, 0, true, value);
-			}
-			if (!(value instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */])) {
-				if ((value instanceof Array) || (value && value.push && _isArray(value))) {
-					align = align || "normal";
-					stagger = stagger || 0;
-					curTime = position;
-					l = value.length;
-					for (i = 0; i < l; i++) {
-						if (_isArray(child = value[i])) {
-							child = new TimelineLite({tweens:child});
-						}
-						this.add(child, curTime);
-						if (typeof(child) !== "string" && typeof(child) !== "function") {
-							if (align === "sequence") {
-								curTime = child._startTime + (child.totalDuration() / child._timeScale);
-							} else if (align === "start") {
-								child._startTime -= child.delay();
-							}
-						}
-						curTime += stagger;
-					}
-					return this._uncache(true);
-				} else if (typeof(value) === "string") {
-					return this.addLabel(value, position);
-				} else if (typeof(value) === "function") {
-					value = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].delayedCall(0, value);
+		
+		p.removeCallback = function(callback, position) {
+			if (callback) {
+				if (position == null) {
+					this._kill(null, callback);
 				} else {
-					throw("Cannot add " + value + " into the timeline; it is not a tween, timeline, function, or string.");
-				}
-			}
-
-			__WEBPACK_IMPORTED_MODULE_0__TweenLite__["j" /* SimpleTimeline */].prototype.add.call(this, value, position);
-
-			if (value._time) { //in case, for example, the _startTime is moved on a tween that has already rendered. Imagine it's at its end state, then the startTime is moved WAY later (after the end of this timeline), it should render at its beginning.
-				value.render((this.rawTime() - value._startTime) * value._timeScale, false, false);
-			}
-
-			//if the timeline has already ended but the inserted tween/timeline extends the duration, we should enable this timeline again so that it renders properly. We should also align the playhead with the parent timeline's when appropriate.
-			if (this._gc || this._time === this._duration) if (!this._paused) if (this._duration < this.duration()) {
-				//in case any of the ancestors had completed but should now be enabled...
-				tl = this;
-				beforeRawTime = (tl.rawTime() > value._startTime); //if the tween is placed on the timeline so that it starts BEFORE the current rawTime, we should align the playhead (move the timeline). This is because sometimes users will create a timeline, let it finish, and much later append a tween and expect it to run instead of jumping to its end state. While technically one could argue that it should jump to its end state, that's not what users intuitively expect.
-				while (tl._timeline) {
-					if (beforeRawTime && tl._timeline.smoothChildTiming) {
-						tl.totalTime(tl._totalTime, true); //moves the timeline (shifts its startTime) if necessary, and also enables it.
-					} else if (tl._gc) {
-						tl._enabled(true, false);
-					}
-					tl = tl._timeline;
-				}
-			}
-
-			return this;
-		};
-
-		p.remove = function(value) {
-			if (value instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */]) {
-				this._remove(value, false);
-				var tl = value._timeline = value.vars.useFrames ? __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */]._rootFramesTimeline : __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */]._rootTimeline; //now that it's removed, default it to the root timeline so that if it gets played again, it doesn't jump back into this timeline.
-				value._startTime = (value._paused ? value._pauseTime : tl._time) - ((!value._reversed ? value._totalTime : value.totalDuration() - value._totalTime) / value._timeScale); //ensure that if it gets played again, the timing is correct.
-				return this;
-			} else if (value instanceof Array || (value && value.push && _isArray(value))) {
-				var i = value.length;
-				while (--i > -1) {
-					this.remove(value[i]);
-				}
-				return this;
-			} else if (typeof(value) === "string") {
-				return this.removeLabel(value);
-			}
-			return this.kill(null, value);
-		};
-
-		p._remove = function(tween, skipDisable) {
-			__WEBPACK_IMPORTED_MODULE_0__TweenLite__["j" /* SimpleTimeline */].prototype._remove.call(this, tween, skipDisable);
-			var last = this._last;
-			if (!last) {
-				this._time = this._totalTime = this._duration = this._totalDuration = 0;
-			} else if (this._time > this.duration()) {
-				this._time = this._duration;
-				this._totalTime = this._totalDuration;
-			}
-			return this;
-		};
-
-		p.append = function(value, offsetOrLabel) {
-			return this.add(value, this._parseTimeOrLabel(null, offsetOrLabel, true, value));
-		};
-
-		p.insert = p.insertMultiple = function(value, position, align, stagger) {
-			return this.add(value, position || 0, align, stagger);
-		};
-
-		p.appendMultiple = function(tweens, offsetOrLabel, align, stagger) {
-			return this.add(tweens, this._parseTimeOrLabel(null, offsetOrLabel, true, tweens), align, stagger);
-		};
-
-		p.addLabel = function(label, position) {
-			this._labels[label] = this._parseTimeOrLabel(position);
-			return this;
-		};
-
-		p.addPause = function(position, callback, params, scope) {
-			var t = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].delayedCall(0, _pauseCallback, params, scope || this);
-			t.vars.onComplete = t.vars.onReverseComplete = callback;
-			t.data = "isPause";
-			this._hasPause = true;
-			return this.add(t, position);
-		};
-
-		p.removeLabel = function(label) {
-			delete this._labels[label];
-			return this;
-		};
-
-		p.getLabelTime = function(label) {
-			return (this._labels[label] != null) ? this._labels[label] : -1;
-		};
-
-		p._parseTimeOrLabel = function(timeOrLabel, offsetOrLabel, appendIfAbsent, ignore) {
-			var clippedDuration, i;
-			//if we're about to add a tween/timeline (or an array of them) that's already a child of this timeline, we should remove it first so that it doesn't contaminate the duration().
-			if (ignore instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */] && ignore.timeline === this) {
-				this.remove(ignore);
-			} else if (ignore && ((ignore instanceof Array) || (ignore.push && _isArray(ignore)))) {
-				i = ignore.length;
-				while (--i > -1) {
-					if (ignore[i] instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */] && ignore[i].timeline === this) {
-						this.remove(ignore[i]);
+					var a = this.getTweensOf(callback, false),
+						i = a.length,
+						time = this._parseTimeOrLabel(position);
+					while (--i > -1) {
+						if (a[i]._startTime === time) {
+							a[i]._enabled(false, false);
+						}
 					}
 				}
 			}
-			clippedDuration = (typeof(timeOrLabel) === "number" && !offsetOrLabel) ? 0 : (this.duration() > 99999999999) ? this.recent().endTime(false) : this._duration; //in case there's a child that infinitely repeats, users almost never intend for the insertion point of a new child to be based on a SUPER long value like that so we clip it and assume the most recently-added child's endTime should be used instead.
-			if (typeof(offsetOrLabel) === "string") {
-				return this._parseTimeOrLabel(offsetOrLabel, (appendIfAbsent && typeof(timeOrLabel) === "number" && this._labels[offsetOrLabel] == null) ? timeOrLabel - clippedDuration : 0, appendIfAbsent);
+			return this;
+		};
+
+		p.removePause = function(position) {
+			return this.removeCallback(__WEBPACK_IMPORTED_MODULE_1__TimelineLite__["a" /* default */]._internals.pauseCallback, position);
+		};
+
+		p.tweenTo = function(position, vars) {
+			vars = vars || {};
+			var copy = {ease:_easeNone, useFrames:this.usesFrames(), immediateRender:false, lazy:false},
+				Engine = (vars.repeat && _globals.TweenMax) || __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */],
+				duration, p, t;
+			for (p in vars) {
+				copy[p] = vars[p];
 			}
-			offsetOrLabel = offsetOrLabel || 0;
-			if (typeof(timeOrLabel) === "string" && (isNaN(timeOrLabel) || this._labels[timeOrLabel] != null)) { //if the string is a number like "1", check to see if there's a label with that name, otherwise interpret it as a number (absolute value).
-				i = timeOrLabel.indexOf("=");
-				if (i === -1) {
-					if (this._labels[timeOrLabel] == null) {
-						return appendIfAbsent ? (this._labels[timeOrLabel] = clippedDuration + offsetOrLabel) : offsetOrLabel;
-					}
-					return this._labels[timeOrLabel] + offsetOrLabel;
+			copy.time = this._parseTimeOrLabel(position);
+			duration = (Math.abs(Number(copy.time) - this._time) / this._timeScale) || 0.001;
+			t = new Engine(this, duration, copy);
+			copy.onStart = function() {
+				t.target.paused(true);
+				if (t.vars.time !== t.target.time() && duration === t.duration() && !t.isFromTo) { //don't make the duration zero - if it's supposed to be zero, don't worry because it's already initting the tween and will complete immediately, effectively making the duration zero anyway. If we make duration zero, the tween won't run at all.
+					t.duration( Math.abs( t.vars.time - t.target.time()) / t.target._timeScale ).render(t.time(), true, true); //render() right away to ensure that things look right, especially in the case of .tweenTo(0).
 				}
-				offsetOrLabel = parseInt(timeOrLabel.charAt(i-1) + "1", 10) * Number(timeOrLabel.substr(i+1));
-				timeOrLabel = (i > 1) ? this._parseTimeOrLabel(timeOrLabel.substr(0, i-1), 0, appendIfAbsent) : clippedDuration;
-			} else if (timeOrLabel == null) {
-				timeOrLabel = clippedDuration;
-			}
-			return Number(timeOrLabel) + offsetOrLabel;
+				if (vars.onStart) { //in case the user had an onStart in the vars - we don't want to overwrite it.
+					vars.onStart.apply(vars.onStartScope || vars.callbackScope || t, vars.onStartParams || []); //don't use t._callback("onStart") or it'll point to the copy.onStart and we'll get a recursion error.
+				}
+			};
+			return t;
 		};
 
-		p.seek = function(position, suppressEvents) {
-			return this.totalTime((typeof(position) === "number") ? position : this._parseTimeOrLabel(position), (suppressEvents !== false));
+		p.tweenFromTo = function(fromPosition, toPosition, vars) {
+			vars = vars || {};
+			fromPosition = this._parseTimeOrLabel(fromPosition);
+			vars.startAt = {onComplete:this.seek, onCompleteParams:[fromPosition], callbackScope:this};
+			vars.immediateRender = (vars.immediateRender !== false);
+			var t = this.tweenTo(toPosition, vars);
+			t.isFromTo = 1; //to ensure we don't mess with the duration in the onStart (we've got the start and end values here, so lock it in)
+			return t.duration((Math.abs( t.vars.time - fromPosition) / this._timeScale) || 0.001);
 		};
-
-		p.stop = function() {
-			return this.paused(true);
-		};
-
-		p.gotoAndPlay = function(position, suppressEvents) {
-			return this.play(position, suppressEvents);
-		};
-
-		p.gotoAndStop = function(position, suppressEvents) {
-			return this.pause(position, suppressEvents);
-		};
-
+		
 		p.render = function(time, suppressEvents, force) {
 			if (this._gc) {
 				this._enabled(true, false);
 			}
 			var prevTime = this._time,
 				totalDur = (!this._dirty) ? this._totalDuration : this.totalDuration(),
-				prevStart = this._startTime,
-				prevTimeScale = this._timeScale,
-				prevPaused = this._paused,
-				tween, isComplete, next, callback, internalForce, pauseTween, curTime;
+				dur = this._duration,
+				prevTotalTime = this._totalTime,
+				prevStart = this._startTime, 
+				prevTimeScale = this._timeScale, 
+				prevRawPrevTime = this._rawPrevTime,
+				prevPaused = this._paused, 
+				prevCycle = this._cycle, 
+				tween, isComplete, next, callback, internalForce, cycleDuration, pauseTween, curTime;
 			if (prevTime !== this._time) { //if totalDuration() finds a child with a negative startTime and smoothChildTiming is true, things get shifted around internally so we need to adjust the time accordingly. For example, if a tween starts at -30 we must shift EVERYTHING forward 30 seconds and move this timeline's startTime backward by 30 seconds so that things align with the playhead (no jump).
 				time += this._time - prevTime;
 			}
 			if (time >= totalDur - 0.0000001 && time >= 0) { //to work around occasional floating point math artifacts.
-				this._totalTime = this._time = totalDur;
+				if (!this._locked) {
+					this._totalTime = totalDur;
+					this._cycle = this._repeat;
+				}
 				if (!this._reversed) if (!this._hasPausedChild()) {
 					isComplete = true;
 					callback = "onComplete";
 					internalForce = !!this._timeline.autoRemoveChildren; //otherwise, if the animation is unpaused/activated after it's already finished, it doesn't get removed from the parent timeline.
-					if (this._duration === 0) if ((time <= 0 && time >= -0.0000001) || this._rawPrevTime < 0 || this._rawPrevTime === _tinyNum) if (this._rawPrevTime !== time && this._first) {
+					if (this._duration === 0) if ((time <= 0 && time >= -0.0000001) || prevRawPrevTime < 0 || prevRawPrevTime === _tinyNum) if (prevRawPrevTime !== time && this._first) {
 						internalForce = true;
-						if (this._rawPrevTime > _tinyNum) {
+						if (prevRawPrevTime > _tinyNum) {
 							callback = "onReverseComplete";
 						}
 					}
 				}
 				this._rawPrevTime = (this._duration || !suppressEvents || time || this._rawPrevTime === time) ? time : _tinyNum; //when the playhead arrives at EXACTLY time 0 (right on top) of a zero-duration timeline or tween, we need to discern if events are suppressed so that when the playhead moves again (next time), it'll trigger the callback. If events are NOT suppressed, obviously the callback would be triggered in this render. Basically, the callback should fire either when the playhead ARRIVES or LEAVES this exact spot, not both. Imagine doing a timeline.seek(0) and there's a callback that sits at 0. Since events are suppressed on that seek() by default, nothing will fire, but when the playhead moves off of that position, the callback should fire. This behavior is what people intuitively expect. We set the _rawPrevTime to be a precise tiny number to indicate this scenario rather than using another property/variable which would increase memory usage. This technique is less readable, but more efficient.
-				time = totalDur + 0.0001; //to avoid occasional floating point rounding errors - sometimes child tweens/timelines were not being fully completed (their progress might be 0.999999999999998 instead of 1 because when _time - tween._startTime is performed, floating point errors would return a value that was SLIGHTLY off). Try (999999999999.7 - 999999999999) * 1 = 0.699951171875 instead of 0.7.
-
+				if (this._yoyo && (this._cycle & 1) !== 0) {
+					this._time = time = 0;
+				} else {
+					this._time = dur;
+					time = dur + 0.0001; //to avoid occasional floating point rounding errors - sometimes child tweens/timelines were not being fully completed (their progress might be 0.999999999999998 instead of 1 because when _time - tween._startTime is performed, floating point errors would return a value that was SLIGHTLY off). Try (999999999999.7 - 999999999999) * 1 = 0.699951171875 instead of 0.7. We cannot do less then 0.0001 because the same issue can occur when the duration is extremely large like 999999999999 in which case adding 0.00000001, for example, causes it to act like nothing was added.
+				}
+				
 			} else if (time < 0.0000001) { //to work around occasional floating point math artifacts, round super small values to 0.
-				this._totalTime = this._time = 0;
-				if (prevTime !== 0 || (this._duration === 0 && this._rawPrevTime !== _tinyNum && (this._rawPrevTime > 0 || (time < 0 && this._rawPrevTime >= 0)))) {
+				if (!this._locked) {
+					this._totalTime = this._cycle = 0;
+				}
+				this._time = 0;
+				if (prevTime !== 0 || (dur === 0 && prevRawPrevTime !== _tinyNum && (prevRawPrevTime > 0 || (time < 0 && prevRawPrevTime >= 0)) && !this._locked)) { //edge case for checking time < 0 && prevRawPrevTime >= 0: a zero-duration fromTo() tween inside a zero-duration timeline (yeah, very rare)
 					callback = "onReverseComplete";
 					isComplete = this._reversed;
 				}
 				if (time < 0) {
 					this._active = false;
-					if (this._timeline.autoRemoveChildren && this._reversed) { //ensures proper GC if a timeline is resumed after it's finished reversing.
+					if (this._timeline.autoRemoveChildren && this._reversed) {
 						internalForce = isComplete = true;
 						callback = "onReverseComplete";
-					} else if (this._rawPrevTime >= 0 && this._first) { //when going back beyond the start, force a render so that zero-duration tweens that sit at the very beginning render their start values properly. Otherwise, if the parent timeline's playhead lands exactly at this timeline's startTime, and then moves backwards, the zero-duration tweens at the beginning would still be at their end state.
+					} else if (prevRawPrevTime >= 0 && this._first) { //when going back beyond the start, force a render so that zero-duration tweens that sit at the very beginning render their start values properly. Otherwise, if the parent timeline's playhead lands exactly at this timeline's startTime, and then moves backwards, the zero-duration tweens at the beginning would still be at their end state.
 						internalForce = true;
 					}
 					this._rawPrevTime = time;
 				} else {
-					this._rawPrevTime = (this._duration || !suppressEvents || time || this._rawPrevTime === time) ? time : _tinyNum; //when the playhead arrives at EXACTLY time 0 (right on top) of a zero-duration timeline or tween, we need to discern if events are suppressed so that when the playhead moves again (next time), it'll trigger the callback. If events are NOT suppressed, obviously the callback would be triggered in this render. Basically, the callback should fire either when the playhead ARRIVES or LEAVES this exact spot, not both. Imagine doing a timeline.seek(0) and there's a callback that sits at 0. Since events are suppressed on that seek() by default, nothing will fire, but when the playhead moves off of that position, the callback should fire. This behavior is what people intuitively expect. We set the _rawPrevTime to be a precise tiny number to indicate this scenario rather than using another property/variable which would increase memory usage. This technique is less readable, but more efficient.
+					this._rawPrevTime = (dur || !suppressEvents || time || this._rawPrevTime === time) ? time : _tinyNum; //when the playhead arrives at EXACTLY time 0 (right on top) of a zero-duration timeline or tween, we need to discern if events are suppressed so that when the playhead moves again (next time), it'll trigger the callback. If events are NOT suppressed, obviously the callback would be triggered in this render. Basically, the callback should fire either when the playhead ARRIVES or LEAVES this exact spot, not both. Imagine doing a timeline.seek(0) and there's a callback that sits at 0. Since events are suppressed on that seek() by default, nothing will fire, but when the playhead moves off of that position, the callback should fire. This behavior is what people intuitively expect. We set the _rawPrevTime to be a precise tiny number to indicate this scenario rather than using another property/variable which would increase memory usage. This technique is less readable, but more efficient.
 					if (time === 0 && isComplete) { //if there's a zero-duration tween at the very beginning of a timeline and the playhead lands EXACTLY at time 0, that tween will correctly render its end values, but we need to keep the timeline alive for one more render so that the beginning values render properly as the parent's playhead keeps moving beyond the begining. Imagine obj.x starts at 0 and then we do tl.set(obj, {x:100}).to(obj, 1, {x:200}) and then later we tl.reverse()...the goal is to have obj.x revert to 0. If the playhead happens to land on exactly 0, without this chunk of code, it'd complete the timeline and remove it from the rendering queue (not good).
 						tween = this._first;
 						while (tween && tween._startTime === 0) {
@@ -15523,11 +16999,38 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("Timeline
 						internalForce = true;
 					}
 				}
-
+				
 			} else {
+				if (dur === 0 && prevRawPrevTime < 0) { //without this, zero-duration repeating timelines (like with a simple callback nested at the very beginning and a repeatDelay) wouldn't render the first time through.
+					internalForce = true;
+				}
+				this._time = this._rawPrevTime = time;
+				if (!this._locked) {
+					this._totalTime = time;
+					if (this._repeat !== 0) {
+						cycleDuration = dur + this._repeatDelay;
+						this._cycle = (this._totalTime / cycleDuration) >> 0; //originally _totalTime % cycleDuration but floating point errors caused problems, so I normalized it. (4 % 0.8 should be 0 but it gets reported as 0.79999999!)
+						if (this._cycle !== 0) if (this._cycle === this._totalTime / cycleDuration && prevTotalTime <= time) {
+							this._cycle--; //otherwise when rendered exactly at the end time, it will act as though it is repeating (at the beginning)
+						}
+						this._time = this._totalTime - (this._cycle * cycleDuration);
+						if (this._yoyo) if ((this._cycle & 1) !== 0) {
+							this._time = dur - this._time;
+						}
+						if (this._time > dur) {
+							this._time = dur;
+							time = dur + 0.0001; //to avoid occasional floating point rounding error
+						} else if (this._time < 0) {
+							this._time = time = 0;
+						} else {
+							time = this._time;
+						}
+					}
+				}
 
 				if (this._hasPause && !this._forcingPlayhead && !suppressEvents) {
-					if (time >= prevTime) {
+					time = this._time;
+					if (time >= prevTime || (this._repeat && prevCycle !== this._cycle)) {
 						tween = this._first;
 						while (tween && tween._startTime <= time && !pauseTween) {
 							if (!tween._duration) if (tween.data === "isPause" && !tween.ratio && !(tween._startTime === 0 && this._rawPrevTime === 0)) {
@@ -15544,25 +17047,83 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("Timeline
 							tween = tween._prev;
 						}
 					}
-					if (pauseTween) {
+					if (pauseTween && pauseTween._startTime < dur) {
 						this._time = time = pauseTween._startTime;
 						this._totalTime = time + (this._cycle * (this._totalDuration + this._repeatDelay));
 					}
 				}
 
-				this._totalTime = this._time = this._rawPrevTime = time;
 			}
+			
+			if (this._cycle !== prevCycle) if (!this._locked) {
+				/*
+				make sure children at the end/beginning of the timeline are rendered properly. If, for example, 
+				a 3-second long timeline rendered at 2.9 seconds previously, and now renders at 3.2 seconds (which
+				would get transated to 2.8 seconds if the timeline yoyos or 0.2 seconds if it just repeats), there
+				could be a callback or a short tween that's at 2.95 or 3 seconds in which wouldn't render. So 
+				we need to push the timeline to the end (and/or beginning depending on its yoyo value). Also we must
+				ensure that zero-duration tweens at the very beginning or end of the TimelineMax work. 
+				*/
+				var backwards = (this._yoyo && (prevCycle & 1) !== 0),
+					wrap = (backwards === (this._yoyo && (this._cycle & 1) !== 0)),
+					recTotalTime = this._totalTime,
+					recCycle = this._cycle,
+					recRawPrevTime = this._rawPrevTime,
+					recTime = this._time;
+				
+				this._totalTime = prevCycle * dur;
+				if (this._cycle < prevCycle) {
+					backwards = !backwards;
+				} else {
+					this._totalTime += dur;
+				}
+				this._time = prevTime; //temporarily revert _time so that render() renders the children in the correct order. Without this, tweens won't rewind correctly. We could arhictect things in a "cleaner" way by splitting out the rendering queue into a separate method but for performance reasons, we kept it all inside this method.
+				
+				this._rawPrevTime = (dur === 0) ? prevRawPrevTime - 0.0001 : prevRawPrevTime;
+				this._cycle = prevCycle;
+				this._locked = true; //prevents changes to totalTime and skips repeat/yoyo behavior when we recursively call render()
+				prevTime = (backwards) ? 0 : dur;
+				this.render(prevTime, suppressEvents, (dur === 0));
+				if (!suppressEvents) if (!this._gc) {
+					if (this.vars.onRepeat) {
+						this._cycle = recCycle; //in case the onRepeat alters the playhead or invalidates(), we shouldn't stay locked or use the previous cycle.
+						this._locked = false;
+						this._callback("onRepeat");
+					}
+				}
+				if (prevTime !== this._time) { //in case there's a callback like onComplete in a nested tween/timeline that changes the playhead position, like via seek(), we should just abort.
+					return;
+				}
+				if (wrap) {
+					this._cycle = prevCycle; //if there's an onRepeat, we reverted this above, so make sure it's set properly again. We also unlocked in that scenario, so reset that too.
+					this._locked = true;
+					prevTime = (backwards) ? dur + 0.0001 : -0.0001;
+					this.render(prevTime, true, false);
+				}
+				this._locked = false;
+				if (this._paused && !prevPaused) { //if the render() triggered callback that paused this timeline, we should abort (very rare, but possible)
+					return;
+				}
+				this._time = recTime;
+				this._totalTime = recTotalTime;
+				this._cycle = recCycle;
+				this._rawPrevTime = recRawPrevTime;
+			}
+
 			if ((this._time === prevTime || !this._first) && !force && !internalForce && !pauseTween) {
+				if (prevTotalTime !== this._totalTime) if (this._onUpdate) if (!suppressEvents) { //so that onUpdate fires even during the repeatDelay - as long as the totalTime changed, we should trigger onUpdate.
+					this._callback("onUpdate");
+				}
 				return;
 			} else if (!this._initted) {
 				this._initted = true;
 			}
 
-			if (!this._active) if (!this._paused && this._time !== prevTime && time > 0) {
+			if (!this._active) if (!this._paused && this._totalTime !== prevTotalTime && time > 0) {
 				this._active = true;  //so that if the user renders the timeline (as opposed to the parent timeline rendering it), it is forced to re-render and align it with the proper time/frame on the next rendering cycle. Maybe the timeline already finished but the user manually re-renders it as halfway done, for example.
 			}
-
-			if (prevTime === 0) if (this.vars.onStart) if (this._time !== 0 || !this._duration) if (!suppressEvents) {
+			
+			if (prevTotalTime === 0) if (this.vars.onStart) if (this._totalTime !== 0 || !this._totalDuration) if (!suppressEvents) {
 				this._callback("onStart");
 			}
 
@@ -15573,7 +17134,7 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("Timeline
 					next = tween._next; //record it here because the value could change after rendering...
 					if (curTime !== this._time || (this._paused && !prevPaused)) { //in case a tween pauses or seeks the timeline when rendering, like inside of an onUpdate/onComplete
 						break;
-					} else if (tween._active || (tween._startTime <= curTime && !tween._paused && !tween._gc)) {
+					} else if (tween._active || (tween._startTime <= this._time && !tween._paused && !tween._gc)) {
 						if (pauseTween === tween) {
 							this.pause();
 						}
@@ -15610,15 +17171,14 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("Timeline
 					tween = next;
 				}
 			}
-
+			
 			if (this._onUpdate) if (!suppressEvents) {
 				if (_lazyTweens.length) { //in case rendering caused any tweens to lazy-init, we should render them because typically when a timeline finishes, users expect things to have rendered fully. Imagine an onUpdate on a timeline that reports/checks tweened values.
 					_lazyRender();
 				}
 				this._callback("onUpdate");
 			}
-
-			if (callback) if (!this._gc) if (prevStart === this._startTime || prevTimeScale !== this._timeScale) if (this._time === 0 || totalDur >= this.totalDuration()) { //if one of the tweens that was rendered altered this timeline's startTime (like if an onComplete reversed the timeline), it probably isn't complete. If it is, don't worry, because whatever call altered the startTime would complete if it was necessary at the new time. The only exception is the timeScale property. Also check _gc because there's a chance that kill() could be called in an onUpdate
+			if (callback) if (!this._locked) if (!this._gc) if (prevStart === this._startTime || prevTimeScale !== this._timeScale) if (this._time === 0 || totalDur >= this.totalDuration()) { //if one of the tweens that was rendered altered this timeline's startTime (like if an onComplete reversed the timeline), it probably isn't complete. If it is, don't worry, because whatever call altered the startTime would complete if it was necessary at the new time. The only exception is the timeScale property. Also check _gc because there's a chance that kill() could be called in an onUpdate
 				if (isComplete) {
 					if (_lazyTweens.length) { //in case rendering caused any tweens to lazy-init, we should render them because typically when a timeline finishes, users expect things to have rendered fully. Imagine an onComplete on a timeline that reports/checks tweened values.
 						_lazyRender();
@@ -15633,256 +17193,167 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("Timeline
 				}
 			}
 		};
-
-		p._hasPausedChild = function() {
-			var tween = this._first;
-			while (tween) {
-				if (tween._paused || ((tween instanceof TimelineLite) && tween._hasPausedChild())) {
-					return true;
-				}
-				tween = tween._next;
+		
+		p.getActive = function(nested, tweens, timelines) {
+			if (nested == null) {
+				nested = true;
 			}
-			return false;
+			if (tweens == null) {
+				tweens = true;
+			}
+			if (timelines == null) {
+				timelines = false;
+			}
+			var a = [], 
+				all = this.getChildren(nested, tweens, timelines), 
+				cnt = 0, 
+				l = all.length,
+				i, tween;
+			for (i = 0; i < l; i++) {
+				tween = all[i];
+				if (tween.isActive()) {
+					a[cnt++] = tween;
+				}
+			}
+			return a;
 		};
-
-		p.getChildren = function(nested, tweens, timelines, ignoreBeforeTime) {
-			ignoreBeforeTime = ignoreBeforeTime || -9999999999;
+		
+		
+		p.getLabelAfter = function(time) {
+			if (!time) if (time !== 0) { //faster than isNan()
+				time = this._time;
+			}
+			var labels = this.getLabelsArray(),
+				l = labels.length,
+				i;
+			for (i = 0; i < l; i++) {
+				if (labels[i].time > time) {
+					return labels[i].name;
+				}
+			}
+			return null;
+		};
+		
+		p.getLabelBefore = function(time) {
+			if (time == null) {
+				time = this._time;
+			}
+			var labels = this.getLabelsArray(),
+				i = labels.length;
+			while (--i > -1) {
+				if (labels[i].time < time) {
+					return labels[i].name;
+				}
+			}
+			return null;
+		};
+		
+		p.getLabelsArray = function() {
 			var a = [],
-				tween = this._first,
-				cnt = 0;
-			while (tween) {
-				if (tween._startTime < ignoreBeforeTime) {
-					//do nothing
-				} else if (tween instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */]) {
-					if (tweens !== false) {
-						a[cnt++] = tween;
-					}
-				} else {
-					if (timelines !== false) {
-						a[cnt++] = tween;
-					}
-					if (nested !== false) {
-						a = a.concat(tween.getChildren(true, tweens, timelines));
-						cnt = a.length;
-					}
-				}
-				tween = tween._next;
-			}
-			return a;
-		};
-
-		p.getTweensOf = function(target, nested) {
-			var disabled = this._gc,
-				a = [],
 				cnt = 0,
-				tweens, i;
-			if (disabled) {
-				this._enabled(true, true); //getTweensOf() filters out disabled tweens, and we have to mark them as _gc = true when the timeline completes in order to allow clean garbage collection, so temporarily re-enable the timeline here.
-			}
-			tweens = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].getTweensOf(target);
-			i = tweens.length;
-			while (--i > -1) {
-				if (tweens[i].timeline === this || (nested && this._contains(tweens[i]))) {
-					a[cnt++] = tweens[i];
-				}
-			}
-			if (disabled) {
-				this._enabled(false, true);
-			}
-			return a;
-		};
-
-		p.recent = function() {
-			return this._recent;
-		};
-
-		p._contains = function(tween) {
-			var tl = tween.timeline;
-			while (tl) {
-				if (tl === this) {
-					return true;
-				}
-				tl = tl.timeline;
-			}
-			return false;
-		};
-
-		p.shiftChildren = function(amount, adjustLabels, ignoreBeforeTime) {
-			ignoreBeforeTime = ignoreBeforeTime || 0;
-			var tween = this._first,
-				labels = this._labels,
 				p;
-			while (tween) {
-				if (tween._startTime >= ignoreBeforeTime) {
-					tween._startTime += amount;
-				}
-				tween = tween._next;
+			for (p in this._labels) {
+				a[cnt++] = {time:this._labels[p], name:p};
 			}
-			if (adjustLabels) {
-				for (p in labels) {
-					if (labels[p] >= ignoreBeforeTime) {
-						labels[p] += amount;
-					}
-				}
-			}
-			return this._uncache(true);
-		};
-
-		p._kill = function(vars, target) {
-			if (!vars && !target) {
-				return this._enabled(false, false);
-			}
-			var tweens = (!target) ? this.getChildren(true, true, false) : this.getTweensOf(target),
-				i = tweens.length,
-				changed = false;
-			while (--i > -1) {
-				if (tweens[i]._kill(vars, target)) {
-					changed = true;
-				}
-			}
-			return changed;
-		};
-
-		p.clear = function(labels) {
-			var tweens = this.getChildren(false, true, true),
-				i = tweens.length;
-			this._time = this._totalTime = 0;
-			while (--i > -1) {
-				tweens[i]._enabled(false, false);
-			}
-			if (labels !== false) {
-				this._labels = {};
-			}
-			return this._uncache(true);
+			a.sort(function(a,b) {
+				return a.time - b.time;
+			});
+			return a;
 		};
 
 		p.invalidate = function() {
-			var tween = this._first;
-			while (tween) {
-				tween.invalidate();
-				tween = tween._next;
-			}
-			return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */].prototype.invalidate.call(this);;
+			this._locked = false; //unlock and set cycle in case invalidate() is called from inside an onRepeat
+			return __WEBPACK_IMPORTED_MODULE_1__TimelineLite__["a" /* default */].prototype.invalidate.call(this);
 		};
 
-		p._enabled = function(enabled, ignoreTimeline) {
-			if (enabled === this._gc) {
-				var tween = this._first;
-				while (tween) {
-					tween._enabled(enabled, true);
-					tween = tween._next;
-				}
-			}
-			return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["j" /* SimpleTimeline */].prototype._enabled.call(this, enabled, ignoreTimeline);
+		
+//---- GETTERS / SETTERS -------------------------------------------------------------------------------------------------------
+		
+		p.progress = function(value, suppressEvents) {
+			return (!arguments.length) ? (this._time / this.duration()) || 0 : this.totalTime( this.duration() * ((this._yoyo && (this._cycle & 1) !== 0) ? 1 - value : value) + (this._cycle * (this._duration + this._repeatDelay)), suppressEvents);
 		};
-
-		p.totalTime = function(time, suppressEvents, uncapped) {
-			this._forcingPlayhead = true;
-			var val = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */].prototype.totalTime.apply(this, arguments);
-			this._forcingPlayhead = false;
-			return val;
-		};
-
-		p.duration = function(value) {
-			if (!arguments.length) {
-				if (this._dirty) {
-					this.totalDuration(); //just triggers recalculation
-				}
-				return this._duration;
-			}
-			if (this.duration() !== 0 && value !== 0) {
-				this.timeScale(this._duration / value);
-			}
-			return this;
+		
+		p.totalProgress = function(value, suppressEvents) {
+			return (!arguments.length) ? (this._totalTime / this.totalDuration()) || 0 : this.totalTime( this.totalDuration() * value, suppressEvents);
 		};
 
 		p.totalDuration = function(value) {
 			if (!arguments.length) {
 				if (this._dirty) {
-					var max = 0,
-						tween = this._last,
-						prevStart = 999999999999,
-						prev, end;
-					while (tween) {
-						prev = tween._prev; //record it here in case the tween changes position in the sequence...
-						if (tween._dirty) {
-							tween.totalDuration(); //could change the tween._startTime, so make sure the tween's cache is clean before analyzing it.
-						}
-						if (tween._startTime > prevStart && this._sortChildren && !tween._paused && !this._calculatingDuration) { //in case one of the tweens shifted out of order, it needs to be re-inserted into the correct position in the sequence
-							this._calculatingDuration = 1; //prevent endless recursive calls - there are methods that get triggered that check duration/totalDuration when we add(), like _parseTimeOrLabel().
-							this.add(tween, tween._startTime - tween._delay);
-							this._calculatingDuration = 0;
-						} else {
-							prevStart = tween._startTime;
-						}
-						if (tween._startTime < 0 && !tween._paused) { //children aren't allowed to have negative startTimes unless smoothChildTiming is true, so adjust here if one is found.
-							max -= tween._startTime;
-							if (this._timeline.smoothChildTiming) {
-								this._startTime += tween._startTime / this._timeScale;
-								this._time -= tween._startTime;
-								this._totalTime -= tween._startTime;
-								this._rawPrevTime -= tween._startTime;
-							}
-							this.shiftChildren(-tween._startTime, false, -9999999999);
-							prevStart = 0;
-						}
-						end = tween._startTime + (tween._totalDuration / tween._timeScale);
-						if (end > max) {
-							max = end;
-						}
-						tween = prev;
-					}
-					this._duration = this._totalDuration = max;
-					this._dirty = false;
+					__WEBPACK_IMPORTED_MODULE_1__TimelineLite__["a" /* default */].prototype.totalDuration.call(this); //just forces refresh
+					//Instead of Infinity, we use 999999999999 so that we can accommodate reverses.
+					this._totalDuration = (this._repeat === -1) ? 999999999999 : this._duration * (this._repeat + 1) + (this._repeatDelay * this._repeat);
 				}
 				return this._totalDuration;
 			}
-			return (value && this.totalDuration()) ? this.timeScale(this._totalDuration / value) : this;
+			return (this._repeat === -1 || !value) ? this : this.timeScale( this.totalDuration() / value );
 		};
-
-		p.paused = function(value) {
-			if (!value) { //if there's a pause directly at the spot from where we're unpausing, skip it.
-				var tween = this._first,
-					time = this._time;
-				while (tween) {
-					if (tween._startTime === time && tween.data === "isPause") {
-						tween._rawPrevTime = 0; //remember, _rawPrevTime is how zero-duration tweens/callbacks sense directionality and determine whether or not to fire. If _rawPrevTime is the same as _startTime on the next render, it won't fire.
-					}
-					tween = tween._next;
-				}
+		
+		p.time = function(value, suppressEvents) {
+			if (!arguments.length) {
+				return this._time;
 			}
-			return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */].prototype.paused.apply(this, arguments);
-		};
-
-		p.usesFrames = function() {
-			var tl = this._timeline;
-			while (tl._timeline) {
-				tl = tl._timeline;
+			if (this._dirty) {
+				this.totalDuration();
 			}
-			return (tl === __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */]._rootFramesTimeline);
+			if (value > this._duration) {
+				value = this._duration;
+			}
+			if (this._yoyo && (this._cycle & 1) !== 0) {
+				value = (this._duration - value) + (this._cycle * (this._duration + this._repeatDelay));
+			} else if (this._repeat !== 0) {
+				value += this._cycle * (this._duration + this._repeatDelay);
+			}
+			return this.totalTime(value, suppressEvents);
 		};
-
-		p.rawTime = function(wrapRepeats) {
-			return (wrapRepeats && (this._paused || (this._repeat && this.time() > 0 && this.totalProgress() < 1))) ? this._totalTime % (this._duration + this._repeatDelay) : this._paused ? this._totalTime : (this._timeline.rawTime(wrapRepeats) - this._startTime) * this._timeScale;
+		
+		p.repeat = function(value) {
+			if (!arguments.length) {
+				return this._repeat;
+			}
+			this._repeat = value;
+			return this._uncache(true);
 		};
-
-		return TimelineLite;
-
+		
+		p.repeatDelay = function(value) {
+			if (!arguments.length) {
+				return this._repeatDelay;
+			}
+			this._repeatDelay = value;
+			return this._uncache(true);
+		};
+		
+		p.yoyo = function(value) {
+			if (!arguments.length) {
+				return this._yoyo;
+			}
+			this._yoyo = value;
+			return this;
+		};
+		
+		p.currentLabel = function(value) {
+			if (!arguments.length) {
+				return this.getLabelBefore(this._time + 0.00000001);
+			}
+			return this.seek(value, true);
+		};
+		
+		return TimelineMax;
+		
 	}, true);
 
-const TimelineLite = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].TimelineLite;
-/* unused harmony export TimelineLite */
-
+const TimelineMax = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].TimelineMax;
+/* unused harmony export TimelineMax */
 
 
 
 /***/ }),
-/* 96 */
+/* 131 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CSSPlugin; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(21);
 /*!
  * VERSION: 1.20.5
  * DATE: 2018-05-14
@@ -15896,21 +17367,21 @@ const TimelineLite = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */
  */
 
 
-	__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("plugins.CSSPlugin", ["plugins.TweenPlugin","TweenLite"], function() {
+	__WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */]._gsDefine("plugins.CSSPlugin", ["plugins.TweenPlugin","TweenLite"], function() {
 
 		/** @constructor **/
 		var CSSPlugin = function() {
-				__WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* TweenPlugin */].call(this, "css");
+				__WEBPACK_IMPORTED_MODULE_0__TweenLite__["j" /* TweenPlugin */].call(this, "css");
 				this._overwriteProps.length = 0;
 				this.setRatio = CSSPlugin.prototype.setRatio; //speed optimization (avoid prototype lookup on this "hot" method)
 			},
-			_globals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine.globals,
+			_globals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */]._gsDefine.globals,
 			_hasPriority, //turns true whenever a CSSPropTween instance is created that has a priority other than 0. This helps us discern whether or not we should spend the time organizing the linked list or not after a CSSPlugin's _onInitTween() method is called.
 			_suffixMap, //we set this in _onInitTween() each time as a way to have a persistent variable we can use in other methods like _parse() without having to pass it around as a parameter and we keep _parse() decoupled from a particular CSSPlugin instance
 			_cs, //computed style (we store this in a shared variable to conserve memory and make minification tighter
 			_overwriteProps, //alias to the currently instantiating CSSPlugin's _overwriteProps array. We use this closure in order to avoid having to pass a reference around from method to method and aid in minification.
 			_specialProps = {},
-			p = CSSPlugin.prototype = new __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* TweenPlugin */]("css");
+			p = CSSPlugin.prototype = new __WEBPACK_IMPORTED_MODULE_0__TweenLite__["j" /* TweenPlugin */]("css");
 
 		p.constructor = CSSPlugin;
 		CSSPlugin.version = "1.20.5";
@@ -15944,14 +17415,14 @@ const TimelineLite = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */
 			_RAD2DEG = 180 / Math.PI,
 			_forcePT = {},
 			_dummyElement = {style:{}},
-			_doc = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].document || {createElement: function() {return _dummyElement;}},
+			_doc = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].document || {createElement: function() {return _dummyElement;}},
 			_createElement = function(type, ns) {
 				return _doc.createElementNS ? _doc.createElementNS(ns || "http://www.w3.org/1999/xhtml", type) : _doc.createElement(type);
 			},
 			_tempDiv = _createElement("div"),
 			_tempImg = _createElement("img"),
 			_internals = CSSPlugin._internals = {_specialProps:_specialProps}, //provides a hook to a few internal methods that we need to access from inside other plugins
-			_agent = (__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].navigator || {}).userAgent || "",
+			_agent = (__WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].navigator || {}).userAgent || "",
 			_autoRound,
 			_reqSafariFix, //we won't apply the Safari transform fix until we actually come across a tween that affects a transform property (to maintain best performance).
 
@@ -15978,7 +17449,7 @@ const TimelineLite = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */
 				return (_opacityExp.test( ((typeof(v) === "string") ? v : (v.currentStyle ? v.currentStyle.filter : v.style.filter) || "") ) ? ( parseFloat( RegExp.$1 ) / 100 ) : 1);
 			},
 			_log = function(s) {//for logging messages, but in a way that won't throw errors in old versions of IE.
-				if (__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].console) {
+				if (__WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].console) {
 					console.log(s);
 				}
 			},
@@ -16075,7 +17546,7 @@ const TimelineLite = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */
 							style.position = "absolute";
 						}
 						cache = node._gsCache;
-						time = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].ticker.frame;
+						time = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].ticker.frame;
 						if (cache && horiz && cache.time === time) { //performance optimization: we record the width of elements along with the ticker frame so that we can quickly get it again on the same tick (seems relatively safe to assume it wouldn't change on the same tick)
 							return cache.width * v / 100;
 						}
@@ -16457,8 +17928,8 @@ const TimelineLite = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */
 			_colorExp.lastIndex = 0;
 		};
 
-		if (!__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].defaultStringFilter) {
-			__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].defaultStringFilter = CSSPlugin.colorStringFilter;
+		if (!__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].defaultStringFilter) {
+			__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].defaultStringFilter = CSSPlugin.colorStringFilter;
 		}
 
 		/**
@@ -17089,7 +18560,7 @@ const TimelineLite = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */
 				this.perspective = parseFloat(CSSPlugin.defaultTransformPerspective) || 0;
 				this.force3D = (CSSPlugin.defaultForce3D === false || !_supports3D) ? false : CSSPlugin.defaultForce3D || "auto";
 			},
-			_SVGElement = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].SVGElement,
+			_SVGElement = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].SVGElement,
 			_useSVGTransformAttr,
 			//Some browsers (like Firefox and IE) don't honor transform-origin properly in SVG elements, so we need to manually adjust the matrix accordingly. We feature detect here rather than always doing the conversion for certain browsers because they may fix the problem at some point in the future.
 
@@ -17106,7 +18577,7 @@ const TimelineLite = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */
 			_docElement = _doc.documentElement || {},
 			_forceSVGTransformAttr = (function() {
 				//IE and Android stock don't support CSS transforms on SVG elements, so we must write them to the "transform" attribute. We populate this variable in the _parseTransform() method, and only if/when we come across an SVG element
-				var force = _ieVers || (/Android/i.test(_agent) && !__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].chrome),
+				var force = _ieVers || (/Android/i.test(_agent) && !__WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].chrome),
 					svg, rect, width;
 				if (_doc.createElementNS && !force) { //IE8 and earlier doesn't support SVG anyway
 					svg = _createSVG("svg", _docElement);
@@ -17468,11 +18939,11 @@ const TimelineLite = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */
 					t._gsTransform = tm; //record to the object's _gsTransform which we use so that tweens can control individual properties independently (we need all the properties to accurately recompose the matrix in the setRatio() method)
 					if (tm.svg) { //if we're supposed to apply transforms to the SVG element's "transform" attribute, make sure there aren't any CSS transforms applied or they'll override the attribute ones. Also clear the transform attribute if we're using CSS, just to be clean.
 						if (_useSVGTransformAttr && t.style[_transformProp]) {
-							__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].delayedCall(0.001, function(){ //if we apply this right away (before anything has rendered), we risk there being no transforms for a brief moment and it also interferes with adjusting the transformOrigin in a tween with immediateRender:true (it'd try reading the matrix and it wouldn't have the appropriate data in place because we just removed it).
+							__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].delayedCall(0.001, function(){ //if we apply this right away (before anything has rendered), we risk there being no transforms for a brief moment and it also interferes with adjusting the transformOrigin in a tween with immediateRender:true (it'd try reading the matrix and it wouldn't have the appropriate data in place because we just removed it).
 								_removeProp(t.style, _transformProp);
 							});
 						} else if (!_useSVGTransformAttr && t.getAttribute("transform")) {
-							__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].delayedCall(0.001, function(){
+							__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].delayedCall(0.001, function(){
 								t.removeAttribute("transform");
 							});
 						}
@@ -18692,7 +20163,7 @@ const TimelineLite = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */
 				}
 				pt = pt._next;
 			}
-			return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* TweenPlugin */].prototype._kill.call(this, copy);
+			return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["j" /* TweenPlugin */].prototype._kill.call(this, copy);
 		};
 
 
@@ -18743,12 +20214,12 @@ const TimelineLite = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */
 		 * @return {Array} An array of TweenLite instances
 		 */
 		CSSPlugin.cascadeTo = function(target, duration, vars) {
-			var tween = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].to(target, duration, vars),
+			var tween = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].to(target, duration, vars),
 				results = [tween],
 				b = [],
 				e = [],
 				targets = [],
-				_reservedProps = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */]._internals.reservedProps,
+				_reservedProps = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */]._internals.reservedProps,
 				i, difs, p, from;
 			target = tween._targets || tween.target;
 			_getChildStyles(target, b, targets);
@@ -18770,1490 +20241,19 @@ const TimelineLite = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */
 					for (p in difs) {
 						from[p] = b[i][p];
 					}
-					results.push(__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].fromTo(targets[i], duration, from, difs));
+					results.push(__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].fromTo(targets[i], duration, from, difs));
 				}
 			}
 			return results;
 		};
 
-		__WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* TweenPlugin */].activate([CSSPlugin]);
+		__WEBPACK_IMPORTED_MODULE_0__TweenLite__["j" /* TweenPlugin */].activate([CSSPlugin]);
 		return CSSPlugin;
 
 	}, true);
 
-const CSSPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].CSSPlugin;
+const CSSPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].CSSPlugin;
 /* unused harmony export CSSPlugin */
-
-
-
-/***/ }),
-/* 97 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = !__webpack_require__(6) && !__webpack_require__(3)(function () {
-  return Object.defineProperty(__webpack_require__(68)('div'), 'a', { get: function () { return 7; } }).a != 7;
-});
-
-
-/***/ }),
-/* 98 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports.f = __webpack_require__(5);
-
-
-/***/ }),
-/* 99 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var has = __webpack_require__(11);
-var toIObject = __webpack_require__(16);
-var arrayIndexOf = __webpack_require__(54)(false);
-var IE_PROTO = __webpack_require__(70)('IE_PROTO');
-
-module.exports = function (object, names) {
-  var O = toIObject(object);
-  var i = 0;
-  var result = [];
-  var key;
-  for (key in O) if (key != IE_PROTO) has(O, key) && result.push(key);
-  // Don't enum bug & hidden keys
-  while (names.length > i) if (has(O, key = names[i++])) {
-    ~arrayIndexOf(result, key) || result.push(key);
-  }
-  return result;
-};
-
-
-/***/ }),
-/* 100 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var dP = __webpack_require__(7);
-var anObject = __webpack_require__(1);
-var getKeys = __webpack_require__(35);
-
-module.exports = __webpack_require__(6) ? Object.defineProperties : function defineProperties(O, Properties) {
-  anObject(O);
-  var keys = getKeys(Properties);
-  var length = keys.length;
-  var i = 0;
-  var P;
-  while (length > i) dP.f(O, P = keys[i++], Properties[P]);
-  return O;
-};
-
-
-/***/ }),
-/* 101 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
-var toIObject = __webpack_require__(16);
-var gOPN = __webpack_require__(38).f;
-var toString = {}.toString;
-
-var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
-  ? Object.getOwnPropertyNames(window) : [];
-
-var getWindowNames = function (it) {
-  try {
-    return gOPN(it);
-  } catch (e) {
-    return windowNames.slice();
-  }
-};
-
-module.exports.f = function getOwnPropertyNames(it) {
-  return windowNames && toString.call(it) == '[object Window]' ? getWindowNames(it) : gOPN(toIObject(it));
-};
-
-
-/***/ }),
-/* 102 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-// 19.1.2.1 Object.assign(target, source, ...)
-var getKeys = __webpack_require__(35);
-var gOPS = __webpack_require__(55);
-var pIE = __webpack_require__(49);
-var toObject = __webpack_require__(9);
-var IObject = __webpack_require__(48);
-var $assign = Object.assign;
-
-// should work with symbols and should have deterministic property order (V8 bug)
-module.exports = !$assign || __webpack_require__(3)(function () {
-  var A = {};
-  var B = {};
-  // eslint-disable-next-line no-undef
-  var S = Symbol();
-  var K = 'abcdefghijklmnopqrst';
-  A[S] = 7;
-  K.split('').forEach(function (k) { B[k] = k; });
-  return $assign({}, A)[S] != 7 || Object.keys($assign({}, B)).join('') != K;
-}) ? function assign(target, source) { // eslint-disable-line no-unused-vars
-  var T = toObject(target);
-  var aLen = arguments.length;
-  var index = 1;
-  var getSymbols = gOPS.f;
-  var isEnum = pIE.f;
-  while (aLen > index) {
-    var S = IObject(arguments[index++]);
-    var keys = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S);
-    var length = keys.length;
-    var j = 0;
-    var key;
-    while (length > j) if (isEnum.call(S, key = keys[j++])) T[key] = S[key];
-  } return T;
-} : $assign;
-
-
-/***/ }),
-/* 103 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var aFunction = __webpack_require__(10);
-var isObject = __webpack_require__(4);
-var invoke = __webpack_require__(104);
-var arraySlice = [].slice;
-var factories = {};
-
-var construct = function (F, len, args) {
-  if (!(len in factories)) {
-    for (var n = [], i = 0; i < len; i++) n[i] = 'a[' + i + ']';
-    // eslint-disable-next-line no-new-func
-    factories[len] = Function('F,a', 'return new F(' + n.join(',') + ')');
-  } return factories[len](F, args);
-};
-
-module.exports = Function.bind || function bind(that /* , ...args */) {
-  var fn = aFunction(this);
-  var partArgs = arraySlice.call(arguments, 1);
-  var bound = function (/* args... */) {
-    var args = partArgs.concat(arraySlice.call(arguments));
-    return this instanceof bound ? construct(fn, args.length, args) : invoke(fn, args, that);
-  };
-  if (isObject(fn.prototype)) bound.prototype = fn.prototype;
-  return bound;
-};
-
-
-/***/ }),
-/* 104 */
-/***/ (function(module, exports) {
-
-// fast apply, http://jsperf.lnkit.com/fast-apply/5
-module.exports = function (fn, args, that) {
-  var un = that === undefined;
-  switch (args.length) {
-    case 0: return un ? fn()
-                      : fn.call(that);
-    case 1: return un ? fn(args[0])
-                      : fn.call(that, args[0]);
-    case 2: return un ? fn(args[0], args[1])
-                      : fn.call(that, args[0], args[1]);
-    case 3: return un ? fn(args[0], args[1], args[2])
-                      : fn.call(that, args[0], args[1], args[2]);
-    case 4: return un ? fn(args[0], args[1], args[2], args[3])
-                      : fn.call(that, args[0], args[1], args[2], args[3]);
-  } return fn.apply(that, args);
-};
-
-
-/***/ }),
-/* 105 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var $parseInt = __webpack_require__(2).parseInt;
-var $trim = __webpack_require__(44).trim;
-var ws = __webpack_require__(74);
-var hex = /^[-+]?0[xX]/;
-
-module.exports = $parseInt(ws + '08') !== 8 || $parseInt(ws + '0x16') !== 22 ? function parseInt(str, radix) {
-  var string = $trim(String(str), 3);
-  return $parseInt(string, (radix >>> 0) || (hex.test(string) ? 16 : 10));
-} : $parseInt;
-
-
-/***/ }),
-/* 106 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var $parseFloat = __webpack_require__(2).parseFloat;
-var $trim = __webpack_require__(44).trim;
-
-module.exports = 1 / $parseFloat(__webpack_require__(74) + '-0') !== -Infinity ? function parseFloat(str) {
-  var string = $trim(String(str), 3);
-  var result = $parseFloat(string);
-  return result === 0 && string.charAt(0) == '-' ? -0 : result;
-} : $parseFloat;
-
-
-/***/ }),
-/* 107 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var cof = __webpack_require__(20);
-module.exports = function (it, msg) {
-  if (typeof it != 'number' && cof(it) != 'Number') throw TypeError(msg);
-  return +it;
-};
-
-
-/***/ }),
-/* 108 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 20.1.2.3 Number.isInteger(number)
-var isObject = __webpack_require__(4);
-var floor = Math.floor;
-module.exports = function isInteger(it) {
-  return !isObject(it) && isFinite(it) && floor(it) === it;
-};
-
-
-/***/ }),
-/* 109 */
-/***/ (function(module, exports) {
-
-// 20.2.2.20 Math.log1p(x)
-module.exports = Math.log1p || function log1p(x) {
-  return (x = +x) > -1e-8 && x < 1e-8 ? x - x * x / 2 : Math.log(1 + x);
-};
-
-
-/***/ }),
-/* 110 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 20.2.2.16 Math.fround(x)
-var sign = __webpack_require__(77);
-var pow = Math.pow;
-var EPSILON = pow(2, -52);
-var EPSILON32 = pow(2, -23);
-var MAX32 = pow(2, 127) * (2 - EPSILON32);
-var MIN32 = pow(2, -126);
-
-var roundTiesToEven = function (n) {
-  return n + 1 / EPSILON - 1 / EPSILON;
-};
-
-module.exports = Math.fround || function fround(x) {
-  var $abs = Math.abs(x);
-  var $sign = sign(x);
-  var a, result;
-  if ($abs < MIN32) return $sign * roundTiesToEven($abs / MIN32 / EPSILON32) * MIN32 * EPSILON32;
-  a = (1 + EPSILON32 / EPSILON) * $abs;
-  result = a - (a - $abs);
-  // eslint-disable-next-line no-self-compare
-  if (result > MAX32 || result != result) return $sign * Infinity;
-  return $sign * result;
-};
-
-
-/***/ }),
-/* 111 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// call something on iterator step with safe closing on error
-var anObject = __webpack_require__(1);
-module.exports = function (iterator, fn, value, entries) {
-  try {
-    return entries ? fn(anObject(value)[0], value[1]) : fn(value);
-  // 7.4.6 IteratorClose(iterator, completion)
-  } catch (e) {
-    var ret = iterator['return'];
-    if (ret !== undefined) anObject(ret.call(iterator));
-    throw e;
-  }
-};
-
-
-/***/ }),
-/* 112 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var aFunction = __webpack_require__(10);
-var toObject = __webpack_require__(9);
-var IObject = __webpack_require__(48);
-var toLength = __webpack_require__(8);
-
-module.exports = function (that, callbackfn, aLen, memo, isRight) {
-  aFunction(callbackfn);
-  var O = toObject(that);
-  var self = IObject(O);
-  var length = toLength(O.length);
-  var index = isRight ? length - 1 : 0;
-  var i = isRight ? -1 : 1;
-  if (aLen < 2) for (;;) {
-    if (index in self) {
-      memo = self[index];
-      index += i;
-      break;
-    }
-    index += i;
-    if (isRight ? index < 0 : length <= index) {
-      throw TypeError('Reduce of empty array with no initial value');
-    }
-  }
-  for (;isRight ? index >= 0 : length > index; index += i) if (index in self) {
-    memo = callbackfn(memo, self[index], index, O);
-  }
-  return memo;
-};
-
-
-/***/ }),
-/* 113 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-// 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
-
-var toObject = __webpack_require__(9);
-var toAbsoluteIndex = __webpack_require__(36);
-var toLength = __webpack_require__(8);
-
-module.exports = [].copyWithin || function copyWithin(target /* = 0 */, start /* = 0, end = @length */) {
-  var O = toObject(this);
-  var len = toLength(O.length);
-  var to = toAbsoluteIndex(target, len);
-  var from = toAbsoluteIndex(start, len);
-  var end = arguments.length > 2 ? arguments[2] : undefined;
-  var count = Math.min((end === undefined ? len : toAbsoluteIndex(end, len)) - from, len - to);
-  var inc = 1;
-  if (from < to && to < from + count) {
-    inc = -1;
-    from += count - 1;
-    to += count - 1;
-  }
-  while (count-- > 0) {
-    if (from in O) O[to] = O[from];
-    else delete O[to];
-    to += inc;
-    from += inc;
-  } return O;
-};
-
-
-/***/ }),
-/* 114 */
-/***/ (function(module, exports) {
-
-module.exports = function (done, value) {
-  return { value: value, done: !!done };
-};
-
-
-/***/ }),
-/* 115 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 21.2.5.3 get RegExp.prototype.flags()
-if (__webpack_require__(6) && /./g.flags != 'g') __webpack_require__(7).f(RegExp.prototype, 'flags', {
-  configurable: true,
-  get: __webpack_require__(59)
-});
-
-
-/***/ }),
-/* 116 */
-/***/ (function(module, exports) {
-
-module.exports = function (exec) {
-  try {
-    return { e: false, v: exec() };
-  } catch (e) {
-    return { e: true, v: e };
-  }
-};
-
-
-/***/ }),
-/* 117 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var anObject = __webpack_require__(1);
-var isObject = __webpack_require__(4);
-var newPromiseCapability = __webpack_require__(92);
-
-module.exports = function (C, x) {
-  anObject(C);
-  if (isObject(x) && x.constructor === C) return x;
-  var promiseCapability = newPromiseCapability.f(C);
-  var resolve = promiseCapability.resolve;
-  resolve(x);
-  return promiseCapability.promise;
-};
-
-
-/***/ }),
-/* 118 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var strong = __webpack_require__(119);
-var validate = __webpack_require__(46);
-var MAP = 'Map';
-
-// 23.1 Map Objects
-module.exports = __webpack_require__(62)(MAP, function (get) {
-  return function Map() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
-}, {
-  // 23.1.3.6 Map.prototype.get(key)
-  get: function get(key) {
-    var entry = strong.getEntry(validate(this, MAP), key);
-    return entry && entry.v;
-  },
-  // 23.1.3.9 Map.prototype.set(key, value)
-  set: function set(key, value) {
-    return strong.def(validate(this, MAP), key === 0 ? 0 : key, value);
-  }
-}, strong, true);
-
-
-/***/ }),
-/* 119 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var dP = __webpack_require__(7).f;
-var create = __webpack_require__(37);
-var redefineAll = __webpack_require__(42);
-var ctx = __webpack_require__(19);
-var anInstance = __webpack_require__(40);
-var forOf = __webpack_require__(41);
-var $iterDefine = __webpack_require__(80);
-var step = __webpack_require__(114);
-var setSpecies = __webpack_require__(39);
-var DESCRIPTORS = __webpack_require__(6);
-var fastKey = __webpack_require__(30).fastKey;
-var validate = __webpack_require__(46);
-var SIZE = DESCRIPTORS ? '_s' : 'size';
-
-var getEntry = function (that, key) {
-  // fast case
-  var index = fastKey(key);
-  var entry;
-  if (index !== 'F') return that._i[index];
-  // frozen object case
-  for (entry = that._f; entry; entry = entry.n) {
-    if (entry.k == key) return entry;
-  }
-};
-
-module.exports = {
-  getConstructor: function (wrapper, NAME, IS_MAP, ADDER) {
-    var C = wrapper(function (that, iterable) {
-      anInstance(that, C, NAME, '_i');
-      that._t = NAME;         // collection type
-      that._i = create(null); // index
-      that._f = undefined;    // first entry
-      that._l = undefined;    // last entry
-      that[SIZE] = 0;         // size
-      if (iterable != undefined) forOf(iterable, IS_MAP, that[ADDER], that);
-    });
-    redefineAll(C.prototype, {
-      // 23.1.3.1 Map.prototype.clear()
-      // 23.2.3.2 Set.prototype.clear()
-      clear: function clear() {
-        for (var that = validate(this, NAME), data = that._i, entry = that._f; entry; entry = entry.n) {
-          entry.r = true;
-          if (entry.p) entry.p = entry.p.n = undefined;
-          delete data[entry.i];
-        }
-        that._f = that._l = undefined;
-        that[SIZE] = 0;
-      },
-      // 23.1.3.3 Map.prototype.delete(key)
-      // 23.2.3.4 Set.prototype.delete(value)
-      'delete': function (key) {
-        var that = validate(this, NAME);
-        var entry = getEntry(that, key);
-        if (entry) {
-          var next = entry.n;
-          var prev = entry.p;
-          delete that._i[entry.i];
-          entry.r = true;
-          if (prev) prev.n = next;
-          if (next) next.p = prev;
-          if (that._f == entry) that._f = next;
-          if (that._l == entry) that._l = prev;
-          that[SIZE]--;
-        } return !!entry;
-      },
-      // 23.2.3.6 Set.prototype.forEach(callbackfn, thisArg = undefined)
-      // 23.1.3.5 Map.prototype.forEach(callbackfn, thisArg = undefined)
-      forEach: function forEach(callbackfn /* , that = undefined */) {
-        validate(this, NAME);
-        var f = ctx(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
-        var entry;
-        while (entry = entry ? entry.n : this._f) {
-          f(entry.v, entry.k, this);
-          // revert to the last existing entry
-          while (entry && entry.r) entry = entry.p;
-        }
-      },
-      // 23.1.3.7 Map.prototype.has(key)
-      // 23.2.3.7 Set.prototype.has(value)
-      has: function has(key) {
-        return !!getEntry(validate(this, NAME), key);
-      }
-    });
-    if (DESCRIPTORS) dP(C.prototype, 'size', {
-      get: function () {
-        return validate(this, NAME)[SIZE];
-      }
-    });
-    return C;
-  },
-  def: function (that, key, value) {
-    var entry = getEntry(that, key);
-    var prev, index;
-    // change existing entry
-    if (entry) {
-      entry.v = value;
-    // create new entry
-    } else {
-      that._l = entry = {
-        i: index = fastKey(key, true), // <- index
-        k: key,                        // <- key
-        v: value,                      // <- value
-        p: prev = that._l,             // <- previous entry
-        n: undefined,                  // <- next entry
-        r: false                       // <- removed
-      };
-      if (!that._f) that._f = entry;
-      if (prev) prev.n = entry;
-      that[SIZE]++;
-      // add to index
-      if (index !== 'F') that._i[index] = entry;
-    } return that;
-  },
-  getEntry: getEntry,
-  setStrong: function (C, NAME, IS_MAP) {
-    // add .keys, .values, .entries, [@@iterator]
-    // 23.1.3.4, 23.1.3.8, 23.1.3.11, 23.1.3.12, 23.2.3.5, 23.2.3.8, 23.2.3.10, 23.2.3.11
-    $iterDefine(C, NAME, function (iterated, kind) {
-      this._t = validate(iterated, NAME); // target
-      this._k = kind;                     // kind
-      this._l = undefined;                // previous
-    }, function () {
-      var that = this;
-      var kind = that._k;
-      var entry = that._l;
-      // revert to the last existing entry
-      while (entry && entry.r) entry = entry.p;
-      // get next entry
-      if (!that._t || !(that._l = entry = entry ? entry.n : that._t._f)) {
-        // or finish the iteration
-        that._t = undefined;
-        return step(1);
-      }
-      // return step by kind
-      if (kind == 'keys') return step(0, entry.k);
-      if (kind == 'values') return step(0, entry.v);
-      return step(0, [entry.k, entry.v]);
-    }, IS_MAP ? 'entries' : 'values', !IS_MAP, true);
-
-    // add [@@species], 23.1.2.2, 23.2.2.2
-    setSpecies(NAME);
-  }
-};
-
-
-/***/ }),
-/* 120 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var strong = __webpack_require__(119);
-var validate = __webpack_require__(46);
-var SET = 'Set';
-
-// 23.2 Set Objects
-module.exports = __webpack_require__(62)(SET, function (get) {
-  return function Set() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
-}, {
-  // 23.2.3.1 Set.prototype.add(value)
-  add: function add(value) {
-    return strong.def(validate(this, SET), value = value === 0 ? 0 : value, value);
-  }
-}, strong);
-
-
-/***/ }),
-/* 121 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var each = __webpack_require__(27)(0);
-var redefine = __webpack_require__(13);
-var meta = __webpack_require__(30);
-var assign = __webpack_require__(102);
-var weak = __webpack_require__(122);
-var isObject = __webpack_require__(4);
-var fails = __webpack_require__(3);
-var validate = __webpack_require__(46);
-var WEAK_MAP = 'WeakMap';
-var getWeak = meta.getWeak;
-var isExtensible = Object.isExtensible;
-var uncaughtFrozenStore = weak.ufstore;
-var tmp = {};
-var InternalMap;
-
-var wrapper = function (get) {
-  return function WeakMap() {
-    return get(this, arguments.length > 0 ? arguments[0] : undefined);
-  };
-};
-
-var methods = {
-  // 23.3.3.3 WeakMap.prototype.get(key)
-  get: function get(key) {
-    if (isObject(key)) {
-      var data = getWeak(key);
-      if (data === true) return uncaughtFrozenStore(validate(this, WEAK_MAP)).get(key);
-      return data ? data[this._i] : undefined;
-    }
-  },
-  // 23.3.3.5 WeakMap.prototype.set(key, value)
-  set: function set(key, value) {
-    return weak.def(validate(this, WEAK_MAP), key, value);
-  }
-};
-
-// 23.3 WeakMap Objects
-var $WeakMap = module.exports = __webpack_require__(62)(WEAK_MAP, wrapper, methods, weak, true, true);
-
-// IE11 WeakMap frozen keys fix
-if (fails(function () { return new $WeakMap().set((Object.freeze || Object)(tmp), 7).get(tmp) != 7; })) {
-  InternalMap = weak.getConstructor(wrapper, WEAK_MAP);
-  assign(InternalMap.prototype, methods);
-  meta.NEED = true;
-  each(['delete', 'has', 'get', 'set'], function (key) {
-    var proto = $WeakMap.prototype;
-    var method = proto[key];
-    redefine(proto, key, function (a, b) {
-      // store frozen objects on internal weakmap shim
-      if (isObject(a) && !isExtensible(a)) {
-        if (!this._f) this._f = new InternalMap();
-        var result = this._f[key](a, b);
-        return key == 'set' ? this : result;
-      // store all the rest on native weakmap
-      } return method.call(this, a, b);
-    });
-  });
-}
-
-
-/***/ }),
-/* 122 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var redefineAll = __webpack_require__(42);
-var getWeak = __webpack_require__(30).getWeak;
-var anObject = __webpack_require__(1);
-var isObject = __webpack_require__(4);
-var anInstance = __webpack_require__(40);
-var forOf = __webpack_require__(41);
-var createArrayMethod = __webpack_require__(27);
-var $has = __webpack_require__(11);
-var validate = __webpack_require__(46);
-var arrayFind = createArrayMethod(5);
-var arrayFindIndex = createArrayMethod(6);
-var id = 0;
-
-// fallback for uncaught frozen keys
-var uncaughtFrozenStore = function (that) {
-  return that._l || (that._l = new UncaughtFrozenStore());
-};
-var UncaughtFrozenStore = function () {
-  this.a = [];
-};
-var findUncaughtFrozen = function (store, key) {
-  return arrayFind(store.a, function (it) {
-    return it[0] === key;
-  });
-};
-UncaughtFrozenStore.prototype = {
-  get: function (key) {
-    var entry = findUncaughtFrozen(this, key);
-    if (entry) return entry[1];
-  },
-  has: function (key) {
-    return !!findUncaughtFrozen(this, key);
-  },
-  set: function (key, value) {
-    var entry = findUncaughtFrozen(this, key);
-    if (entry) entry[1] = value;
-    else this.a.push([key, value]);
-  },
-  'delete': function (key) {
-    var index = arrayFindIndex(this.a, function (it) {
-      return it[0] === key;
-    });
-    if (~index) this.a.splice(index, 1);
-    return !!~index;
-  }
-};
-
-module.exports = {
-  getConstructor: function (wrapper, NAME, IS_MAP, ADDER) {
-    var C = wrapper(function (that, iterable) {
-      anInstance(that, C, NAME, '_i');
-      that._t = NAME;      // collection type
-      that._i = id++;      // collection id
-      that._l = undefined; // leak store for uncaught frozen objects
-      if (iterable != undefined) forOf(iterable, IS_MAP, that[ADDER], that);
-    });
-    redefineAll(C.prototype, {
-      // 23.3.3.2 WeakMap.prototype.delete(key)
-      // 23.4.3.3 WeakSet.prototype.delete(value)
-      'delete': function (key) {
-        if (!isObject(key)) return false;
-        var data = getWeak(key);
-        if (data === true) return uncaughtFrozenStore(validate(this, NAME))['delete'](key);
-        return data && $has(data, this._i) && delete data[this._i];
-      },
-      // 23.3.3.4 WeakMap.prototype.has(key)
-      // 23.4.3.4 WeakSet.prototype.has(value)
-      has: function has(key) {
-        if (!isObject(key)) return false;
-        var data = getWeak(key);
-        if (data === true) return uncaughtFrozenStore(validate(this, NAME)).has(key);
-        return data && $has(data, this._i);
-      }
-    });
-    return C;
-  },
-  def: function (that, key, value) {
-    var data = getWeak(anObject(key), true);
-    if (data === true) uncaughtFrozenStore(that).set(key, value);
-    else data[that._i] = value;
-    return that;
-  },
-  ufstore: uncaughtFrozenStore
-};
-
-
-/***/ }),
-/* 123 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// https://tc39.github.io/ecma262/#sec-toindex
-var toInteger = __webpack_require__(25);
-var toLength = __webpack_require__(8);
-module.exports = function (it) {
-  if (it === undefined) return 0;
-  var number = toInteger(it);
-  var length = toLength(number);
-  if (number !== length) throw RangeError('Wrong length!');
-  return length;
-};
-
-
-/***/ }),
-/* 124 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// all object keys, includes non-enumerable and symbols
-var gOPN = __webpack_require__(38);
-var gOPS = __webpack_require__(55);
-var anObject = __webpack_require__(1);
-var Reflect = __webpack_require__(2).Reflect;
-module.exports = Reflect && Reflect.ownKeys || function ownKeys(it) {
-  var keys = gOPN.f(anObject(it));
-  var getSymbols = gOPS.f;
-  return getSymbols ? keys.concat(getSymbols(it)) : keys;
-};
-
-
-/***/ }),
-/* 125 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-// https://tc39.github.io/proposal-flatMap/#sec-FlattenIntoArray
-var isArray = __webpack_require__(56);
-var isObject = __webpack_require__(4);
-var toLength = __webpack_require__(8);
-var ctx = __webpack_require__(19);
-var IS_CONCAT_SPREADABLE = __webpack_require__(5)('isConcatSpreadable');
-
-function flattenIntoArray(target, original, source, sourceLen, start, depth, mapper, thisArg) {
-  var targetIndex = start;
-  var sourceIndex = 0;
-  var mapFn = mapper ? ctx(mapper, thisArg, 3) : false;
-  var element, spreadable;
-
-  while (sourceIndex < sourceLen) {
-    if (sourceIndex in source) {
-      element = mapFn ? mapFn(source[sourceIndex], sourceIndex, original) : source[sourceIndex];
-
-      spreadable = false;
-      if (isObject(element)) {
-        spreadable = element[IS_CONCAT_SPREADABLE];
-        spreadable = spreadable !== undefined ? !!spreadable : isArray(element);
-      }
-
-      if (spreadable && depth > 0) {
-        targetIndex = flattenIntoArray(target, original, element, toLength(element.length), targetIndex, depth - 1) - 1;
-      } else {
-        if (targetIndex >= 0x1fffffffffffff) throw TypeError();
-        target[targetIndex] = element;
-      }
-
-      targetIndex++;
-    }
-    sourceIndex++;
-  }
-  return targetIndex;
-}
-
-module.exports = flattenIntoArray;
-
-
-/***/ }),
-/* 126 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// https://github.com/tc39/proposal-string-pad-start-end
-var toLength = __webpack_require__(8);
-var repeat = __webpack_require__(76);
-var defined = __webpack_require__(24);
-
-module.exports = function (that, maxLength, fillString, left) {
-  var S = String(defined(that));
-  var stringLength = S.length;
-  var fillStr = fillString === undefined ? ' ' : String(fillString);
-  var intMaxLength = toLength(maxLength);
-  if (intMaxLength <= stringLength || fillStr == '') return S;
-  var fillLen = intMaxLength - stringLength;
-  var stringFiller = repeat.call(fillStr, Math.ceil(fillLen / fillStr.length));
-  if (stringFiller.length > fillLen) stringFiller = stringFiller.slice(0, fillLen);
-  return left ? stringFiller + S : S + stringFiller;
-};
-
-
-/***/ }),
-/* 127 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var getKeys = __webpack_require__(35);
-var toIObject = __webpack_require__(16);
-var isEnum = __webpack_require__(49).f;
-module.exports = function (isEntries) {
-  return function (it) {
-    var O = toIObject(it);
-    var keys = getKeys(O);
-    var length = keys.length;
-    var i = 0;
-    var result = [];
-    var key;
-    while (length > i) if (isEnum.call(O, key = keys[i++])) {
-      result.push(isEntries ? [key, O[key]] : O[key]);
-    } return result;
-  };
-};
-
-
-/***/ }),
-/* 128 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// https://github.com/DavidBruant/Map-Set.prototype.toJSON
-var classof = __webpack_require__(50);
-var from = __webpack_require__(129);
-module.exports = function (NAME) {
-  return function toJSON() {
-    if (classof(this) != NAME) throw TypeError(NAME + "#toJSON isn't generic");
-    return from(this);
-  };
-};
-
-
-/***/ }),
-/* 129 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var forOf = __webpack_require__(41);
-
-module.exports = function (iter, ITERATOR) {
-  var result = [];
-  forOf(iter, false, result.push, result, ITERATOR);
-  return result;
-};
-
-
-/***/ }),
-/* 130 */
-/***/ (function(module, exports) {
-
-// https://rwaldron.github.io/proposal-math-extensions/
-module.exports = Math.scale || function scale(x, inLow, inHigh, outLow, outHigh) {
-  if (
-    arguments.length === 0
-      // eslint-disable-next-line no-self-compare
-      || x != x
-      // eslint-disable-next-line no-self-compare
-      || inLow != inLow
-      // eslint-disable-next-line no-self-compare
-      || inHigh != inHigh
-      // eslint-disable-next-line no-self-compare
-      || outLow != outLow
-      // eslint-disable-next-line no-self-compare
-      || outHigh != outHigh
-  ) return NaN;
-  if (x === Infinity || x === -Infinity) return x;
-  return (x - inLow) * (outHigh - outLow) / (inHigh - inLow) + outLow;
-};
-
-
-/***/ }),
-/* 131 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TimelineMax; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TimelineLite__ = __webpack_require__(95);
-/* unused harmony reexport TimelineLite */
-/*!
- * VERSION: 1.20.5
- * DATE: 2018-05-21
- * UPDATES AND DOCS AT: http://greensock.com
- *
- * @license Copyright (c) 2008-2018, GreenSock. All rights reserved.
- * This work is subject to the terms at http://greensock.com/standard-license or for
- * Club GreenSock members, the software agreement that was issued with your membership.
- * 
- * @author: Jack Doyle, jack@greensock.com
- */
-
-
-
-
-__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TimelineMax", ["TimelineLite","TweenLite","easing.Ease"], function() {
-		
-		var TimelineMax = function(vars) {
-				__WEBPACK_IMPORTED_MODULE_1__TimelineLite__["a" /* default */].call(this, vars);
-				this._repeat = this.vars.repeat || 0;
-				this._repeatDelay = this.vars.repeatDelay || 0;
-				this._cycle = 0;
-				this._yoyo = (this.vars.yoyo === true);
-				this._dirty = true;
-			},
-			_tinyNum = 0.0000000001,
-			TweenLiteInternals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */]._internals,
-			_lazyTweens = TweenLiteInternals.lazyTweens,
-			_lazyRender = TweenLiteInternals.lazyRender,
-			_globals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine.globals,
-			_easeNone = new __WEBPACK_IMPORTED_MODULE_0__TweenLite__["b" /* Ease */](null, null, 1, 0),
-			p = TimelineMax.prototype = new __WEBPACK_IMPORTED_MODULE_1__TimelineLite__["a" /* default */]();
-			
-		p.constructor = TimelineMax;
-		p.kill()._gc = false;
-		TimelineMax.version = "1.20.5";
-		
-		p.invalidate = function() {
-			this._yoyo = (this.vars.yoyo === true);
-			this._repeat = this.vars.repeat || 0;
-			this._repeatDelay = this.vars.repeatDelay || 0;
-			this._uncache(true);
-			return __WEBPACK_IMPORTED_MODULE_1__TimelineLite__["a" /* default */].prototype.invalidate.call(this);
-		};
-		
-		p.addCallback = function(callback, position, params, scope) {
-			return this.add( __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].delayedCall(0, callback, params, scope), position);
-		};
-		
-		p.removeCallback = function(callback, position) {
-			if (callback) {
-				if (position == null) {
-					this._kill(null, callback);
-				} else {
-					var a = this.getTweensOf(callback, false),
-						i = a.length,
-						time = this._parseTimeOrLabel(position);
-					while (--i > -1) {
-						if (a[i]._startTime === time) {
-							a[i]._enabled(false, false);
-						}
-					}
-				}
-			}
-			return this;
-		};
-
-		p.removePause = function(position) {
-			return this.removeCallback(__WEBPACK_IMPORTED_MODULE_1__TimelineLite__["a" /* default */]._internals.pauseCallback, position);
-		};
-
-		p.tweenTo = function(position, vars) {
-			vars = vars || {};
-			var copy = {ease:_easeNone, useFrames:this.usesFrames(), immediateRender:false, lazy:false},
-				Engine = (vars.repeat && _globals.TweenMax) || __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */],
-				duration, p, t;
-			for (p in vars) {
-				copy[p] = vars[p];
-			}
-			copy.time = this._parseTimeOrLabel(position);
-			duration = (Math.abs(Number(copy.time) - this._time) / this._timeScale) || 0.001;
-			t = new Engine(this, duration, copy);
-			copy.onStart = function() {
-				t.target.paused(true);
-				if (t.vars.time !== t.target.time() && duration === t.duration() && !t.isFromTo) { //don't make the duration zero - if it's supposed to be zero, don't worry because it's already initting the tween and will complete immediately, effectively making the duration zero anyway. If we make duration zero, the tween won't run at all.
-					t.duration( Math.abs( t.vars.time - t.target.time()) / t.target._timeScale ).render(t.time(), true, true); //render() right away to ensure that things look right, especially in the case of .tweenTo(0).
-				}
-				if (vars.onStart) { //in case the user had an onStart in the vars - we don't want to overwrite it.
-					vars.onStart.apply(vars.onStartScope || vars.callbackScope || t, vars.onStartParams || []); //don't use t._callback("onStart") or it'll point to the copy.onStart and we'll get a recursion error.
-				}
-			};
-			return t;
-		};
-
-		p.tweenFromTo = function(fromPosition, toPosition, vars) {
-			vars = vars || {};
-			fromPosition = this._parseTimeOrLabel(fromPosition);
-			vars.startAt = {onComplete:this.seek, onCompleteParams:[fromPosition], callbackScope:this};
-			vars.immediateRender = (vars.immediateRender !== false);
-			var t = this.tweenTo(toPosition, vars);
-			t.isFromTo = 1; //to ensure we don't mess with the duration in the onStart (we've got the start and end values here, so lock it in)
-			return t.duration((Math.abs( t.vars.time - fromPosition) / this._timeScale) || 0.001);
-		};
-		
-		p.render = function(time, suppressEvents, force) {
-			if (this._gc) {
-				this._enabled(true, false);
-			}
-			var prevTime = this._time,
-				totalDur = (!this._dirty) ? this._totalDuration : this.totalDuration(),
-				dur = this._duration,
-				prevTotalTime = this._totalTime,
-				prevStart = this._startTime, 
-				prevTimeScale = this._timeScale, 
-				prevRawPrevTime = this._rawPrevTime,
-				prevPaused = this._paused, 
-				prevCycle = this._cycle, 
-				tween, isComplete, next, callback, internalForce, cycleDuration, pauseTween, curTime;
-			if (prevTime !== this._time) { //if totalDuration() finds a child with a negative startTime and smoothChildTiming is true, things get shifted around internally so we need to adjust the time accordingly. For example, if a tween starts at -30 we must shift EVERYTHING forward 30 seconds and move this timeline's startTime backward by 30 seconds so that things align with the playhead (no jump).
-				time += this._time - prevTime;
-			}
-			if (time >= totalDur - 0.0000001 && time >= 0) { //to work around occasional floating point math artifacts.
-				if (!this._locked) {
-					this._totalTime = totalDur;
-					this._cycle = this._repeat;
-				}
-				if (!this._reversed) if (!this._hasPausedChild()) {
-					isComplete = true;
-					callback = "onComplete";
-					internalForce = !!this._timeline.autoRemoveChildren; //otherwise, if the animation is unpaused/activated after it's already finished, it doesn't get removed from the parent timeline.
-					if (this._duration === 0) if ((time <= 0 && time >= -0.0000001) || prevRawPrevTime < 0 || prevRawPrevTime === _tinyNum) if (prevRawPrevTime !== time && this._first) {
-						internalForce = true;
-						if (prevRawPrevTime > _tinyNum) {
-							callback = "onReverseComplete";
-						}
-					}
-				}
-				this._rawPrevTime = (this._duration || !suppressEvents || time || this._rawPrevTime === time) ? time : _tinyNum; //when the playhead arrives at EXACTLY time 0 (right on top) of a zero-duration timeline or tween, we need to discern if events are suppressed so that when the playhead moves again (next time), it'll trigger the callback. If events are NOT suppressed, obviously the callback would be triggered in this render. Basically, the callback should fire either when the playhead ARRIVES or LEAVES this exact spot, not both. Imagine doing a timeline.seek(0) and there's a callback that sits at 0. Since events are suppressed on that seek() by default, nothing will fire, but when the playhead moves off of that position, the callback should fire. This behavior is what people intuitively expect. We set the _rawPrevTime to be a precise tiny number to indicate this scenario rather than using another property/variable which would increase memory usage. This technique is less readable, but more efficient.
-				if (this._yoyo && (this._cycle & 1) !== 0) {
-					this._time = time = 0;
-				} else {
-					this._time = dur;
-					time = dur + 0.0001; //to avoid occasional floating point rounding errors - sometimes child tweens/timelines were not being fully completed (their progress might be 0.999999999999998 instead of 1 because when _time - tween._startTime is performed, floating point errors would return a value that was SLIGHTLY off). Try (999999999999.7 - 999999999999) * 1 = 0.699951171875 instead of 0.7. We cannot do less then 0.0001 because the same issue can occur when the duration is extremely large like 999999999999 in which case adding 0.00000001, for example, causes it to act like nothing was added.
-				}
-				
-			} else if (time < 0.0000001) { //to work around occasional floating point math artifacts, round super small values to 0.
-				if (!this._locked) {
-					this._totalTime = this._cycle = 0;
-				}
-				this._time = 0;
-				if (prevTime !== 0 || (dur === 0 && prevRawPrevTime !== _tinyNum && (prevRawPrevTime > 0 || (time < 0 && prevRawPrevTime >= 0)) && !this._locked)) { //edge case for checking time < 0 && prevRawPrevTime >= 0: a zero-duration fromTo() tween inside a zero-duration timeline (yeah, very rare)
-					callback = "onReverseComplete";
-					isComplete = this._reversed;
-				}
-				if (time < 0) {
-					this._active = false;
-					if (this._timeline.autoRemoveChildren && this._reversed) {
-						internalForce = isComplete = true;
-						callback = "onReverseComplete";
-					} else if (prevRawPrevTime >= 0 && this._first) { //when going back beyond the start, force a render so that zero-duration tweens that sit at the very beginning render their start values properly. Otherwise, if the parent timeline's playhead lands exactly at this timeline's startTime, and then moves backwards, the zero-duration tweens at the beginning would still be at their end state.
-						internalForce = true;
-					}
-					this._rawPrevTime = time;
-				} else {
-					this._rawPrevTime = (dur || !suppressEvents || time || this._rawPrevTime === time) ? time : _tinyNum; //when the playhead arrives at EXACTLY time 0 (right on top) of a zero-duration timeline or tween, we need to discern if events are suppressed so that when the playhead moves again (next time), it'll trigger the callback. If events are NOT suppressed, obviously the callback would be triggered in this render. Basically, the callback should fire either when the playhead ARRIVES or LEAVES this exact spot, not both. Imagine doing a timeline.seek(0) and there's a callback that sits at 0. Since events are suppressed on that seek() by default, nothing will fire, but when the playhead moves off of that position, the callback should fire. This behavior is what people intuitively expect. We set the _rawPrevTime to be a precise tiny number to indicate this scenario rather than using another property/variable which would increase memory usage. This technique is less readable, but more efficient.
-					if (time === 0 && isComplete) { //if there's a zero-duration tween at the very beginning of a timeline and the playhead lands EXACTLY at time 0, that tween will correctly render its end values, but we need to keep the timeline alive for one more render so that the beginning values render properly as the parent's playhead keeps moving beyond the begining. Imagine obj.x starts at 0 and then we do tl.set(obj, {x:100}).to(obj, 1, {x:200}) and then later we tl.reverse()...the goal is to have obj.x revert to 0. If the playhead happens to land on exactly 0, without this chunk of code, it'd complete the timeline and remove it from the rendering queue (not good).
-						tween = this._first;
-						while (tween && tween._startTime === 0) {
-							if (!tween._duration) {
-								isComplete = false;
-							}
-							tween = tween._next;
-						}
-					}
-					time = 0; //to avoid occasional floating point rounding errors (could cause problems especially with zero-duration tweens at the very beginning of the timeline)
-					if (!this._initted) {
-						internalForce = true;
-					}
-				}
-				
-			} else {
-				if (dur === 0 && prevRawPrevTime < 0) { //without this, zero-duration repeating timelines (like with a simple callback nested at the very beginning and a repeatDelay) wouldn't render the first time through.
-					internalForce = true;
-				}
-				this._time = this._rawPrevTime = time;
-				if (!this._locked) {
-					this._totalTime = time;
-					if (this._repeat !== 0) {
-						cycleDuration = dur + this._repeatDelay;
-						this._cycle = (this._totalTime / cycleDuration) >> 0; //originally _totalTime % cycleDuration but floating point errors caused problems, so I normalized it. (4 % 0.8 should be 0 but it gets reported as 0.79999999!)
-						if (this._cycle !== 0) if (this._cycle === this._totalTime / cycleDuration && prevTotalTime <= time) {
-							this._cycle--; //otherwise when rendered exactly at the end time, it will act as though it is repeating (at the beginning)
-						}
-						this._time = this._totalTime - (this._cycle * cycleDuration);
-						if (this._yoyo) if ((this._cycle & 1) !== 0) {
-							this._time = dur - this._time;
-						}
-						if (this._time > dur) {
-							this._time = dur;
-							time = dur + 0.0001; //to avoid occasional floating point rounding error
-						} else if (this._time < 0) {
-							this._time = time = 0;
-						} else {
-							time = this._time;
-						}
-					}
-				}
-
-				if (this._hasPause && !this._forcingPlayhead && !suppressEvents) {
-					time = this._time;
-					if (time >= prevTime || (this._repeat && prevCycle !== this._cycle)) {
-						tween = this._first;
-						while (tween && tween._startTime <= time && !pauseTween) {
-							if (!tween._duration) if (tween.data === "isPause" && !tween.ratio && !(tween._startTime === 0 && this._rawPrevTime === 0)) {
-								pauseTween = tween;
-							}
-							tween = tween._next;
-						}
-					} else {
-						tween = this._last;
-						while (tween && tween._startTime >= time && !pauseTween) {
-							if (!tween._duration) if (tween.data === "isPause" && tween._rawPrevTime > 0) {
-								pauseTween = tween;
-							}
-							tween = tween._prev;
-						}
-					}
-					if (pauseTween && pauseTween._startTime < dur) {
-						this._time = time = pauseTween._startTime;
-						this._totalTime = time + (this._cycle * (this._totalDuration + this._repeatDelay));
-					}
-				}
-
-			}
-			
-			if (this._cycle !== prevCycle) if (!this._locked) {
-				/*
-				make sure children at the end/beginning of the timeline are rendered properly. If, for example, 
-				a 3-second long timeline rendered at 2.9 seconds previously, and now renders at 3.2 seconds (which
-				would get transated to 2.8 seconds if the timeline yoyos or 0.2 seconds if it just repeats), there
-				could be a callback or a short tween that's at 2.95 or 3 seconds in which wouldn't render. So 
-				we need to push the timeline to the end (and/or beginning depending on its yoyo value). Also we must
-				ensure that zero-duration tweens at the very beginning or end of the TimelineMax work. 
-				*/
-				var backwards = (this._yoyo && (prevCycle & 1) !== 0),
-					wrap = (backwards === (this._yoyo && (this._cycle & 1) !== 0)),
-					recTotalTime = this._totalTime,
-					recCycle = this._cycle,
-					recRawPrevTime = this._rawPrevTime,
-					recTime = this._time;
-				
-				this._totalTime = prevCycle * dur;
-				if (this._cycle < prevCycle) {
-					backwards = !backwards;
-				} else {
-					this._totalTime += dur;
-				}
-				this._time = prevTime; //temporarily revert _time so that render() renders the children in the correct order. Without this, tweens won't rewind correctly. We could arhictect things in a "cleaner" way by splitting out the rendering queue into a separate method but for performance reasons, we kept it all inside this method.
-				
-				this._rawPrevTime = (dur === 0) ? prevRawPrevTime - 0.0001 : prevRawPrevTime;
-				this._cycle = prevCycle;
-				this._locked = true; //prevents changes to totalTime and skips repeat/yoyo behavior when we recursively call render()
-				prevTime = (backwards) ? 0 : dur;
-				this.render(prevTime, suppressEvents, (dur === 0));
-				if (!suppressEvents) if (!this._gc) {
-					if (this.vars.onRepeat) {
-						this._cycle = recCycle; //in case the onRepeat alters the playhead or invalidates(), we shouldn't stay locked or use the previous cycle.
-						this._locked = false;
-						this._callback("onRepeat");
-					}
-				}
-				if (prevTime !== this._time) { //in case there's a callback like onComplete in a nested tween/timeline that changes the playhead position, like via seek(), we should just abort.
-					return;
-				}
-				if (wrap) {
-					this._cycle = prevCycle; //if there's an onRepeat, we reverted this above, so make sure it's set properly again. We also unlocked in that scenario, so reset that too.
-					this._locked = true;
-					prevTime = (backwards) ? dur + 0.0001 : -0.0001;
-					this.render(prevTime, true, false);
-				}
-				this._locked = false;
-				if (this._paused && !prevPaused) { //if the render() triggered callback that paused this timeline, we should abort (very rare, but possible)
-					return;
-				}
-				this._time = recTime;
-				this._totalTime = recTotalTime;
-				this._cycle = recCycle;
-				this._rawPrevTime = recRawPrevTime;
-			}
-
-			if ((this._time === prevTime || !this._first) && !force && !internalForce && !pauseTween) {
-				if (prevTotalTime !== this._totalTime) if (this._onUpdate) if (!suppressEvents) { //so that onUpdate fires even during the repeatDelay - as long as the totalTime changed, we should trigger onUpdate.
-					this._callback("onUpdate");
-				}
-				return;
-			} else if (!this._initted) {
-				this._initted = true;
-			}
-
-			if (!this._active) if (!this._paused && this._totalTime !== prevTotalTime && time > 0) {
-				this._active = true;  //so that if the user renders the timeline (as opposed to the parent timeline rendering it), it is forced to re-render and align it with the proper time/frame on the next rendering cycle. Maybe the timeline already finished but the user manually re-renders it as halfway done, for example.
-			}
-			
-			if (prevTotalTime === 0) if (this.vars.onStart) if (this._totalTime !== 0 || !this._totalDuration) if (!suppressEvents) {
-				this._callback("onStart");
-			}
-
-			curTime = this._time;
-			if (curTime >= prevTime) {
-				tween = this._first;
-				while (tween) {
-					next = tween._next; //record it here because the value could change after rendering...
-					if (curTime !== this._time || (this._paused && !prevPaused)) { //in case a tween pauses or seeks the timeline when rendering, like inside of an onUpdate/onComplete
-						break;
-					} else if (tween._active || (tween._startTime <= this._time && !tween._paused && !tween._gc)) {
-						if (pauseTween === tween) {
-							this.pause();
-						}
-						if (!tween._reversed) {
-							tween.render((time - tween._startTime) * tween._timeScale, suppressEvents, force);
-						} else {
-							tween.render(((!tween._dirty) ? tween._totalDuration : tween.totalDuration()) - ((time - tween._startTime) * tween._timeScale), suppressEvents, force);
-						}
-					}
-					tween = next;
-				}
-			} else {
-				tween = this._last;
-				while (tween) {
-					next = tween._prev; //record it here because the value could change after rendering...
-					if (curTime !== this._time || (this._paused && !prevPaused)) { //in case a tween pauses or seeks the timeline when rendering, like inside of an onUpdate/onComplete
-						break;
-					} else if (tween._active || (tween._startTime <= prevTime && !tween._paused && !tween._gc)) {
-						if (pauseTween === tween) {
-							pauseTween = tween._prev; //the linked list is organized by _startTime, thus it's possible that a tween could start BEFORE the pause and end after it, in which case it would be positioned before the pause tween in the linked list, but we should render it before we pause() the timeline and cease rendering. This is only a concern when going in reverse.
-							while (pauseTween && pauseTween.endTime() > this._time) {
-								pauseTween.render( (pauseTween._reversed ? pauseTween.totalDuration() - ((time - pauseTween._startTime) * pauseTween._timeScale) : (time - pauseTween._startTime) * pauseTween._timeScale), suppressEvents, force);
-								pauseTween = pauseTween._prev;
-							}
-							pauseTween = null;
-							this.pause();
-						}
-						if (!tween._reversed) {
-							tween.render((time - tween._startTime) * tween._timeScale, suppressEvents, force);
-						} else {
-							tween.render(((!tween._dirty) ? tween._totalDuration : tween.totalDuration()) - ((time - tween._startTime) * tween._timeScale), suppressEvents, force);
-						}
-					}
-					tween = next;
-				}
-			}
-			
-			if (this._onUpdate) if (!suppressEvents) {
-				if (_lazyTweens.length) { //in case rendering caused any tweens to lazy-init, we should render them because typically when a timeline finishes, users expect things to have rendered fully. Imagine an onUpdate on a timeline that reports/checks tweened values.
-					_lazyRender();
-				}
-				this._callback("onUpdate");
-			}
-			if (callback) if (!this._locked) if (!this._gc) if (prevStart === this._startTime || prevTimeScale !== this._timeScale) if (this._time === 0 || totalDur >= this.totalDuration()) { //if one of the tweens that was rendered altered this timeline's startTime (like if an onComplete reversed the timeline), it probably isn't complete. If it is, don't worry, because whatever call altered the startTime would complete if it was necessary at the new time. The only exception is the timeScale property. Also check _gc because there's a chance that kill() could be called in an onUpdate
-				if (isComplete) {
-					if (_lazyTweens.length) { //in case rendering caused any tweens to lazy-init, we should render them because typically when a timeline finishes, users expect things to have rendered fully. Imagine an onComplete on a timeline that reports/checks tweened values.
-						_lazyRender();
-					}
-					if (this._timeline.autoRemoveChildren) {
-						this._enabled(false, false);
-					}
-					this._active = false;
-				}
-				if (!suppressEvents && this.vars[callback]) {
-					this._callback(callback);
-				}
-			}
-		};
-		
-		p.getActive = function(nested, tweens, timelines) {
-			if (nested == null) {
-				nested = true;
-			}
-			if (tweens == null) {
-				tweens = true;
-			}
-			if (timelines == null) {
-				timelines = false;
-			}
-			var a = [], 
-				all = this.getChildren(nested, tweens, timelines), 
-				cnt = 0, 
-				l = all.length,
-				i, tween;
-			for (i = 0; i < l; i++) {
-				tween = all[i];
-				if (tween.isActive()) {
-					a[cnt++] = tween;
-				}
-			}
-			return a;
-		};
-		
-		
-		p.getLabelAfter = function(time) {
-			if (!time) if (time !== 0) { //faster than isNan()
-				time = this._time;
-			}
-			var labels = this.getLabelsArray(),
-				l = labels.length,
-				i;
-			for (i = 0; i < l; i++) {
-				if (labels[i].time > time) {
-					return labels[i].name;
-				}
-			}
-			return null;
-		};
-		
-		p.getLabelBefore = function(time) {
-			if (time == null) {
-				time = this._time;
-			}
-			var labels = this.getLabelsArray(),
-				i = labels.length;
-			while (--i > -1) {
-				if (labels[i].time < time) {
-					return labels[i].name;
-				}
-			}
-			return null;
-		};
-		
-		p.getLabelsArray = function() {
-			var a = [],
-				cnt = 0,
-				p;
-			for (p in this._labels) {
-				a[cnt++] = {time:this._labels[p], name:p};
-			}
-			a.sort(function(a,b) {
-				return a.time - b.time;
-			});
-			return a;
-		};
-
-		p.invalidate = function() {
-			this._locked = false; //unlock and set cycle in case invalidate() is called from inside an onRepeat
-			return __WEBPACK_IMPORTED_MODULE_1__TimelineLite__["a" /* default */].prototype.invalidate.call(this);
-		};
-
-		
-//---- GETTERS / SETTERS -------------------------------------------------------------------------------------------------------
-		
-		p.progress = function(value, suppressEvents) {
-			return (!arguments.length) ? (this._time / this.duration()) || 0 : this.totalTime( this.duration() * ((this._yoyo && (this._cycle & 1) !== 0) ? 1 - value : value) + (this._cycle * (this._duration + this._repeatDelay)), suppressEvents);
-		};
-		
-		p.totalProgress = function(value, suppressEvents) {
-			return (!arguments.length) ? (this._totalTime / this.totalDuration()) || 0 : this.totalTime( this.totalDuration() * value, suppressEvents);
-		};
-
-		p.totalDuration = function(value) {
-			if (!arguments.length) {
-				if (this._dirty) {
-					__WEBPACK_IMPORTED_MODULE_1__TimelineLite__["a" /* default */].prototype.totalDuration.call(this); //just forces refresh
-					//Instead of Infinity, we use 999999999999 so that we can accommodate reverses.
-					this._totalDuration = (this._repeat === -1) ? 999999999999 : this._duration * (this._repeat + 1) + (this._repeatDelay * this._repeat);
-				}
-				return this._totalDuration;
-			}
-			return (this._repeat === -1 || !value) ? this : this.timeScale( this.totalDuration() / value );
-		};
-		
-		p.time = function(value, suppressEvents) {
-			if (!arguments.length) {
-				return this._time;
-			}
-			if (this._dirty) {
-				this.totalDuration();
-			}
-			if (value > this._duration) {
-				value = this._duration;
-			}
-			if (this._yoyo && (this._cycle & 1) !== 0) {
-				value = (this._duration - value) + (this._cycle * (this._duration + this._repeatDelay));
-			} else if (this._repeat !== 0) {
-				value += this._cycle * (this._duration + this._repeatDelay);
-			}
-			return this.totalTime(value, suppressEvents);
-		};
-		
-		p.repeat = function(value) {
-			if (!arguments.length) {
-				return this._repeat;
-			}
-			this._repeat = value;
-			return this._uncache(true);
-		};
-		
-		p.repeatDelay = function(value) {
-			if (!arguments.length) {
-				return this._repeatDelay;
-			}
-			this._repeatDelay = value;
-			return this._uncache(true);
-		};
-		
-		p.yoyo = function(value) {
-			if (!arguments.length) {
-				return this._yoyo;
-			}
-			this._yoyo = value;
-			return this;
-		};
-		
-		p.currentLabel = function(value) {
-			if (!arguments.length) {
-				return this.getLabelBefore(this._time + 0.00000001);
-			}
-			return this.seek(value, true);
-		};
-		
-		return TimelineMax;
-		
-	}, true);
-
-const TimelineMax = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].TimelineMax;
-/* unused harmony export TimelineMax */
 
 
 
@@ -20263,7 +20263,7 @@ const TimelineMax = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AttrPlugin; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(21);
 /*!
  * VERSION: 0.6.1
  * DATE: 2018-05-14
@@ -20278,7 +20278,7 @@ const TimelineMax = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]
 
 
 
-const AttrPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine.plugin({
+const AttrPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */]._gsDefine.plugin({
 	propName: "attr",
 	API: 2,
 	version: "0.6.1",
@@ -20316,7 +20316,7 @@ const AttrPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return RoundPropsPlugin; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(21);
 /*!
  * VERSION: 1.6.0
  * DATE: 2018-05-14
@@ -20330,7 +20330,7 @@ const AttrPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].
  **/
 
 
-const RoundPropsPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine.plugin({
+const RoundPropsPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */]._gsDefine.plugin({
 				propName: "roundProps",
 				version: "1.7.0",
 				priority: -1,
@@ -20431,7 +20431,7 @@ const RoundPropsPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScop
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DirectionalRotationPlugin; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(21);
 /*!
  * VERSION: 0.3.1
  * DATE: 2018-05-14
@@ -20446,7 +20446,7 @@ const RoundPropsPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScop
 
 
 
-const DirectionalRotationPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine.plugin({
+const DirectionalRotationPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */]._gsDefine.plugin({
 		propName: "directionalRotation",
 		version: "0.3.1",
 		API: 2,
@@ -20527,7 +20527,7 @@ DirectionalRotationPlugin._autoCSS = true;
 "use strict";
 /* unused harmony export BezierPlugin */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return BezierPlugin; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(21);
 /*!
  * VERSION: 1.3.8
  * DATE: 2018-05-14
@@ -20546,7 +20546,7 @@ DirectionalRotationPlugin._autoCSS = true;
 			_r2 = [],
 			_r3 = [],
 			_corProps = {},
-			_globals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine.globals,
+			_globals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */]._gsDefine.globals,
 			Segment = function(a, b, c, d) {
 				if (c === d) { //if c and d match, the final autoRotate value could lock at -90 degrees, so differentiate them slightly.
 					c = d - (d - b) / 1000000;
@@ -20838,7 +20838,7 @@ DirectionalRotationPlugin._autoCSS = true;
 
 
 
-			BezierPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine.plugin({
+			BezierPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */]._gsDefine.plugin({
 					propName: "bezier",
 					priority: -1,
 					version: "1.3.8",
@@ -21137,7 +21137,7 @@ DirectionalRotationPlugin._autoCSS = true;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(21);
 /* unused harmony reexport Linear */
 /* unused harmony reexport Power0 */
 /* unused harmony reexport Power1 */
@@ -21158,9 +21158,9 @@ DirectionalRotationPlugin._autoCSS = true;
 
 
 
-__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("easing.Back", ["easing.Ease"], function() {
+__WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */]._gsDefine("easing.Back", ["easing.Ease"], function() {
 		
-		var w = (__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].GreenSockGlobals || __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]),
+		var w = (__WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].GreenSockGlobals || __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */]),
 			gs = w.com.greensock,
 			_2PI = Math.PI * 2,
 			_HALF_PI = Math.PI / 2,
@@ -21507,34 +21507,34 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("easing.B
 		
 	}, true);
 
-const Back = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].Back;
+const Back = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].Back;
 /* harmony export (immutable) */ __webpack_exports__["a"] = Back;
 
-const Elastic = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].Elastic;
+const Elastic = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].Elastic;
 /* harmony export (immutable) */ __webpack_exports__["d"] = Elastic;
 
-const Bounce = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].Bounce;
+const Bounce = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].Bounce;
 /* harmony export (immutable) */ __webpack_exports__["b"] = Bounce;
 
-const RoughEase = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].RoughEase;
+const RoughEase = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].RoughEase;
 /* harmony export (immutable) */ __webpack_exports__["g"] = RoughEase;
 
-const SlowMo = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].SlowMo;
+const SlowMo = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].SlowMo;
 /* harmony export (immutable) */ __webpack_exports__["i"] = SlowMo;
 
-const SteppedEase = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].SteppedEase;
+const SteppedEase = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].SteppedEase;
 /* harmony export (immutable) */ __webpack_exports__["j"] = SteppedEase;
 
-const Circ = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].Circ;
+const Circ = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].Circ;
 /* harmony export (immutable) */ __webpack_exports__["c"] = Circ;
 
-const Expo = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].Expo;
+const Expo = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].Expo;
 /* harmony export (immutable) */ __webpack_exports__["e"] = Expo;
 
-const Sine = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].Sine;
+const Sine = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].Sine;
 /* harmony export (immutable) */ __webpack_exports__["h"] = Sine;
 
-const ExpoScaleEase = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].ExpoScaleEase;
+const ExpoScaleEase = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].ExpoScaleEase;
 /* harmony export (immutable) */ __webpack_exports__["f"] = ExpoScaleEase;
 
 
@@ -21544,11 +21544,9 @@ const ExpoScaleEase = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope *
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(138);
-__webpack_require__(51);
+__webpack_require__(129);
 __webpack_require__(340);
-__webpack_require__(344);
-__webpack_require__(345);
-module.exports = __webpack_require__(346);
+module.exports = __webpack_require__(344);
 
 
 /***/ }),
@@ -21584,7 +21582,7 @@ define(String.prototype, "padRight", "".padEnd);
 "pop,reverse,shift,keys,values,entries,indexOf,every,some,forEach,map,filter,find,findIndex,includes,join,slice,concat,push,splice,unshift,sort,lastIndexOf,reduce,reduceRight,copyWithin,fill".split(",").forEach(function (key) {
   [][key] && define(Array, key, Function.call.bind([][key]));
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(67)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(65)))
 
 /***/ }),
 /* 139 */
@@ -21689,18 +21687,18 @@ __webpack_require__(240);
 __webpack_require__(241);
 __webpack_require__(242);
 __webpack_require__(243);
-__webpack_require__(89);
+__webpack_require__(87);
 __webpack_require__(244);
 __webpack_require__(245);
-__webpack_require__(115);
+__webpack_require__(113);
 __webpack_require__(246);
 __webpack_require__(247);
 __webpack_require__(248);
 __webpack_require__(249);
 __webpack_require__(250);
+__webpack_require__(116);
 __webpack_require__(118);
-__webpack_require__(120);
-__webpack_require__(121);
+__webpack_require__(119);
 __webpack_require__(251);
 __webpack_require__(252);
 __webpack_require__(253);
@@ -21803,22 +21801,22 @@ var $export = __webpack_require__(0);
 var redefine = __webpack_require__(13);
 var META = __webpack_require__(30).KEY;
 var $fails = __webpack_require__(3);
-var shared = __webpack_require__(53);
+var shared = __webpack_require__(50);
 var setToStringTag = __webpack_require__(43);
 var uid = __webpack_require__(33);
 var wks = __webpack_require__(5);
-var wksExt = __webpack_require__(98);
-var wksDefine = __webpack_require__(69);
+var wksExt = __webpack_require__(96);
+var wksDefine = __webpack_require__(67);
 var enumKeys = __webpack_require__(141);
-var isArray = __webpack_require__(56);
+var isArray = __webpack_require__(53);
 var anObject = __webpack_require__(1);
 var isObject = __webpack_require__(4);
-var toIObject = __webpack_require__(16);
+var toIObject = __webpack_require__(15);
 var toPrimitive = __webpack_require__(23);
 var createDesc = __webpack_require__(32);
 var _create = __webpack_require__(37);
-var gOPNExt = __webpack_require__(101);
-var $GOPD = __webpack_require__(17);
+var gOPNExt = __webpack_require__(99);
+var $GOPD = __webpack_require__(16);
 var $DP = __webpack_require__(7);
 var $keys = __webpack_require__(35);
 var gOPD = $GOPD.f;
@@ -21944,8 +21942,8 @@ if (!USE_NATIVE) {
   $GOPD.f = $getOwnPropertyDescriptor;
   $DP.f = $defineProperty;
   __webpack_require__(38).f = gOPNExt.f = $getOwnPropertyNames;
-  __webpack_require__(49).f = $propertyIsEnumerable;
-  __webpack_require__(55).f = $getOwnPropertySymbols;
+  __webpack_require__(48).f = $propertyIsEnumerable;
+  __webpack_require__(52).f = $getOwnPropertySymbols;
 
   if (DESCRIPTORS && !__webpack_require__(34)) {
     redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
@@ -22036,8 +22034,8 @@ setToStringTag(global.JSON, 'JSON', true);
 
 // all enumerable object keys, includes symbols
 var getKeys = __webpack_require__(35);
-var gOPS = __webpack_require__(55);
-var pIE = __webpack_require__(49);
+var gOPS = __webpack_require__(52);
+var pIE = __webpack_require__(48);
 module.exports = function (it) {
   var result = getKeys(it);
   var getSymbols = gOPS.f;
@@ -22075,7 +22073,7 @@ $export($export.S + $export.F * !__webpack_require__(6), 'Object', { definePrope
 
 var $export = __webpack_require__(0);
 // 19.1.2.3 / 15.2.3.7 Object.defineProperties(O, Properties)
-$export($export.S + $export.F * !__webpack_require__(6), 'Object', { defineProperties: __webpack_require__(100) });
+$export($export.S + $export.F * !__webpack_require__(6), 'Object', { defineProperties: __webpack_require__(98) });
 
 
 /***/ }),
@@ -22083,8 +22081,8 @@ $export($export.S + $export.F * !__webpack_require__(6), 'Object', { definePrope
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
-var toIObject = __webpack_require__(16);
-var $getOwnPropertyDescriptor = __webpack_require__(17).f;
+var toIObject = __webpack_require__(15);
+var $getOwnPropertyDescriptor = __webpack_require__(16).f;
 
 __webpack_require__(26)('getOwnPropertyDescriptor', function () {
   return function getOwnPropertyDescriptor(it, key) {
@@ -22099,7 +22097,7 @@ __webpack_require__(26)('getOwnPropertyDescriptor', function () {
 
 // 19.1.2.9 Object.getPrototypeOf(O)
 var toObject = __webpack_require__(9);
-var $getPrototypeOf = __webpack_require__(18);
+var $getPrototypeOf = __webpack_require__(17);
 
 __webpack_require__(26)('getPrototypeOf', function () {
   return function getPrototypeOf(it) {
@@ -22129,7 +22127,7 @@ __webpack_require__(26)('keys', function () {
 
 // 19.1.2.7 Object.getOwnPropertyNames(O)
 __webpack_require__(26)('getOwnPropertyNames', function () {
-  return __webpack_require__(101).f;
+  return __webpack_require__(99).f;
 });
 
 
@@ -22227,7 +22225,7 @@ __webpack_require__(26)('isExtensible', function ($isExtensible) {
 // 19.1.3.1 Object.assign(target, source)
 var $export = __webpack_require__(0);
 
-$export($export.S + $export.F, 'Object', { assign: __webpack_require__(102) });
+$export($export.S + $export.F, 'Object', { assign: __webpack_require__(100) });
 
 
 /***/ }),
@@ -22256,7 +22254,7 @@ module.exports = Object.is || function is(x, y) {
 
 // 19.1.3.19 Object.setPrototypeOf(O, proto)
 var $export = __webpack_require__(0);
-$export($export.S, 'Object', { setPrototypeOf: __webpack_require__(73).set });
+$export($export.S, 'Object', { setPrototypeOf: __webpack_require__(71).set });
 
 
 /***/ }),
@@ -22266,7 +22264,7 @@ $export($export.S, 'Object', { setPrototypeOf: __webpack_require__(73).set });
 "use strict";
 
 // 19.1.3.6 Object.prototype.toString()
-var classof = __webpack_require__(50);
+var classof = __webpack_require__(49);
 var test = {};
 test[__webpack_require__(5)('toStringTag')] = 'z';
 if (test + '' != '[object z]') {
@@ -22283,7 +22281,7 @@ if (test + '' != '[object z]') {
 // 19.2.3.2 / 15.3.4.5 Function.prototype.bind(thisArg, args...)
 var $export = __webpack_require__(0);
 
-$export($export.P, 'Function', { bind: __webpack_require__(103) });
+$export($export.P, 'Function', { bind: __webpack_require__(101) });
 
 
 /***/ }),
@@ -22315,7 +22313,7 @@ NAME in FProto || __webpack_require__(6) && dP(FProto, NAME, {
 "use strict";
 
 var isObject = __webpack_require__(4);
-var getPrototypeOf = __webpack_require__(18);
+var getPrototypeOf = __webpack_require__(17);
 var HAS_INSTANCE = __webpack_require__(5)('hasInstance');
 var FunctionProto = Function.prototype;
 // 19.2.3.6 Function.prototype[@@hasInstance](V)
@@ -22333,7 +22331,7 @@ if (!(HAS_INSTANCE in FunctionProto)) __webpack_require__(7).f(FunctionProto, HA
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
-var $parseInt = __webpack_require__(105);
+var $parseInt = __webpack_require__(103);
 // 18.2.5 parseInt(string, radix)
 $export($export.G + $export.F * (parseInt != $parseInt), { parseInt: $parseInt });
 
@@ -22343,7 +22341,7 @@ $export($export.G + $export.F * (parseInt != $parseInt), { parseInt: $parseInt }
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
-var $parseFloat = __webpack_require__(106);
+var $parseFloat = __webpack_require__(104);
 // 18.2.4 parseFloat(string)
 $export($export.G + $export.F * (parseFloat != $parseFloat), { parseFloat: $parseFloat });
 
@@ -22356,12 +22354,12 @@ $export($export.G + $export.F * (parseFloat != $parseFloat), { parseFloat: $pars
 
 var global = __webpack_require__(2);
 var has = __webpack_require__(11);
-var cof = __webpack_require__(20);
-var inheritIfRequired = __webpack_require__(75);
+var cof = __webpack_require__(19);
+var inheritIfRequired = __webpack_require__(73);
 var toPrimitive = __webpack_require__(23);
 var fails = __webpack_require__(3);
 var gOPN = __webpack_require__(38).f;
-var gOPD = __webpack_require__(17).f;
+var gOPD = __webpack_require__(16).f;
 var dP = __webpack_require__(7).f;
 var $trim = __webpack_require__(44).trim;
 var NUMBER = 'Number';
@@ -22432,8 +22430,8 @@ if (!$Number(' 0o1') || !$Number('0b1') || $Number('+0x1')) {
 
 var $export = __webpack_require__(0);
 var toInteger = __webpack_require__(25);
-var aNumberValue = __webpack_require__(107);
-var repeat = __webpack_require__(76);
+var aNumberValue = __webpack_require__(105);
+var repeat = __webpack_require__(74);
 var $toFixed = 1.0.toFixed;
 var floor = Math.floor;
 var data = [0, 0, 0, 0, 0, 0];
@@ -22553,7 +22551,7 @@ $export($export.P + $export.F * (!!$toFixed && (
 
 var $export = __webpack_require__(0);
 var $fails = __webpack_require__(3);
-var aNumberValue = __webpack_require__(107);
+var aNumberValue = __webpack_require__(105);
 var $toPrecision = 1.0.toPrecision;
 
 $export($export.P + $export.F * ($fails(function () {
@@ -22602,7 +22600,7 @@ $export($export.S, 'Number', {
 // 20.1.2.3 Number.isInteger(number)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Number', { isInteger: __webpack_require__(108) });
+$export($export.S, 'Number', { isInteger: __webpack_require__(106) });
 
 
 /***/ }),
@@ -22626,7 +22624,7 @@ $export($export.S, 'Number', {
 
 // 20.1.2.5 Number.isSafeInteger(number)
 var $export = __webpack_require__(0);
-var isInteger = __webpack_require__(108);
+var isInteger = __webpack_require__(106);
 var abs = Math.abs;
 
 $export($export.S, 'Number', {
@@ -22661,7 +22659,7 @@ $export($export.S, 'Number', { MIN_SAFE_INTEGER: -0x1fffffffffffff });
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
-var $parseFloat = __webpack_require__(106);
+var $parseFloat = __webpack_require__(104);
 // 20.1.2.12 Number.parseFloat(string)
 $export($export.S + $export.F * (Number.parseFloat != $parseFloat), 'Number', { parseFloat: $parseFloat });
 
@@ -22671,7 +22669,7 @@ $export($export.S + $export.F * (Number.parseFloat != $parseFloat), 'Number', { 
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
-var $parseInt = __webpack_require__(105);
+var $parseInt = __webpack_require__(103);
 // 20.1.2.13 Number.parseInt(string, radix)
 $export($export.S + $export.F * (Number.parseInt != $parseInt), 'Number', { parseInt: $parseInt });
 
@@ -22682,7 +22680,7 @@ $export($export.S + $export.F * (Number.parseInt != $parseInt), 'Number', { pars
 
 // 20.2.2.3 Math.acosh(x)
 var $export = __webpack_require__(0);
-var log1p = __webpack_require__(109);
+var log1p = __webpack_require__(107);
 var sqrt = Math.sqrt;
 var $acosh = Math.acosh;
 
@@ -22738,7 +22736,7 @@ $export($export.S + $export.F * !($atanh && 1 / $atanh(-0) < 0), 'Math', {
 
 // 20.2.2.9 Math.cbrt(x)
 var $export = __webpack_require__(0);
-var sign = __webpack_require__(77);
+var sign = __webpack_require__(75);
 
 $export($export.S, 'Math', {
   cbrt: function cbrt(x) {
@@ -22782,7 +22780,7 @@ $export($export.S, 'Math', {
 
 // 20.2.2.14 Math.expm1(x)
 var $export = __webpack_require__(0);
-var $expm1 = __webpack_require__(78);
+var $expm1 = __webpack_require__(76);
 
 $export($export.S + $export.F * ($expm1 != Math.expm1), 'Math', { expm1: $expm1 });
 
@@ -22794,7 +22792,7 @@ $export($export.S + $export.F * ($expm1 != Math.expm1), 'Math', { expm1: $expm1 
 // 20.2.2.16 Math.fround(x)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Math', { fround: __webpack_require__(110) });
+$export($export.S, 'Math', { fround: __webpack_require__(108) });
 
 
 /***/ }),
@@ -22872,7 +22870,7 @@ $export($export.S, 'Math', {
 // 20.2.2.20 Math.log1p(x)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Math', { log1p: __webpack_require__(109) });
+$export($export.S, 'Math', { log1p: __webpack_require__(107) });
 
 
 /***/ }),
@@ -22896,7 +22894,7 @@ $export($export.S, 'Math', {
 // 20.2.2.28 Math.sign(x)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Math', { sign: __webpack_require__(77) });
+$export($export.S, 'Math', { sign: __webpack_require__(75) });
 
 
 /***/ }),
@@ -22905,7 +22903,7 @@ $export($export.S, 'Math', { sign: __webpack_require__(77) });
 
 // 20.2.2.30 Math.sinh(x)
 var $export = __webpack_require__(0);
-var expm1 = __webpack_require__(78);
+var expm1 = __webpack_require__(76);
 var exp = Math.exp;
 
 // V8 near Chromium 38 has a problem with very small numbers
@@ -22926,7 +22924,7 @@ $export($export.S + $export.F * __webpack_require__(3)(function () {
 
 // 20.2.2.33 Math.tanh(x)
 var $export = __webpack_require__(0);
-var expm1 = __webpack_require__(78);
+var expm1 = __webpack_require__(76);
 var exp = Math.exp;
 
 $export($export.S, 'Math', {
@@ -22986,7 +22984,7 @@ $export($export.S + $export.F * (!!$fromCodePoint && $fromCodePoint.length != 1)
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
-var toIObject = __webpack_require__(16);
+var toIObject = __webpack_require__(15);
 var toLength = __webpack_require__(8);
 
 $export($export.S, 'String', {
@@ -23025,10 +23023,10 @@ __webpack_require__(44)('trim', function ($trim) {
 
 "use strict";
 
-var $at = __webpack_require__(79)(true);
+var $at = __webpack_require__(77)(true);
 
 // 21.1.3.27 String.prototype[@@iterator]()
-__webpack_require__(80)(String, 'String', function (iterated) {
+__webpack_require__(78)(String, 'String', function (iterated) {
   this._t = String(iterated); // target
   this._i = 0;                // next index
 // 21.1.5.2.1 %StringIteratorPrototype%.next()
@@ -23050,7 +23048,7 @@ __webpack_require__(80)(String, 'String', function (iterated) {
 "use strict";
 
 var $export = __webpack_require__(0);
-var $at = __webpack_require__(79)(false);
+var $at = __webpack_require__(77)(false);
 $export($export.P, 'String', {
   // 21.1.3.3 String.prototype.codePointAt(pos)
   codePointAt: function codePointAt(pos) {
@@ -23068,11 +23066,11 @@ $export($export.P, 'String', {
 
 var $export = __webpack_require__(0);
 var toLength = __webpack_require__(8);
-var context = __webpack_require__(82);
+var context = __webpack_require__(80);
 var ENDS_WITH = 'endsWith';
 var $endsWith = ''[ENDS_WITH];
 
-$export($export.P + $export.F * __webpack_require__(83)(ENDS_WITH), 'String', {
+$export($export.P + $export.F * __webpack_require__(81)(ENDS_WITH), 'String', {
   endsWith: function endsWith(searchString /* , endPosition = @length */) {
     var that = context(this, searchString, ENDS_WITH);
     var endPosition = arguments.length > 1 ? arguments[1] : undefined;
@@ -23094,10 +23092,10 @@ $export($export.P + $export.F * __webpack_require__(83)(ENDS_WITH), 'String', {
 // 21.1.3.7 String.prototype.includes(searchString, position = 0)
 
 var $export = __webpack_require__(0);
-var context = __webpack_require__(82);
+var context = __webpack_require__(80);
 var INCLUDES = 'includes';
 
-$export($export.P + $export.F * __webpack_require__(83)(INCLUDES), 'String', {
+$export($export.P + $export.F * __webpack_require__(81)(INCLUDES), 'String', {
   includes: function includes(searchString /* , position = 0 */) {
     return !!~context(this, searchString, INCLUDES)
       .indexOf(searchString, arguments.length > 1 ? arguments[1] : undefined);
@@ -23113,7 +23111,7 @@ var $export = __webpack_require__(0);
 
 $export($export.P, 'String', {
   // 21.1.3.13 String.prototype.repeat(count)
-  repeat: __webpack_require__(76)
+  repeat: __webpack_require__(74)
 });
 
 
@@ -23126,11 +23124,11 @@ $export($export.P, 'String', {
 
 var $export = __webpack_require__(0);
 var toLength = __webpack_require__(8);
-var context = __webpack_require__(82);
+var context = __webpack_require__(80);
 var STARTS_WITH = 'startsWith';
 var $startsWith = ''[STARTS_WITH];
 
-$export($export.P + $export.F * __webpack_require__(83)(STARTS_WITH), 'String', {
+$export($export.P + $export.F * __webpack_require__(81)(STARTS_WITH), 'String', {
   startsWith: function startsWith(searchString /* , position = 0 */) {
     var that = context(this, searchString, STARTS_WITH);
     var index = toLength(Math.min(arguments.length > 1 ? arguments[1] : undefined, that.length));
@@ -23455,7 +23453,7 @@ module.exports = function (hint) {
 // 22.1.2.2 / 15.4.3.2 Array.isArray(arg)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Array', { isArray: __webpack_require__(56) });
+$export($export.S, 'Array', { isArray: __webpack_require__(53) });
 
 
 /***/ }),
@@ -23464,16 +23462,16 @@ $export($export.S, 'Array', { isArray: __webpack_require__(56) });
 
 "use strict";
 
-var ctx = __webpack_require__(19);
+var ctx = __webpack_require__(18);
 var $export = __webpack_require__(0);
 var toObject = __webpack_require__(9);
-var call = __webpack_require__(111);
-var isArrayIter = __webpack_require__(84);
+var call = __webpack_require__(109);
+var isArrayIter = __webpack_require__(82);
 var toLength = __webpack_require__(8);
-var createProperty = __webpack_require__(85);
-var getIterFn = __webpack_require__(86);
+var createProperty = __webpack_require__(83);
+var getIterFn = __webpack_require__(84);
 
-$export($export.S + $export.F * !__webpack_require__(58)(function (iter) { Array.from(iter); }), 'Array', {
+$export($export.S + $export.F * !__webpack_require__(55)(function (iter) { Array.from(iter); }), 'Array', {
   // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
   from: function from(arrayLike /* , mapfn = undefined, thisArg = undefined */) {
     var O = toObject(arrayLike);
@@ -23509,7 +23507,7 @@ $export($export.S + $export.F * !__webpack_require__(58)(function (iter) { Array
 "use strict";
 
 var $export = __webpack_require__(0);
-var createProperty = __webpack_require__(85);
+var createProperty = __webpack_require__(83);
 
 // WebKit Array.of isn't generic
 $export($export.S + $export.F * __webpack_require__(3)(function () {
@@ -23536,11 +23534,11 @@ $export($export.S + $export.F * __webpack_require__(3)(function () {
 
 // 22.1.3.13 Array.prototype.join(separator)
 var $export = __webpack_require__(0);
-var toIObject = __webpack_require__(16);
+var toIObject = __webpack_require__(15);
 var arrayJoin = [].join;
 
 // fallback for not array-like strings
-$export($export.P + $export.F * (__webpack_require__(48) != Object || !__webpack_require__(21)(arrayJoin)), 'Array', {
+$export($export.P + $export.F * (__webpack_require__(47) != Object || !__webpack_require__(20)(arrayJoin)), 'Array', {
   join: function join(separator) {
     return arrayJoin.call(toIObject(this), separator === undefined ? ',' : separator);
   }
@@ -23554,8 +23552,8 @@ $export($export.P + $export.F * (__webpack_require__(48) != Object || !__webpack
 "use strict";
 
 var $export = __webpack_require__(0);
-var html = __webpack_require__(72);
-var cof = __webpack_require__(20);
+var html = __webpack_require__(70);
+var cof = __webpack_require__(19);
 var toAbsoluteIndex = __webpack_require__(36);
 var toLength = __webpack_require__(8);
 var arraySlice = [].slice;
@@ -23602,7 +23600,7 @@ $export($export.P + $export.F * (fails(function () {
   // V8 bug
   test.sort(null);
   // Old WebKit
-}) || !__webpack_require__(21)($sort)), 'Array', {
+}) || !__webpack_require__(20)($sort)), 'Array', {
   // 22.1.3.25 Array.prototype.sort(comparefn)
   sort: function sort(comparefn) {
     return comparefn === undefined
@@ -23620,7 +23618,7 @@ $export($export.P + $export.F * (fails(function () {
 
 var $export = __webpack_require__(0);
 var $forEach = __webpack_require__(27)(0);
-var STRICT = __webpack_require__(21)([].forEach, true);
+var STRICT = __webpack_require__(20)([].forEach, true);
 
 $export($export.P + $export.F * !STRICT, 'Array', {
   // 22.1.3.10 / 15.4.4.18 Array.prototype.forEach(callbackfn [, thisArg])
@@ -23635,7 +23633,7 @@ $export($export.P + $export.F * !STRICT, 'Array', {
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(4);
-var isArray = __webpack_require__(56);
+var isArray = __webpack_require__(53);
 var SPECIES = __webpack_require__(5)('species');
 
 module.exports = function (original) {
@@ -23661,7 +23659,7 @@ module.exports = function (original) {
 var $export = __webpack_require__(0);
 var $map = __webpack_require__(27)(1);
 
-$export($export.P + $export.F * !__webpack_require__(21)([].map, true), 'Array', {
+$export($export.P + $export.F * !__webpack_require__(20)([].map, true), 'Array', {
   // 22.1.3.15 / 15.4.4.19 Array.prototype.map(callbackfn [, thisArg])
   map: function map(callbackfn /* , thisArg */) {
     return $map(this, callbackfn, arguments[1]);
@@ -23678,7 +23676,7 @@ $export($export.P + $export.F * !__webpack_require__(21)([].map, true), 'Array',
 var $export = __webpack_require__(0);
 var $filter = __webpack_require__(27)(2);
 
-$export($export.P + $export.F * !__webpack_require__(21)([].filter, true), 'Array', {
+$export($export.P + $export.F * !__webpack_require__(20)([].filter, true), 'Array', {
   // 22.1.3.7 / 15.4.4.20 Array.prototype.filter(callbackfn [, thisArg])
   filter: function filter(callbackfn /* , thisArg */) {
     return $filter(this, callbackfn, arguments[1]);
@@ -23695,7 +23693,7 @@ $export($export.P + $export.F * !__webpack_require__(21)([].filter, true), 'Arra
 var $export = __webpack_require__(0);
 var $some = __webpack_require__(27)(3);
 
-$export($export.P + $export.F * !__webpack_require__(21)([].some, true), 'Array', {
+$export($export.P + $export.F * !__webpack_require__(20)([].some, true), 'Array', {
   // 22.1.3.23 / 15.4.4.17 Array.prototype.some(callbackfn [, thisArg])
   some: function some(callbackfn /* , thisArg */) {
     return $some(this, callbackfn, arguments[1]);
@@ -23712,7 +23710,7 @@ $export($export.P + $export.F * !__webpack_require__(21)([].some, true), 'Array'
 var $export = __webpack_require__(0);
 var $every = __webpack_require__(27)(4);
 
-$export($export.P + $export.F * !__webpack_require__(21)([].every, true), 'Array', {
+$export($export.P + $export.F * !__webpack_require__(20)([].every, true), 'Array', {
   // 22.1.3.5 / 15.4.4.16 Array.prototype.every(callbackfn [, thisArg])
   every: function every(callbackfn /* , thisArg */) {
     return $every(this, callbackfn, arguments[1]);
@@ -23727,9 +23725,9 @@ $export($export.P + $export.F * !__webpack_require__(21)([].every, true), 'Array
 "use strict";
 
 var $export = __webpack_require__(0);
-var $reduce = __webpack_require__(112);
+var $reduce = __webpack_require__(110);
 
-$export($export.P + $export.F * !__webpack_require__(21)([].reduce, true), 'Array', {
+$export($export.P + $export.F * !__webpack_require__(20)([].reduce, true), 'Array', {
   // 22.1.3.18 / 15.4.4.21 Array.prototype.reduce(callbackfn [, initialValue])
   reduce: function reduce(callbackfn /* , initialValue */) {
     return $reduce(this, callbackfn, arguments.length, arguments[1], false);
@@ -23744,9 +23742,9 @@ $export($export.P + $export.F * !__webpack_require__(21)([].reduce, true), 'Arra
 "use strict";
 
 var $export = __webpack_require__(0);
-var $reduce = __webpack_require__(112);
+var $reduce = __webpack_require__(110);
 
-$export($export.P + $export.F * !__webpack_require__(21)([].reduceRight, true), 'Array', {
+$export($export.P + $export.F * !__webpack_require__(20)([].reduceRight, true), 'Array', {
   // 22.1.3.19 / 15.4.4.22 Array.prototype.reduceRight(callbackfn [, initialValue])
   reduceRight: function reduceRight(callbackfn /* , initialValue */) {
     return $reduce(this, callbackfn, arguments.length, arguments[1], true);
@@ -23761,11 +23759,11 @@ $export($export.P + $export.F * !__webpack_require__(21)([].reduceRight, true), 
 "use strict";
 
 var $export = __webpack_require__(0);
-var $indexOf = __webpack_require__(54)(false);
+var $indexOf = __webpack_require__(51)(false);
 var $native = [].indexOf;
 var NEGATIVE_ZERO = !!$native && 1 / [1].indexOf(1, -0) < 0;
 
-$export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(21)($native)), 'Array', {
+$export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(20)($native)), 'Array', {
   // 22.1.3.11 / 15.4.4.14 Array.prototype.indexOf(searchElement [, fromIndex])
   indexOf: function indexOf(searchElement /* , fromIndex = 0 */) {
     return NEGATIVE_ZERO
@@ -23783,13 +23781,13 @@ $export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(21)($nati
 "use strict";
 
 var $export = __webpack_require__(0);
-var toIObject = __webpack_require__(16);
+var toIObject = __webpack_require__(15);
 var toInteger = __webpack_require__(25);
 var toLength = __webpack_require__(8);
 var $native = [].lastIndexOf;
 var NEGATIVE_ZERO = !!$native && 1 / [1].lastIndexOf(1, -0) < 0;
 
-$export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(21)($native)), 'Array', {
+$export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(20)($native)), 'Array', {
   // 22.1.3.14 / 15.4.4.15 Array.prototype.lastIndexOf(searchElement [, fromIndex])
   lastIndexOf: function lastIndexOf(searchElement /* , fromIndex = @[*-1] */) {
     // convert -0 to +0
@@ -23812,7 +23810,7 @@ $export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(21)($nati
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 var $export = __webpack_require__(0);
 
-$export($export.P, 'Array', { copyWithin: __webpack_require__(113) });
+$export($export.P, 'Array', { copyWithin: __webpack_require__(111) });
 
 __webpack_require__(31)('copyWithin');
 
@@ -23824,7 +23822,7 @@ __webpack_require__(31)('copyWithin');
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 var $export = __webpack_require__(0);
 
-$export($export.P, 'Array', { fill: __webpack_require__(88) });
+$export($export.P, 'Array', { fill: __webpack_require__(86) });
 
 __webpack_require__(31)('fill');
 
@@ -23883,11 +23881,11 @@ __webpack_require__(39)('Array');
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(2);
-var inheritIfRequired = __webpack_require__(75);
+var inheritIfRequired = __webpack_require__(73);
 var dP = __webpack_require__(7).f;
 var gOPN = __webpack_require__(38).f;
-var isRegExp = __webpack_require__(57);
-var $flags = __webpack_require__(59);
+var isRegExp = __webpack_require__(54);
+var $flags = __webpack_require__(56);
 var $RegExp = global.RegExp;
 var Base = $RegExp;
 var proto = $RegExp.prototype;
@@ -23933,9 +23931,9 @@ __webpack_require__(39)('RegExp');
 
 "use strict";
 
-__webpack_require__(115);
+__webpack_require__(113);
 var anObject = __webpack_require__(1);
-var $flags = __webpack_require__(59);
+var $flags = __webpack_require__(56);
 var DESCRIPTORS = __webpack_require__(6);
 var TO_STRING = 'toString';
 var $toString = /./[TO_STRING];
@@ -23964,7 +23962,7 @@ if (__webpack_require__(3)(function () { return $toString.call({ source: 'a', fl
 /***/ (function(module, exports, __webpack_require__) {
 
 // @@match logic
-__webpack_require__(60)('match', 1, function (defined, MATCH, $match) {
+__webpack_require__(57)('match', 1, function (defined, MATCH, $match) {
   // 21.1.3.11 String.prototype.match(regexp)
   return [function match(regexp) {
     'use strict';
@@ -23980,7 +23978,7 @@ __webpack_require__(60)('match', 1, function (defined, MATCH, $match) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // @@replace logic
-__webpack_require__(60)('replace', 2, function (defined, REPLACE, $replace) {
+__webpack_require__(57)('replace', 2, function (defined, REPLACE, $replace) {
   // 21.1.3.14 String.prototype.replace(searchValue, replaceValue)
   return [function replace(searchValue, replaceValue) {
     'use strict';
@@ -23998,7 +23996,7 @@ __webpack_require__(60)('replace', 2, function (defined, REPLACE, $replace) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // @@search logic
-__webpack_require__(60)('search', 1, function (defined, SEARCH, $search) {
+__webpack_require__(57)('search', 1, function (defined, SEARCH, $search) {
   // 21.1.3.15 String.prototype.search(regexp)
   return [function search(regexp) {
     'use strict';
@@ -24014,9 +24012,9 @@ __webpack_require__(60)('search', 1, function (defined, SEARCH, $search) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // @@split logic
-__webpack_require__(60)('split', 2, function (defined, SPLIT, $split) {
+__webpack_require__(57)('split', 2, function (defined, SPLIT, $split) {
   'use strict';
-  var isRegExp = __webpack_require__(57);
+  var isRegExp = __webpack_require__(54);
   var _split = $split;
   var $push = [].push;
   var $SPLIT = 'split';
@@ -24094,19 +24092,19 @@ __webpack_require__(60)('split', 2, function (defined, SPLIT, $split) {
 
 var LIBRARY = __webpack_require__(34);
 var global = __webpack_require__(2);
-var ctx = __webpack_require__(19);
-var classof = __webpack_require__(50);
+var ctx = __webpack_require__(18);
+var classof = __webpack_require__(49);
 var $export = __webpack_require__(0);
 var isObject = __webpack_require__(4);
 var aFunction = __webpack_require__(10);
 var anInstance = __webpack_require__(40);
 var forOf = __webpack_require__(41);
-var speciesConstructor = __webpack_require__(61);
-var task = __webpack_require__(90).set;
-var microtask = __webpack_require__(91)();
-var newPromiseCapabilityModule = __webpack_require__(92);
-var perform = __webpack_require__(116);
-var promiseResolve = __webpack_require__(117);
+var speciesConstructor = __webpack_require__(58);
+var task = __webpack_require__(88).set;
+var microtask = __webpack_require__(89)();
+var newPromiseCapabilityModule = __webpack_require__(90);
+var perform = __webpack_require__(114);
+var promiseResolve = __webpack_require__(115);
 var PROMISE = 'Promise';
 var TypeError = global.TypeError;
 var process = global.process;
@@ -24320,7 +24318,7 @@ $export($export.S + $export.F * (LIBRARY || !USE_NATIVE), PROMISE, {
     return promiseResolve(LIBRARY && this === Wrapper ? $Promise : this, x);
   }
 });
-$export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(58)(function (iter) {
+$export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(55)(function (iter) {
   $Promise.all(iter)['catch'](empty);
 })), PROMISE, {
   // 25.4.4.1 Promise.all(iterable)
@@ -24372,12 +24370,12 @@ $export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(58)(function
 
 "use strict";
 
-var weak = __webpack_require__(122);
+var weak = __webpack_require__(120);
 var validate = __webpack_require__(46);
 var WEAK_SET = 'WeakSet';
 
 // 23.4 WeakSet Objects
-__webpack_require__(62)(WEAK_SET, function (get) {
+__webpack_require__(59)(WEAK_SET, function (get) {
   return function WeakSet() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
 }, {
   // 23.4.3.1 WeakSet.prototype.add(value)
@@ -24394,14 +24392,14 @@ __webpack_require__(62)(WEAK_SET, function (get) {
 "use strict";
 
 var $export = __webpack_require__(0);
-var $typed = __webpack_require__(63);
-var buffer = __webpack_require__(93);
+var $typed = __webpack_require__(60);
+var buffer = __webpack_require__(91);
 var anObject = __webpack_require__(1);
 var toAbsoluteIndex = __webpack_require__(36);
 var toLength = __webpack_require__(8);
 var isObject = __webpack_require__(4);
 var ArrayBuffer = __webpack_require__(2).ArrayBuffer;
-var speciesConstructor = __webpack_require__(61);
+var speciesConstructor = __webpack_require__(58);
 var $ArrayBuffer = buffer.ArrayBuffer;
 var $DataView = buffer.DataView;
 var $isView = $typed.ABV && ArrayBuffer.isView;
@@ -24445,8 +24443,8 @@ __webpack_require__(39)(ARRAY_BUFFER);
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
-$export($export.G + $export.W + $export.F * !__webpack_require__(63).ABV, {
-  DataView: __webpack_require__(93).DataView
+$export($export.G + $export.W + $export.F * !__webpack_require__(60).ABV, {
+  DataView: __webpack_require__(91).DataView
 });
 
 
@@ -24582,7 +24580,7 @@ var aFunction = __webpack_require__(10);
 var anObject = __webpack_require__(1);
 var isObject = __webpack_require__(4);
 var fails = __webpack_require__(3);
-var bind = __webpack_require__(103);
+var bind = __webpack_require__(101);
 var rConstruct = (__webpack_require__(2).Reflect || {}).construct;
 
 // MS Edge supports only 2 arguments and argumentsList argument is optional
@@ -24659,7 +24657,7 @@ $export($export.S + $export.F * __webpack_require__(3)(function () {
 
 // 26.1.4 Reflect.deleteProperty(target, propertyKey)
 var $export = __webpack_require__(0);
-var gOPD = __webpack_require__(17).f;
+var gOPD = __webpack_require__(16).f;
 var anObject = __webpack_require__(1);
 
 $export($export.S, 'Reflect', {
@@ -24686,7 +24684,7 @@ var Enumerate = function (iterated) {
   var key;
   for (key in iterated) keys.push(key);
 };
-__webpack_require__(81)(Enumerate, 'Object', function () {
+__webpack_require__(79)(Enumerate, 'Object', function () {
   var that = this;
   var keys = that._k;
   var key;
@@ -24708,8 +24706,8 @@ $export($export.S, 'Reflect', {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.6 Reflect.get(target, propertyKey [, receiver])
-var gOPD = __webpack_require__(17);
-var getPrototypeOf = __webpack_require__(18);
+var gOPD = __webpack_require__(16);
+var getPrototypeOf = __webpack_require__(17);
 var has = __webpack_require__(11);
 var $export = __webpack_require__(0);
 var isObject = __webpack_require__(4);
@@ -24735,7 +24733,7 @@ $export($export.S, 'Reflect', { get: get });
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.7 Reflect.getOwnPropertyDescriptor(target, propertyKey)
-var gOPD = __webpack_require__(17);
+var gOPD = __webpack_require__(16);
 var $export = __webpack_require__(0);
 var anObject = __webpack_require__(1);
 
@@ -24752,7 +24750,7 @@ $export($export.S, 'Reflect', {
 
 // 26.1.8 Reflect.getPrototypeOf(target)
 var $export = __webpack_require__(0);
-var getProto = __webpack_require__(18);
+var getProto = __webpack_require__(17);
 var anObject = __webpack_require__(1);
 
 $export($export.S, 'Reflect', {
@@ -24800,7 +24798,7 @@ $export($export.S, 'Reflect', {
 // 26.1.11 Reflect.ownKeys(target)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Reflect', { ownKeys: __webpack_require__(124) });
+$export($export.S, 'Reflect', { ownKeys: __webpack_require__(122) });
 
 
 /***/ }),
@@ -24831,8 +24829,8 @@ $export($export.S, 'Reflect', {
 
 // 26.1.13 Reflect.set(target, propertyKey, V [, receiver])
 var dP = __webpack_require__(7);
-var gOPD = __webpack_require__(17);
-var getPrototypeOf = __webpack_require__(18);
+var gOPD = __webpack_require__(16);
+var getPrototypeOf = __webpack_require__(17);
 var has = __webpack_require__(11);
 var $export = __webpack_require__(0);
 var createDesc = __webpack_require__(32);
@@ -24868,7 +24866,7 @@ $export($export.S, 'Reflect', { set: set });
 
 // 26.1.14 Reflect.setPrototypeOf(target, proto)
 var $export = __webpack_require__(0);
-var setProto = __webpack_require__(73);
+var setProto = __webpack_require__(71);
 
 if (setProto) $export($export.S, 'Reflect', {
   setPrototypeOf: function setPrototypeOf(target, proto) {
@@ -24891,7 +24889,7 @@ if (setProto) $export($export.S, 'Reflect', {
 
 // https://github.com/tc39/Array.prototype.includes
 var $export = __webpack_require__(0);
-var $includes = __webpack_require__(54)(true);
+var $includes = __webpack_require__(51)(true);
 
 $export($export.P, 'Array', {
   includes: function includes(el /* , fromIndex = 0 */) {
@@ -24910,11 +24908,11 @@ __webpack_require__(31)('includes');
 
 // https://tc39.github.io/proposal-flatMap/#sec-Array.prototype.flatMap
 var $export = __webpack_require__(0);
-var flattenIntoArray = __webpack_require__(125);
+var flattenIntoArray = __webpack_require__(123);
 var toObject = __webpack_require__(9);
 var toLength = __webpack_require__(8);
 var aFunction = __webpack_require__(10);
-var arraySpeciesCreate = __webpack_require__(87);
+var arraySpeciesCreate = __webpack_require__(85);
 
 $export($export.P, 'Array', {
   flatMap: function flatMap(callbackfn /* , thisArg */) {
@@ -24939,11 +24937,11 @@ __webpack_require__(31)('flatMap');
 
 // https://tc39.github.io/proposal-flatMap/#sec-Array.prototype.flatten
 var $export = __webpack_require__(0);
-var flattenIntoArray = __webpack_require__(125);
+var flattenIntoArray = __webpack_require__(123);
 var toObject = __webpack_require__(9);
 var toLength = __webpack_require__(8);
 var toInteger = __webpack_require__(25);
-var arraySpeciesCreate = __webpack_require__(87);
+var arraySpeciesCreate = __webpack_require__(85);
 
 $export($export.P, 'Array', {
   flatten: function flatten(/* depthArg = 1 */) {
@@ -24967,7 +24965,7 @@ __webpack_require__(31)('flatten');
 
 // https://github.com/mathiasbynens/String.prototype.at
 var $export = __webpack_require__(0);
-var $at = __webpack_require__(79)(true);
+var $at = __webpack_require__(77)(true);
 
 $export($export.P, 'String', {
   at: function at(pos) {
@@ -24984,8 +24982,8 @@ $export($export.P, 'String', {
 
 // https://github.com/tc39/proposal-string-pad-start-end
 var $export = __webpack_require__(0);
-var $pad = __webpack_require__(126);
-var userAgent = __webpack_require__(94);
+var $pad = __webpack_require__(124);
+var userAgent = __webpack_require__(92);
 
 // https://github.com/zloirock/core-js/issues/280
 $export($export.P + $export.F * /Version\/10\.\d+(\.\d+)? Safari\//.test(userAgent), 'String', {
@@ -25003,8 +25001,8 @@ $export($export.P + $export.F * /Version\/10\.\d+(\.\d+)? Safari\//.test(userAge
 
 // https://github.com/tc39/proposal-string-pad-start-end
 var $export = __webpack_require__(0);
-var $pad = __webpack_require__(126);
-var userAgent = __webpack_require__(94);
+var $pad = __webpack_require__(124);
+var userAgent = __webpack_require__(92);
 
 // https://github.com/zloirock/core-js/issues/280
 $export($export.P + $export.F * /Version\/10\.\d+(\.\d+)? Safari\//.test(userAgent), 'String', {
@@ -25052,8 +25050,8 @@ __webpack_require__(44)('trimRight', function ($trim) {
 var $export = __webpack_require__(0);
 var defined = __webpack_require__(24);
 var toLength = __webpack_require__(8);
-var isRegExp = __webpack_require__(57);
-var getFlags = __webpack_require__(59);
+var isRegExp = __webpack_require__(54);
+var getFlags = __webpack_require__(56);
 var RegExpProto = RegExp.prototype;
 
 var $RegExpStringIterator = function (regexp, string) {
@@ -25061,7 +25059,7 @@ var $RegExpStringIterator = function (regexp, string) {
   this._s = string;
 };
 
-__webpack_require__(81)($RegExpStringIterator, 'RegExp String', function next() {
+__webpack_require__(79)($RegExpStringIterator, 'RegExp String', function next() {
   var match = this._r.exec(this._s);
   return { value: match, done: match === null };
 });
@@ -25083,14 +25081,14 @@ $export($export.P, 'String', {
 /* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(69)('asyncIterator');
+__webpack_require__(67)('asyncIterator');
 
 
 /***/ }),
 /* 287 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(69)('observable');
+__webpack_require__(67)('observable');
 
 
 /***/ }),
@@ -25099,10 +25097,10 @@ __webpack_require__(69)('observable');
 
 // https://github.com/tc39/proposal-object-getownpropertydescriptors
 var $export = __webpack_require__(0);
-var ownKeys = __webpack_require__(124);
-var toIObject = __webpack_require__(16);
-var gOPD = __webpack_require__(17);
-var createProperty = __webpack_require__(85);
+var ownKeys = __webpack_require__(122);
+var toIObject = __webpack_require__(15);
+var gOPD = __webpack_require__(16);
+var createProperty = __webpack_require__(83);
 
 $export($export.S, 'Object', {
   getOwnPropertyDescriptors: function getOwnPropertyDescriptors(object) {
@@ -25127,7 +25125,7 @@ $export($export.S, 'Object', {
 
 // https://github.com/tc39/proposal-object-values-entries
 var $export = __webpack_require__(0);
-var $values = __webpack_require__(127)(false);
+var $values = __webpack_require__(125)(false);
 
 $export($export.S, 'Object', {
   values: function values(it) {
@@ -25142,7 +25140,7 @@ $export($export.S, 'Object', {
 
 // https://github.com/tc39/proposal-object-values-entries
 var $export = __webpack_require__(0);
-var $entries = __webpack_require__(127)(true);
+var $entries = __webpack_require__(125)(true);
 
 $export($export.S, 'Object', {
   entries: function entries(it) {
@@ -25163,7 +25161,7 @@ var aFunction = __webpack_require__(10);
 var $defineProperty = __webpack_require__(7);
 
 // B.2.2.2 Object.prototype.__defineGetter__(P, getter)
-__webpack_require__(6) && $export($export.P + __webpack_require__(64), 'Object', {
+__webpack_require__(6) && $export($export.P + __webpack_require__(61), 'Object', {
   __defineGetter__: function __defineGetter__(P, getter) {
     $defineProperty.f(toObject(this), P, { get: aFunction(getter), enumerable: true, configurable: true });
   }
@@ -25182,7 +25180,7 @@ var aFunction = __webpack_require__(10);
 var $defineProperty = __webpack_require__(7);
 
 // B.2.2.3 Object.prototype.__defineSetter__(P, setter)
-__webpack_require__(6) && $export($export.P + __webpack_require__(64), 'Object', {
+__webpack_require__(6) && $export($export.P + __webpack_require__(61), 'Object', {
   __defineSetter__: function __defineSetter__(P, setter) {
     $defineProperty.f(toObject(this), P, { set: aFunction(setter), enumerable: true, configurable: true });
   }
@@ -25198,11 +25196,11 @@ __webpack_require__(6) && $export($export.P + __webpack_require__(64), 'Object',
 var $export = __webpack_require__(0);
 var toObject = __webpack_require__(9);
 var toPrimitive = __webpack_require__(23);
-var getPrototypeOf = __webpack_require__(18);
-var getOwnPropertyDescriptor = __webpack_require__(17).f;
+var getPrototypeOf = __webpack_require__(17);
+var getOwnPropertyDescriptor = __webpack_require__(16).f;
 
 // B.2.2.4 Object.prototype.__lookupGetter__(P)
-__webpack_require__(6) && $export($export.P + __webpack_require__(64), 'Object', {
+__webpack_require__(6) && $export($export.P + __webpack_require__(61), 'Object', {
   __lookupGetter__: function __lookupGetter__(P) {
     var O = toObject(this);
     var K = toPrimitive(P, true);
@@ -25223,11 +25221,11 @@ __webpack_require__(6) && $export($export.P + __webpack_require__(64), 'Object',
 var $export = __webpack_require__(0);
 var toObject = __webpack_require__(9);
 var toPrimitive = __webpack_require__(23);
-var getPrototypeOf = __webpack_require__(18);
-var getOwnPropertyDescriptor = __webpack_require__(17).f;
+var getPrototypeOf = __webpack_require__(17);
+var getOwnPropertyDescriptor = __webpack_require__(16).f;
 
 // B.2.2.5 Object.prototype.__lookupSetter__(P)
-__webpack_require__(6) && $export($export.P + __webpack_require__(64), 'Object', {
+__webpack_require__(6) && $export($export.P + __webpack_require__(61), 'Object', {
   __lookupSetter__: function __lookupSetter__(P) {
     var O = toObject(this);
     var K = toPrimitive(P, true);
@@ -25246,7 +25244,7 @@ __webpack_require__(6) && $export($export.P + __webpack_require__(64), 'Object',
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var $export = __webpack_require__(0);
 
-$export($export.P + $export.R, 'Map', { toJSON: __webpack_require__(128)('Map') });
+$export($export.P + $export.R, 'Map', { toJSON: __webpack_require__(126)('Map') });
 
 
 /***/ }),
@@ -25256,7 +25254,7 @@ $export($export.P + $export.R, 'Map', { toJSON: __webpack_require__(128)('Map') 
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var $export = __webpack_require__(0);
 
-$export($export.P + $export.R, 'Set', { toJSON: __webpack_require__(128)('Set') });
+$export($export.P + $export.R, 'Set', { toJSON: __webpack_require__(126)('Set') });
 
 
 /***/ }),
@@ -25264,7 +25262,7 @@ $export($export.P + $export.R, 'Set', { toJSON: __webpack_require__(128)('Set') 
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-map.of
-__webpack_require__(65)('Map');
+__webpack_require__(62)('Map');
 
 
 /***/ }),
@@ -25272,7 +25270,7 @@ __webpack_require__(65)('Map');
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-set.of
-__webpack_require__(65)('Set');
+__webpack_require__(62)('Set');
 
 
 /***/ }),
@@ -25280,7 +25278,7 @@ __webpack_require__(65)('Set');
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-weakmap.of
-__webpack_require__(65)('WeakMap');
+__webpack_require__(62)('WeakMap');
 
 
 /***/ }),
@@ -25288,7 +25286,7 @@ __webpack_require__(65)('WeakMap');
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-weakset.of
-__webpack_require__(65)('WeakSet');
+__webpack_require__(62)('WeakSet');
 
 
 /***/ }),
@@ -25296,7 +25294,7 @@ __webpack_require__(65)('WeakSet');
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-map.from
-__webpack_require__(66)('Map');
+__webpack_require__(63)('Map');
 
 
 /***/ }),
@@ -25304,7 +25302,7 @@ __webpack_require__(66)('Map');
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-set.from
-__webpack_require__(66)('Set');
+__webpack_require__(63)('Set');
 
 
 /***/ }),
@@ -25312,7 +25310,7 @@ __webpack_require__(66)('Set');
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-weakmap.from
-__webpack_require__(66)('WeakMap');
+__webpack_require__(63)('WeakMap');
 
 
 /***/ }),
@@ -25320,7 +25318,7 @@ __webpack_require__(66)('WeakMap');
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-weakset.from
-__webpack_require__(66)('WeakSet');
+__webpack_require__(63)('WeakSet');
 
 
 /***/ }),
@@ -25349,7 +25347,7 @@ $export($export.S, 'System', { global: __webpack_require__(2) });
 
 // https://github.com/ljharb/proposal-is-error
 var $export = __webpack_require__(0);
-var cof = __webpack_require__(20);
+var cof = __webpack_require__(19);
 
 $export($export.S, 'Error', {
   isError: function isError(it) {
@@ -25403,8 +25401,8 @@ $export($export.S, 'Math', {
 
 // https://rwaldron.github.io/proposal-math-extensions/
 var $export = __webpack_require__(0);
-var scale = __webpack_require__(130);
-var fround = __webpack_require__(110);
+var scale = __webpack_require__(128);
+var fround = __webpack_require__(108);
 
 $export($export.S, 'Math', {
   fscale: function fscale(x, inLow, inHigh, outLow, outHigh) {
@@ -25501,7 +25499,7 @@ $export($export.S, 'Math', {
 // https://rwaldron.github.io/proposal-math-extensions/
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Math', { scale: __webpack_require__(130) });
+$export($export.S, 'Math', { scale: __webpack_require__(128) });
 
 
 /***/ }),
@@ -25549,8 +25547,8 @@ $export($export.S, 'Math', { signbit: function signbit(x) {
 var $export = __webpack_require__(0);
 var core = __webpack_require__(22);
 var global = __webpack_require__(2);
-var speciesConstructor = __webpack_require__(61);
-var promiseResolve = __webpack_require__(117);
+var speciesConstructor = __webpack_require__(58);
+var promiseResolve = __webpack_require__(115);
 
 $export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {
   var C = speciesConstructor(this, core.Promise || global.Promise);
@@ -25574,8 +25572,8 @@ $export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {
 
 // https://github.com/tc39/proposal-promise-try
 var $export = __webpack_require__(0);
-var newPromiseCapability = __webpack_require__(92);
-var perform = __webpack_require__(116);
+var newPromiseCapability = __webpack_require__(90);
+var perform = __webpack_require__(114);
 
 $export($export.S, 'Promise', { 'try': function (callbackfn) {
   var promiseCapability = newPromiseCapability.f(this);
@@ -25626,7 +25624,7 @@ metadata.exp({ deleteMetadata: function deleteMetadata(metadataKey, target /* , 
 
 var metadata = __webpack_require__(29);
 var anObject = __webpack_require__(1);
-var getPrototypeOf = __webpack_require__(18);
+var getPrototypeOf = __webpack_require__(17);
 var ordinaryHasOwnMetadata = metadata.has;
 var ordinaryGetOwnMetadata = metadata.get;
 var toMetaKey = metadata.key;
@@ -25647,11 +25645,11 @@ metadata.exp({ getMetadata: function getMetadata(metadataKey, target /* , target
 /* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Set = __webpack_require__(120);
-var from = __webpack_require__(129);
+var Set = __webpack_require__(118);
+var from = __webpack_require__(127);
 var metadata = __webpack_require__(29);
 var anObject = __webpack_require__(1);
-var getPrototypeOf = __webpack_require__(18);
+var getPrototypeOf = __webpack_require__(17);
 var ordinaryOwnMetadataKeys = metadata.keys;
 var toMetaKey = metadata.key;
 
@@ -25703,7 +25701,7 @@ metadata.exp({ getOwnMetadataKeys: function getOwnMetadataKeys(target /* , targe
 
 var metadata = __webpack_require__(29);
 var anObject = __webpack_require__(1);
-var getPrototypeOf = __webpack_require__(18);
+var getPrototypeOf = __webpack_require__(17);
 var ordinaryHasOwnMetadata = metadata.has;
 var toMetaKey = metadata.key;
 
@@ -25761,9 +25759,9 @@ $metadata.exp({ metadata: function metadata(metadataKey, metadataValue) {
 
 // https://github.com/rwaldron/tc39-notes/blob/master/es6/2014-09/sept-25.md#510-globalasap-for-enqueuing-a-microtask
 var $export = __webpack_require__(0);
-var microtask = __webpack_require__(91)();
+var microtask = __webpack_require__(89)();
 var process = __webpack_require__(2).process;
-var isNode = __webpack_require__(20)(process) == 'process';
+var isNode = __webpack_require__(19)(process) == 'process';
 
 $export($export.G, {
   asap: function asap(fn) {
@@ -25783,7 +25781,7 @@ $export($export.G, {
 var $export = __webpack_require__(0);
 var global = __webpack_require__(2);
 var core = __webpack_require__(22);
-var microtask = __webpack_require__(91)();
+var microtask = __webpack_require__(89)();
 var OBSERVABLE = __webpack_require__(5)('observable');
 var aFunction = __webpack_require__(10);
 var anObject = __webpack_require__(1);
@@ -25986,7 +25984,7 @@ __webpack_require__(39)('Observable');
 // ie9- setTimeout & setInterval additional parameters fix
 var global = __webpack_require__(2);
 var $export = __webpack_require__(0);
-var userAgent = __webpack_require__(94);
+var userAgent = __webpack_require__(92);
 var slice = [].slice;
 var MSIE = /MSIE .\./.test(userAgent); // <- dirty ie9- check
 var wrap = function (set) {
@@ -26010,7 +26008,7 @@ $export($export.G + $export.B + $export.F * MSIE, {
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
-var $task = __webpack_require__(90);
+var $task = __webpack_require__(88);
 $export($export.G + $export.B, {
   setImmediate: $task.set,
   clearImmediate: $task.clear
@@ -26021,7 +26019,7 @@ $export($export.G + $export.B, {
 /* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $iterators = __webpack_require__(89);
+var $iterators = __webpack_require__(87);
 var getKeys = __webpack_require__(35);
 var redefine = __webpack_require__(13);
 var global = __webpack_require__(2);
@@ -26822,7 +26820,7 @@ for (var collections = getKeys(DOMIterables), i = 0; i < collections.length; i++
   typeof self === "object" ? self : this
 );
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(67)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(65)))
 
 /***/ }),
 /* 337 */
@@ -26863,18 +26861,18 @@ module.exports = function (regExp, replace) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TimelineLite__ = __webpack_require__(95);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__TimelineMax__ = __webpack_require__(131);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TimelineLite__ = __webpack_require__(93);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__TimelineMax__ = __webpack_require__(130);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__TweenMax__ = __webpack_require__(342);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__CSSPlugin__ = __webpack_require__(96);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__CSSPlugin__ = __webpack_require__(131);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__AttrPlugin__ = __webpack_require__(132);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__RoundPropsPlugin__ = __webpack_require__(133);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__DirectionalRotationPlugin__ = __webpack_require__(134);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__BezierPlugin__ = __webpack_require__(135);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__EasePack__ = __webpack_require__(136);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return __WEBPACK_IMPORTED_MODULE_3__TweenMax__["a"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "TweenLite", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "TweenLite", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "TweenMax", function() { return __WEBPACK_IMPORTED_MODULE_3__TweenMax__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "TimelineLite", function() { return __WEBPACK_IMPORTED_MODULE_1__TimelineLite__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "TimelineMax", function() { return __WEBPACK_IMPORTED_MODULE_2__TimelineMax__["a"]; });
@@ -26883,14 +26881,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "BezierPlugin", function() { return __WEBPACK_IMPORTED_MODULE_8__BezierPlugin__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "RoundPropsPlugin", function() { return __WEBPACK_IMPORTED_MODULE_6__RoundPropsPlugin__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "DirectionalRotationPlugin", function() { return __WEBPACK_IMPORTED_MODULE_7__DirectionalRotationPlugin__["a"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "TweenPlugin", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "TweenPlugin", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["j"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Ease", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["b"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Power0", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["e"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Power1", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["f"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Power2", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["g"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Power3", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["h"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Power4", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["i"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Linear", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["d"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Power0", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["d"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Power1", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["e"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Power2", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["f"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Power3", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["g"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Power4", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["h"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Linear", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["c"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Back", function() { return __WEBPACK_IMPORTED_MODULE_9__EasePack__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Elastic", function() { return __WEBPACK_IMPORTED_MODULE_9__EasePack__["d"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Bounce", function() { return __WEBPACK_IMPORTED_MODULE_9__EasePack__["b"]; });
@@ -26901,7 +26899,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Expo", function() { return __WEBPACK_IMPORTED_MODULE_9__EasePack__["e"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Sine", function() { return __WEBPACK_IMPORTED_MODULE_9__EasePack__["h"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "ExpoScaleEase", function() { return __WEBPACK_IMPORTED_MODULE_9__EasePack__["f"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "_gsScope", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "_gsScope", function() { return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k"]; });
 /*!
  * VERSION: 1.20.5
  * DATE: 2018-05-21
@@ -26965,14 +26963,14 @@ module.exports = function(originalModule) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TweenMax; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TweenMaxBase__ = __webpack_require__(343);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__CSSPlugin__ = __webpack_require__(96);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__CSSPlugin__ = __webpack_require__(131);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__AttrPlugin__ = __webpack_require__(132);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__RoundPropsPlugin__ = __webpack_require__(133);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__DirectionalRotationPlugin__ = __webpack_require__(134);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__TimelineLite__ = __webpack_require__(95);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__TimelineMax__ = __webpack_require__(131);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__TimelineLite__ = __webpack_require__(93);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__TimelineMax__ = __webpack_require__(130);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__BezierPlugin__ = __webpack_require__(135);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__EasePack__ = __webpack_require__(136);
 /* unused harmony reexport TweenLite */
@@ -27040,7 +27038,7 @@ TweenMax._autoActivated = [__WEBPACK_IMPORTED_MODULE_6__TimelineLite__["a" /* de
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TweenMax; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(21);
 /* unused harmony reexport TweenLite */
 /* unused harmony reexport Ease */
 /* unused harmony reexport Power0 */
@@ -27064,7 +27062,7 @@ TweenMax._autoActivated = [__WEBPACK_IMPORTED_MODULE_6__TimelineLite__["a" /* de
 
 
 
-__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TweenMax", ["core.Animation","core.SimpleTimeline","TweenLite"], function() {
+__WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */]._gsDefine("TweenMax", ["core.Animation","core.SimpleTimeline","TweenLite"], function() {
 
 		var _slice = function(a) { //don't use [].slice because that doesn't work in IE8 with a NodeList that's returned by querySelectorAll()
 				var b = [],
@@ -27083,7 +27081,7 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TweenMax
 				delete vars.cycle;
 			},
 			TweenMax = function(target, duration, vars) {
-				__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].call(this, target, duration, vars);
+				__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].call(this, target, duration, vars);
 				this._cycle = 0;
 				this._yoyo = (this.vars.yoyo === true || !!this.vars.yoyoEase);
 				this._repeat = this.vars.repeat || 0;
@@ -27094,20 +27092,20 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TweenMax
 				this.render = TweenMax.prototype.render; //speed optimization (avoid prototype lookup on this "hot" method)
 			},
 			_tinyNum = 0.0000000001,
-			TweenLiteInternals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */]._internals,
+			TweenLiteInternals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */]._internals,
 			_isSelector = TweenLiteInternals.isSelector,
 			_isArray = TweenLiteInternals.isArray,
-			p = TweenMax.prototype = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].to({}, 0.1, {}),
+			p = TweenMax.prototype = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].to({}, 0.1, {}),
 			_blankArray = [];
 
 		TweenMax.version = "1.20.5";
 		p.constructor = TweenMax;
 		p.kill()._gc = false;
-		TweenMax.killTweensOf = TweenMax.killDelayedCallsTo = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].killTweensOf;
-		TweenMax.getTweensOf = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].getTweensOf;
-		TweenMax.lagSmoothing = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].lagSmoothing;
-		TweenMax.ticker = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].ticker;
-		TweenMax.render = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].render;
+		TweenMax.killTweensOf = TweenMax.killDelayedCallsTo = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].killTweensOf;
+		TweenMax.getTweensOf = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].getTweensOf;
+		TweenMax.lagSmoothing = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].lagSmoothing;
+		TweenMax.ticker = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].ticker;
+		TweenMax.render = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].render;
 
 		p.invalidate = function() {
 			this._yoyo = (this.vars.yoyo === true || !!this.vars.yoyoEase);
@@ -27115,7 +27113,7 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TweenMax
 			this._repeatDelay = this.vars.repeatDelay || 0;
 			this._yoyoEase = null;
 			this._uncache(true);
-			return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].prototype.invalidate.call(this);
+			return __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].prototype.invalidate.call(this);
 		};
 
 		p.updateTo = function(vars, resetDuration) {
@@ -27145,7 +27143,7 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TweenMax
 						this._enabled(true, false);
 					}
 					if (this._notifyPluginsOfEnabled && this._firstPT) {
-						__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */]._onPluginEvent("_onDisable", this); //in case a plugin like MotionBlur must perform some cleanup tasks
+						__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */]._onPluginEvent("_onDisable", this); //in case a plugin like MotionBlur must perform some cleanup tasks
 					}
 					if (this._time / this._duration > 0.998) { //if the tween has finished (or come extremely close to finishing), we just need to rewind it to 0 and then render it again at the end which forces it to re-initialize (parsing the new vars). We allow tweens that are close to finishing (but haven't quite finished) to work this way too because otherwise, the values are so small when determining where to project the starting values that binary math issues creep in and can make the tween appear to render incorrectly when run backwards.
 						var prevTime = this._totalTime;
@@ -27245,7 +27243,7 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TweenMax
 							if (!this._yoyoEase) {
 								if (yoyoEase === true && !this._initted) { //if it's not initted and yoyoEase is true, this._ease won't have been populated yet so we must discern it here.
 									yoyoEase = this.vars.ease;
-									this._yoyoEase = yoyoEase = !yoyoEase ? __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].defaultEase : (yoyoEase instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["b" /* Ease */]) ? yoyoEase : (typeof(yoyoEase) === "function") ? new __WEBPACK_IMPORTED_MODULE_0__TweenLite__["b" /* Ease */](yoyoEase, this.vars.easeParams) : __WEBPACK_IMPORTED_MODULE_0__TweenLite__["b" /* Ease */].map[yoyoEase] || __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].defaultEase;
+									this._yoyoEase = yoyoEase = !yoyoEase ? __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].defaultEase : (yoyoEase instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["b" /* Ease */]) ? yoyoEase : (typeof(yoyoEase) === "function") ? new __WEBPACK_IMPORTED_MODULE_0__TweenLite__["b" /* Ease */](yoyoEase, this.vars.easeParams) : __WEBPACK_IMPORTED_MODULE_0__TweenLite__["b" /* Ease */].map[yoyoEase] || __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].defaultEase;
 								} else {
 									this._yoyoEase = yoyoEase = (yoyoEase === true) ? this._ease : (yoyoEase instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["b" /* Ease */]) ? yoyoEase : __WEBPACK_IMPORTED_MODULE_0__TweenLite__["b" /* Ease */].map[yoyoEase];
 								}
@@ -27417,7 +27415,7 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TweenMax
 				l, copy, i, p;
 			if (!_isArray(targets)) {
 				if (typeof(targets) === "string") {
-					targets = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].selector(targets) || targets;
+					targets = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].selector(targets) || targets;
 				}
 				if (_isSelector(targets)) {
 					targets = _slice(targets);
@@ -27480,7 +27478,7 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TweenMax
 		};
 
 		TweenMax.isTweening = function(target) {
-			return (__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].getTweensOf(target, true).length > 0);
+			return (__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].getTweensOf(target, true).length > 0);
 		};
 
 		var _getChildrenOf = function(timeline, includeTimelines) {
@@ -27488,7 +27486,7 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TweenMax
 					cnt = 0,
 					tween = timeline._first;
 				while (tween) {
-					if (tween instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */]) {
+					if (tween instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */]) {
 						a[cnt++] = tween;
 					} else {
 						if (includeTimelines) {
@@ -27518,7 +27516,7 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TweenMax
 				isDC, tween, i;
 			for (i = 0; i < l; i++) {
 				tween = a[i];
-				if (allTrue || (tween instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["j" /* SimpleTimeline */]) || ((isDC = (tween.target === tween.vars.onComplete)) && delayedCalls) || (tweens && !isDC)) {
+				if (allTrue || (tween instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["i" /* SimpleTimeline */]) || ((isDC = (tween.target === tween.vars.onComplete)) && delayedCalls) || (tweens && !isDC)) {
 					if (complete) {
 						tween.totalTime(tween._reversed ? 0 : tween.totalDuration());
 					} else {
@@ -27535,7 +27533,7 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TweenMax
 			var tl = TweenLiteInternals.tweenLookup,
 				a, curParent, p, i, l;
 			if (typeof(parent) === "string") {
-				parent = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].selector(parent) || parent;
+				parent = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].selector(parent) || parent;
 			}
 			if (_isSelector(parent)) {
 				parent = _slice(parent);
@@ -27576,7 +27574,7 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TweenMax
 				isDC, tween;
 			while (--i > -1) {
 				tween = a[i];
-				if (allTrue || (tween instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["j" /* SimpleTimeline */]) || ((isDC = (tween.target === tween.vars.onComplete)) && delayedCalls) || (tweens && !isDC)) {
+				if (allTrue || (tween instanceof __WEBPACK_IMPORTED_MODULE_0__TweenLite__["i" /* SimpleTimeline */]) || ((isDC = (tween.target === tween.vars.onComplete)) && delayedCalls) || (tweens && !isDC)) {
 					tween.paused(pause);
 				}
 			}
@@ -27592,14 +27590,14 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TweenMax
 
 		TweenMax.globalTimeScale = function(value) {
 			var tl = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */]._rootTimeline,
-				t = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].ticker.time;
+				t = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].ticker.time;
 			if (!arguments.length) {
 				return tl._timeScale;
 			}
 			value = value || _tinyNum; //can't allow zero because it'll throw the math off
 			tl._startTime = t - ((t - tl._startTime) * tl._timeScale / value);
 			tl = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */]._rootFramesTimeline;
-			t = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].ticker.frame;
+			t = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* default */].ticker.frame;
 			tl._startTime = t - ((t - tl._startTime) * tl._timeScale / value);
 			tl._timeScale = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["a" /* Animation */]._rootTimeline._timeScale = value;
 			return value;
@@ -27682,7 +27680,7 @@ __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("TweenMax
 
 	}, true);
 
-const TweenMax = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].TweenMax;
+const TweenMax = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["k" /* _gsScope */].TweenMax;
 /* unused harmony export TweenMax */
 
 const TweenMaxBase = TweenMax;
@@ -27694,5701 +27692,129 @@ const TweenMaxBase = TweenMax;
 
 /***/ }),
 /* 344 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Draggable; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__CSSPlugin__ = __webpack_require__(96);
-/*!
- * VERSION: 0.16.3
- * DATE: 2018-05-14
- * UPDATES AND DOCS AT: http://greensock.com
- *
- * Requires TweenLite and CSSPlugin version 1.17.0 or later (TweenMax contains both TweenLite and CSSPlugin). ThrowPropsPlugin is required for momentum-based continuation of movement after the mouse/touch is released (ThrowPropsPlugin is a membership benefit of Club GreenSock - http://greensock.com/club/).
- *
- * @license Copyright (c) 2008-2018, GreenSock. All rights reserved.
- * This work is subject to the terms at http://greensock.com/standard-license or for
- * Club GreenSock members, the software agreement that was issued with your membership.
- *
- * @author: Jack Doyle, jack@greensock.com
- */
-
-
-
-
-	__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine("utils.Draggable", ["events.EventDispatcher","TweenLite","plugins.CSSPlugin"], function() {
-
-		var _tempVarsXY = {css:{}, data:"_draggable"}, //speed optimization - we reuse the same vars object for x/y TweenLite.set() calls to minimize garbage collection tasks and improve performance.
-			_tempVarsX = {css:{}, data:"_draggable"},
-			_tempVarsY = {css:{}, data:"_draggable"},
-			_tempVarsRotation = {css:{}},
-			_globals = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine.globals,
-			_tempEvent = {}, //for populating with pageX/pageY in old versions of IE
-			_dummyElement = {style:{}},
-			_doc = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].document || {createElement: function() {return _dummyElement;}},
-			_docElement = _doc.documentElement || {},
-			_createElement = function(type) {
-				return _doc.createElementNS ? _doc.createElementNS("http://www.w3.org/1999/xhtml", type) : _doc.createElement(type);
-			},
-			_tempDiv = _createElement("div"),
-			_emptyArray = [],
-			_emptyFunc = function() { return false; },
-			_RAD2DEG = 180 / Math.PI,
-			_max = 999999999999999,
-			_getTime = Date.now || function() {return new Date().getTime();},
-			_isOldIE = !!(!_doc.addEventListener && _doc.all),
-			_placeholderDiv = _doc.createElement("div"),
-			_renderQueue = [],
-			_lookup = {}, //when a Draggable is created, the target gets a unique _gsDragID property that allows gets associated with the Draggable instance for quick lookups in Draggable.get(). This avoids circular references that could cause gc problems.
-			_lookupCount = 0,
-			_clickableTagExp = /^(?:a|input|textarea|button|select)$/i,
-			_dragCount = 0, //total number of elements currently being dragged
-			_prefix,
-			_isMultiTouching,
-			_isAndroid = (__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].navigator && __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].navigator.userAgent.toLowerCase().indexOf("android") !== -1), //Android handles touch events in an odd way and it's virtually impossible to "feature test" so we resort to UA sniffing
-			_lastDragTime = 0,
-			_temp1 = {}, // a simple object we reuse and populate (usually x/y properties) to conserve memory and improve performance.
-			_windowProxy = {}, //memory/performance optimization - we reuse this object during autoScroll to store window-related bounds/offsets.
-			_slice = function(a) { //don't use Array.prototype.slice.call(target, 0) because that doesn't work in IE8 with a NodeList that's returned by querySelectorAll()
-				if (typeof(a) === "string") {
-					a = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].selector(a);
-				}
-				if (!a || a.nodeType) { //if it's not an array, wrap it in one.
-					return [a];
-				}
-				var b = [],
-					l = a.length,
-					i;
-				for (i = 0; i !== l; b.push(a[i++]));
-				return b;
-			},
-			_copy = function(obj, factor) {
-				var copy = {}, p;
-				if (factor) {
-					for (p in obj) {
-						copy[p] = obj[p] * factor;
-					}
-				} else {
-					for (p in obj) {
-						copy[p] = obj[p];
-					}
-				}
-				return copy;
-			},
-			ThrowPropsPlugin,
-
-			_renderQueueTick = function() {
-				var i = _renderQueue.length;
-				while (--i > -1) {
-					_renderQueue[i]();
-				}
-			},
-			_addToRenderQueue = function(func) {
-				_renderQueue.push(func);
-				if (_renderQueue.length === 1) {
-					__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].ticker.addEventListener("tick", _renderQueueTick, this, false, 1);
-				}
-			},
-			_removeFromRenderQueue = function(func) {
-				var i = _renderQueue.length;
-				while (--i > -1) {
-					if (_renderQueue[i] === func) {
-						_renderQueue.splice(i, 1);
-					}
-				}
-				__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].to(_renderQueueTimeout, 0, {overwrite:"all", delay:15, onComplete:_renderQueueTimeout, data:"_draggable"}); //remove the "tick" listener only after the render queue is empty for 15 seconds (to improve performance). Adding/removing it constantly for every click/touch wouldn't deliver optimal speed, and we also don't want the ticker to keep calling the render method when things are idle for long periods of time (we want to improve battery life on mobile devices).
-			},
-			_renderQueueTimeout = function() {
-				if (!_renderQueue.length) {
-					__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].ticker.removeEventListener("tick", _renderQueueTick);
-				}
-			},
-
-			_extend = function(obj, defaults) {
-				var p;
-				for (p in defaults) {
-					if (obj[p] === undefined) {
-						obj[p] = defaults[p];
-					}
-				}
-				return obj;
-			},
-			_getDocScrollTop = function() {
-				return (window.pageYOffset != null) ? window.pageYOffset : (_doc.scrollTop != null) ? _doc.scrollTop : _docElement.scrollTop || _doc.body.scrollTop || 0;
-			},
-			_getDocScrollLeft = function() {
-				return (window.pageXOffset != null) ? window.pageXOffset : (_doc.scrollLeft != null) ? _doc.scrollLeft : _docElement.scrollLeft || _doc.body.scrollLeft || 0;
-			},
-			_addScrollListener = function(e, callback) {
-				_addListener(e, "scroll", callback);
-				if (!_isRoot(e.parentNode)) {
-					_addScrollListener(e.parentNode, callback);
-				}
-			},
-			_removeScrollListener = function(e, callback) {
-				_removeListener(e, "scroll", callback);
-				if (!_isRoot(e.parentNode)) {
-					_removeScrollListener(e.parentNode, callback);
-				}
-			},
-			_isRoot = function (e) {
-				return !!(!e || e === _docElement || e === _doc || e === _doc.body || e === window || !e.nodeType || !e.parentNode);
-			},
-			_getMaxScroll = function(element, axis) {
-				var dim = (axis === "x") ? "Width" : "Height",
-					scroll = "scroll" + dim,
-					client = "client" + dim,
-					body = _doc.body;
-				return Math.max(0, _isRoot(element) ? Math.max(_docElement[scroll], body[scroll]) - (window["inner" + dim] || _docElement[client] || body[client]) : element[scroll] - element[client]);
-			},
-			_recordMaxScrolls = function(e) { //records _gsMaxScrollX and _gsMaxScrollY properties for the element and all ancestors up the chain so that we can cap it, otherwise dragging beyond the edges with autoScroll on can endlessly scroll.
-				var isRoot = _isRoot(e),
-					x = _getMaxScroll(e, "x"),
-					y = _getMaxScroll(e, "y");
-				if (isRoot) {
-					e = _windowProxy;
-				} else {
-					_recordMaxScrolls(e.parentNode);
-				}
-				e._gsMaxScrollX = x;
-				e._gsMaxScrollY = y;
-				e._gsScrollX = e.scrollLeft || 0;
-				e._gsScrollY = e.scrollTop || 0;
-			},
-
-			//just used for IE8 and earlier to normalize events and populate pageX/pageY
-			_populateIEEvent = function(e, preventDefault) {
-				e = e || window.event;
-				_tempEvent.pageX = e.clientX + _doc.body.scrollLeft + _docElement.scrollLeft;
-				_tempEvent.pageY = e.clientY + _doc.body.scrollTop + _docElement.scrollTop;
-				if (preventDefault) {
-					e.returnValue = false;
-				}
-				return _tempEvent;
-			},
-
-			//grabs the first element it finds (and we include the window as an element), so if it's selector text, it'll feed that value to TweenLite.selector, if it's a jQuery object or some other selector engine's result, it'll grab the first one, and same for an array. If the value doesn't contain a DOM element, it'll just return null.
-			_unwrapElement = function(value) {
-				if (!value) {
-					return value;
-				}
-				if (typeof(value) === "string") {
-					value = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].selector(value);
-				}
-				if (value.length && value !== window && value[0] && value[0].style && !value.nodeType) {
-					value = value[0];
-				}
-				return (value === window || (value.nodeType && value.style)) ? value : null;
-			},
-
-			_checkPrefix = function(e, p) {
-				var s = e.style,
-					capped, i, a;
-				if (s[p] === undefined) {
-					a = ["O","Moz","ms","Ms","Webkit"];
-					i = 5;
-					capped = p.charAt(0).toUpperCase() + p.substr(1);
-					while (--i > -1 && s[a[i]+capped] === undefined) { }
-					if (i < 0) {
-						return "";
-					}
-					_prefix = (i === 3) ? "ms" : a[i];
-					p = _prefix + capped;
-				}
-				return p;
-			},
-
-			_setStyle = function(e, p, value) {
-				var s = e.style;
-				if (!s) {
-					return;
-				}
-				if (s[p] === undefined) {
-					p = _checkPrefix(e, p);
-				}
-				if (value == null) {
-					if (s.removeProperty) {
-						s.removeProperty(p.replace(/([A-Z])/g, "-$1").toLowerCase());
-					} else { //note: old versions of IE use "removeAttribute()" instead of "removeProperty()"
-						s.removeAttribute(p);
-					}
-				} else if (s[p] !== undefined) {
-					s[p] = value;
-				}
-			},
-
-			_getComputedStyle = _doc.defaultView ? _doc.defaultView.getComputedStyle : _emptyFunc,
-			_horizExp = /(?:Left|Right|Width)/i,
-			_suffixExp = /(?:\d|\-|\+|=|#|\.)*/g,
-			_convertToPixels = function(t, p, v, sfx, recurse) {
-				if (sfx === "px" || !sfx) { return v; }
-				if (sfx === "auto" || !v) { return 0; }
-				var horiz = _horizExp.test(p),
-					node = t,
-					style = _tempDiv.style,
-					neg = (v < 0),
-					pix;
-				if (neg) {
-					v = -v;
-				}
-				if (sfx === "%" && p.indexOf("border") !== -1) {
-					pix = (v / 100) * (horiz ? t.clientWidth : t.clientHeight);
-				} else {
-					style.cssText = "border:0 solid red;position:" + _getStyle(t, "position", true) + ";line-height:0;";
-					if (sfx === "%" || !node.appendChild) {
-						node = t.parentNode || _doc.body;
-						style[(horiz ? "width" : "height")] = v + sfx;
-					} else {
-						style[(horiz ? "borderLeftWidth" : "borderTopWidth")] = v + sfx;
-					}
-					node.appendChild(_tempDiv);
-					pix = parseFloat(_tempDiv[(horiz ? "offsetWidth" : "offsetHeight")]);
-					node.removeChild(_tempDiv);
-					if (pix === 0 && !recurse) {
-						pix = _convertToPixels(t, p, v, sfx, true);
-					}
-				}
-				return neg ? -pix : pix;
-			},
-			_calculateOffset = function(t, p) { //for figuring out "top" or "left" in px when it's "auto". We need to factor in margin with the offsetLeft/offsetTop
-				if (_getStyle(t, "position", true) !== "absolute") { return 0; }
-				var dim = ((p === "left") ? "Left" : "Top"),
-					v = _getStyle(t, "margin" + dim, true);
-				return t["offset" + dim] - (_convertToPixels(t, p, parseFloat(v), (v + "").replace(_suffixExp, "")) || 0);
-			},
-
-			_getStyle = function(element, prop, keepUnits) {
-				var rv = (element._gsTransform || {})[prop],
-					cs;
-				if (rv || rv === 0) {
-					return rv;
-				} else if (element.style[prop]) {
-					rv = element.style[prop];
-				} else if ((cs = _getComputedStyle(element))) {
-					rv = cs.getPropertyValue(prop.replace(/([A-Z])/g, "-$1").toLowerCase());
-					rv = (rv || cs.length) ? rv : cs[prop]; //Opera behaves VERY strangely - length is usually 0 and cs[prop] is the only way to get accurate results EXCEPT when checking for -o-transform which only works with cs.getPropertyValue()!
-				} else if (element.currentStyle) {
-					rv = element.currentStyle[prop];
-				}
-				if (rv === "auto" && (prop === "top" || prop === "left")) {
-					rv = _calculateOffset(element, prop);
-				}
-				return keepUnits ? rv : parseFloat(rv) || 0;
-			},
-
-			_dispatchEvent = function(instance, type, callbackName) {
-				var vars = instance.vars,
-					callback = vars[callbackName],
-					listeners = instance._listeners[type];
-				if (typeof(callback) === "function") {
-					callback.apply(vars[callbackName + "Scope"] || vars.callbackScope || instance, vars[callbackName + "Params"] || [instance.pointerEvent]);
-				}
-				if (listeners) {
-					instance.dispatchEvent(type);
-				}
-			},
-			_getBounds = function(obj, context) { //accepts any of the following: a DOM element, jQuery object, selector text, or an object defining bounds as {top, left, width, height} or {minX, maxX, minY, maxY}. Returns an object with left, top, width, and height properties.
-				var e = _unwrapElement(obj),
-					top, left, offset;
-				if (!e) {
-					if (obj.left !== undefined) {
-						offset = _getOffsetTransformOrigin(context); //the bounds should be relative to the origin
-						return {left: obj.left - offset.x, top: obj.top - offset.y, width: obj.width, height: obj.height};
-					}
-					left = obj.min || obj.minX || obj.minRotation || 0;
-					top = obj.min || obj.minY || 0;
-					return {left:left, top:top, width:(obj.max || obj.maxX || obj.maxRotation || 0) - left, height:(obj.max || obj.maxY || 0) - top};
-				}
-				return _getElementBounds(e, context);
-			},
-
-			_svgBorderFactor,
-			_svgBorderScales,
-			_svgScrollOffset,
-			_hasBorderBug,
-			_hasReparentBug,//some browsers, like Chrome 49, alter the offsetTop/offsetLeft/offsetParent of elements when a non-identity transform is applied.
-			_setEnvironmentVariables = function() { //some browsers factor the border into the SVG coordinate space, some don't (like Firefox). Some apply transforms to them, some don't. We feature-detect here so we know how to handle the border(s). We can't do this immediately - we must wait for the document.body to exist.
-				if (!_doc.createElementNS) {
-					_svgBorderFactor = 0;
-					_svgBorderScales = false;
-					return;
-				}
-				var div = _createElement("div"),
-					svg = _doc.createElementNS("http://www.w3.org/2000/svg", "svg"),
-					wrapper = _createElement("div"),
-					style = div.style,
-					parent = _doc.body || _docElement,
-					isFlex = (_getStyle(parent, "display", true) === "flex"), //Firefox bug causes getScreenCTM() to return null when parent is display:flex and the element isn't rendered inside the window (like if it's below the scroll position)
-					matrix, e1, point, oldValue;
-				if (_doc.body && _transformProp) {
-					style.position = "absolute";
-					parent.appendChild(wrapper);
-					wrapper.appendChild(div);
-					oldValue = div.offsetParent;
-					wrapper.style[_transformProp] = "rotate(1deg)";
-					_hasReparentBug = (div.offsetParent === oldValue);
-					wrapper.style.position = "absolute";
-					style.height = "10px";
-					oldValue = div.offsetTop;
-					wrapper.style.border = "5px solid red";
-					_hasBorderBug = (oldValue !== div.offsetTop); //some browsers, like Firefox 38, cause the offsetTop/Left to be affected by a parent's border.
-					parent.removeChild(wrapper);
-				}
-				style = svg.style;
-				svg.setAttributeNS(null, "width", "400px");
-				svg.setAttributeNS(null, "height", "400px");
-				svg.setAttributeNS(null, "viewBox", "0 0 400 400");
-				style.display = "block";
-				style.boxSizing = "border-box";
-				style.border = "0px solid red";
-				style.transform = "none";
-				// in some browsers (like certain flavors of Android), the getScreenCTM() matrix is contaminated by the scroll position. We can run some logic here to detect that condition, but we ended up not needing this because we found another workaround using getBoundingClientRect().
-				div.style.cssText = "width:100px;height:100px;overflow:scroll;-ms-overflow-style:none;";
-				parent.appendChild(div);
-				div.appendChild(svg);
-				point = svg.createSVGPoint().matrixTransform(svg.getScreenCTM());
-				e1 = point.y;
-				div.scrollTop = 100;
-				point.x = point.y = 0;
-				point = point.matrixTransform(svg.getScreenCTM());
-				_svgScrollOffset = (e1 - point.y < 100.1) ? 0 : e1 - point.y - 150;
-				div.removeChild(svg);
-				parent.removeChild(div);
-				// -- end _svgScrollOffset calculation.
-				parent.appendChild(svg);
-				if (isFlex) {
-					parent.style.display = "block"; //Firefox bug causes getScreenCTM() to return null when parent is display:flex and the element isn't rendered inside the window (like if it's below the scroll position)
-				}
-				matrix = svg.getScreenCTM();
-				e1 = matrix.e;
-				style.border = "50px solid red";
-				matrix = svg.getScreenCTM();
-				if (e1 === 0 && matrix.e === 0 && matrix.f === 0 && matrix.a === 1) { //Opera has a bunch of bugs - it doesn't adjust the x/y of the matrix, nor does it scale when box-sizing is border-box but it does so elsewhere; to get the correct behavior we set _svgBorderScales to true.
-					_svgBorderFactor = 1;
-					_svgBorderScales = true;
-				} else {
-					_svgBorderFactor = (e1 !== matrix.e) ? 1 : 0;
-					_svgBorderScales = (matrix.a !== 1);
-				}
-				if (isFlex) {
-					parent.style.display = "flex";
-				}
-				parent.removeChild(svg);
-			},
-
-			_supports3D = (_checkPrefix(_tempDiv, "perspective") !== ""),
-
-			// start matrix and point conversion methods...
-			_transformOriginProp = _checkPrefix(_tempDiv, "transformOrigin").replace(/^ms/g, "Ms").replace(/([A-Z])/g, "-$1").toLowerCase(),
-			_transformProp = _checkPrefix(_tempDiv, "transform"),
-			_transformPropCSS = _transformProp.replace(/^ms/g, "Ms").replace(/([A-Z])/g, "-$1").toLowerCase(),
-			_point1 = {}, //we reuse _point1 and _point2 objects inside matrix and point conversion methods to conserve memory and minimize garbage collection tasks.
-			_point2 = {},
-			_SVGElement = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].SVGElement,
-			_isSVG = function(e) {
-				return !!(_SVGElement && typeof(e.getBBox) === "function" && e.getCTM && (!e.parentNode || (e.parentNode.getBBox && e.parentNode.getCTM)));
-			},
-			_isIE10orBelow = (((/MSIE ([0-9]{1,}[\.0-9]{0,})/).exec(navigator.userAgent) || (/Trident\/.*rv:([0-9]{1,}[\.0-9]{0,})/).exec(navigator.userAgent)) && parseFloat( RegExp.$1 ) < 11), //Ideally we'd avoid user agent sniffing, but there doesn't seem to be a way to feature-detect and sense a border-related bug that only affects IE10 and IE9.
-			_tempTransforms = [],
-			_tempElements = [],
-			_getSVGOffsets = function(e) { //SVG elements don't always report offsetTop/offsetLeft/offsetParent at all (I'm looking at you, Firefox 29 and Android), so we have to do some work to manufacture those values. You can pass any SVG element and it'll spit back an object with offsetTop, offsetLeft, offsetParent, scaleX, and scaleY properties. We need the scaleX and scaleY to handle the way SVG can resize itself based on the container.
-				if (!e.getBoundingClientRect || !e.parentNode || !_transformProp) {
-					return {offsetTop:0, offsetLeft:0, scaleX:1, scaleY:1, offsetParent:_docElement};
-				}
-				if (Draggable.cacheSVGData !== false && e._dCache && e._dCache.lastUpdate === __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].ticker.frame) { //performance optimization. Assume that if the offsets are requested again on the same tick, we can just feed back the values we already calculated (no need to keep recalculating until another tick elapses).
-					return e._dCache;
-				}
-				var curElement = e,
-					cache = _cache(e),
-					eRect, parentRect, offsetParent, cs, m, i, point1, point2, borderWidth, borderHeight, width, height;
-				cache.lastUpdate = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].ticker.frame;
-				if (e.getBBox && !cache.isSVGRoot) { //if it's a nested/child SVG element, we must find the parent SVG canvas and measure the offset from there.
-					curElement = e.parentNode;
-					eRect = e.getBBox();
-					while (curElement && (curElement.nodeName + "").toLowerCase() !== "svg") {
-						curElement = curElement.parentNode;
-					}
-					cs = _getSVGOffsets(curElement);
-					cache.offsetTop = eRect.y * cs.scaleY;
-					cache.offsetLeft = eRect.x * cs.scaleX;
-					cache.scaleX = cs.scaleX;
-					cache.scaleY = cs.scaleY;
-					cache.offsetParent = curElement || _docElement;
-					return cache;
-				}
-				//only root SVG elements continue here...
-				offsetParent = cache.offsetParent;
-				if (offsetParent === _doc.body) {
-					offsetParent = _docElement; //avoids problems with margins/padding on the body
-				}
-				//walk up the ancestors and record any non-identity transforms (and reset them to "none") until we reach the offsetParent. We must do this so that the getBoundingClientRect() is accurate for measuring the offsetTop/offsetLeft. We'll revert the values later...
-				_tempElements.length = _tempTransforms.length = 0;
-				while (curElement) {
-					m = _getStyle(curElement, _transformProp, true);
-					if (m !== "matrix(1, 0, 0, 1, 0, 0)" && m !== "none" && m !== "translate3d(0px, 0px, 0px)") {
-						_tempElements.push(curElement);
-						_tempTransforms.push(curElement.style[_transformProp]);
-						curElement.style[_transformProp] = "none";
-					}
-					if (curElement === offsetParent) {
-						break;
-					}
-					curElement = curElement.parentNode;
-				}
-				parentRect = offsetParent.getBoundingClientRect();
-				m = e.getScreenCTM();
-
-				point2 = e.createSVGPoint();
-				point1 = point2.matrixTransform(m);
-				cache.scaleX = Math.sqrt(m.a * m.a + m.b * m.b);
-				cache.scaleY = Math.sqrt(m.d * m.d + m.c * m.c);
-				if (_svgBorderFactor === undefined) {
-					_setEnvironmentVariables();
-				}
-				if (cache.borderBox && !_svgBorderScales && e.getAttribute("width")) { //some browsers (like Safari) don't properly scale the matrix to accommodate the border when box-sizing is border-box, so we must calculate it here...
-					cs = _getComputedStyle(e) || {};
-					borderWidth = (parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth)) || 0;
-					borderHeight = (parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth)) || 0;
-					width = parseFloat(cs.width) || 0;
-					height = parseFloat(cs.height) || 0;
-					cache.scaleX *= (width - borderWidth) / width;
-					cache.scaleY *= (height - borderHeight) / height;
-				}
-				if (_svgScrollOffset) { //some browsers (like Chrome for Android) have bugs in the way getScreenCTM() is reported (it doesn't factor in scroll position), so we must revert to a more expensive technique for calculating offsetTop/Left.
-					eRect = e.getBoundingClientRect();
-					cache.offsetLeft = eRect.left - parentRect.left;
-					cache.offsetTop = eRect.top - parentRect.top;
-				} else {
-					cache.offsetLeft = point1.x - parentRect.left;
-					cache.offsetTop = point1.y - parentRect.top;
-				}
-				cache.offsetParent = offsetParent;
-				i = _tempElements.length;
-				while (--i > -1) {
-					_tempElements[i].style[_transformProp] = _tempTransforms[i];
-				}
-				return cache;
-			},
-			_getOffsetTransformOrigin = function(e, decoratee) { //returns the x/y position of the transformOrigin of the element, in its own local coordinate system (pixels), offset from the top left corner.
-				decoratee = decoratee || {};
-				if (!e || e === _docElement || !e.parentNode || e === window) {
-					return {x:0, y:0};
-				}
-				var cs = _getComputedStyle(e),
-					v = (_transformOriginProp && cs) ? cs.getPropertyValue(_transformOriginProp) : "50% 50%",
-					a = v.split(" "),
-					x = (v.indexOf("left") !== -1) ? "0%" : (v.indexOf("right") !== -1) ? "100%" : a[0],
-					y = (v.indexOf("top") !== -1) ? "0%" : (v.indexOf("bottom") !== -1) ? "100%" : a[1];
-				if (y === "center" || y == null) {
-					y = "50%";
-				}
-				if (x === "center" || isNaN(parseFloat(x))) { //remember, the user could flip-flop the values and say "bottom center" or "center bottom", etc. "center" is ambiguous because it could be used to describe horizontal or vertical, hence the isNaN(). If there's an "=" sign in the value, it's relative.
-					x = "50%";
-				}
-				if (e.getBBox && _isSVG(e)) { //SVG elements must be handled in a special way because their origins are calculated from the top left.
-					if (!e._gsTransform) {
-						__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].set(e, {x:"+=0", overwrite:false}); //forces creation of the _gsTransform where we store all the transform components including xOrigin and yOrigin for SVG elements, as of GSAP 1.15.0 which also takes care of calculating the origin from the upper left corner of the SVG canvas.
-						if (e._gsTransform.xOrigin === undefined) {
-							console.log("Draggable requires at least GSAP 1.17.0");
-						}
-					}
-					v = e.getBBox();
-					decoratee.x = (e._gsTransform.xOrigin - v.x);
-					decoratee.y = (e._gsTransform.yOrigin - v.y);
-				} else {
-					if (e.getBBox && (x + y).indexOf("%") !== -1) { //Firefox doesn't report offsetWidth/height on <svg> elements.
-						e = e.getBBox();
-						e = {offsetWidth: e.width, offsetHeight: e.height};
-					}
-					decoratee.x = ((x.indexOf("%") !== -1) ? e.offsetWidth * parseFloat(x) / 100 : parseFloat(x));
-					decoratee.y = ((y.indexOf("%") !== -1) ? e.offsetHeight * parseFloat(y) / 100 : parseFloat(y));
-				}
-				return decoratee;
-			},
-			_cache = function(e) { //computes some important values and stores them in a _dCache object attached to the element itself so that we can optimize performance
-				if (Draggable.cacheSVGData !== false && e._dCache && e._dCache.lastUpdate === __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].ticker.frame) { //performance optimization. Assume that if the offsets are requested again on the same tick, we can just feed back the values we already calculated (no need to keep recalculating until another tick elapses).
-					return e._dCache;
-				}
-				var cache = e._dCache = e._dCache || {},
-					cs = _getComputedStyle(e),
-					isSVG = (e.getBBox && _isSVG(e)),
-					isSVGRoot = ((e.nodeName + "").toLowerCase() === "svg"),
-					curSVG;
-				cache.isSVG = isSVG;
-				cache.isSVGRoot = isSVGRoot;
-				cache.borderBox = (cs.boxSizing === "border-box");
-				cache.computedStyle = cs;
-				if (isSVGRoot) { //some browsers don't report parentNode on SVG elements.
-					curSVG = e.parentNode || _docElement;
-					curSVG.insertBefore(_tempDiv, e);
-					cache.offsetParent = _tempDiv.offsetParent || _docElement; //in some cases, Firefox still reports offsetParent as null.
-					curSVG.removeChild(_tempDiv);
-				} else if (isSVG) {
-					curSVG = e.parentNode;
-					while (curSVG && (curSVG.nodeName + "").toLowerCase() !== "svg") { //offsetParent is always the SVG canvas for SVG elements.
-						curSVG = curSVG.parentNode;
-					}
-					cache.offsetParent = curSVG;
-				} else {
-					cache.offsetParent = e.offsetParent;
-				}
-				return cache;
-			},
-			_getOffset2DMatrix = function(e, offsetOrigin, parentOffsetOrigin, zeroOrigin, isBase) {  //"isBase" helps us discern context - it should only be true when the element is the base one (the one at which we're starting to walk up the chain). It only matters in cases when it's an <svg> element itself because that's a case when we don't apply scaling.
-				if (e === window || !e || !e.style || !e.parentNode) {
-					return [1,0,0,1,0,0];
-				}
-				var cache = e._dCache || _cache(e),
-					parent = e.parentNode,
-					parentCache = parent._dCache || _cache(parent),
-					cs = cache.computedStyle,
-					parentOffsetParent = cache.isSVG ? parentCache.offsetParent : parent.offsetParent,
-					m, isRoot, offsets, rect, t, sx, sy, offsetX, offsetY, parentRect, borderTop, borderLeft, borderTranslateX, borderTranslateY;
-				m = (cache.isSVG && (e.style[_transformProp] + "").indexOf("matrix") !== -1) ? e.style[_transformProp] : cs ? cs.getPropertyValue(_transformPropCSS) : e.currentStyle ? e.currentStyle[_transformProp] : "1,0,0,1,0,0"; //some browsers (like Chrome 40) don't correctly report transforms that are applied inline on an SVG element (they don't get included in the computed style), so we double-check here and accept matrix values
-				if (e.getBBox && (e.getAttribute("transform") + "").indexOf("matrix") !== -1) { //SVG can store transform data in its "transform" attribute instead of the CSS, so look for that here (only accept matrix()).
-					m = e.getAttribute("transform");
-				}
-				m = (m + "").match(/(?:\-|\.|\b)(\d|\.|e\-)+/g) || [1,0,0,1,0,0];
-				if (m.length > 6) {
-					m = [m[0], m[1], m[4], m[5], m[12], m[13]];
-				}
-				if (zeroOrigin) {
-					m[4] = m[5] = 0;
-				} else if (cache.isSVG && (t = e._gsTransform) && (t.xOrigin || t.yOrigin)) {
-					//SVGs handle origin very differently. Factor in GSAP's handling of origin values here:
-					m[0] = parseFloat(m[0]);
-					m[1] = parseFloat(m[1]);
-					m[2] = parseFloat(m[2]);
-					m[3] = parseFloat(m[3]);
-					m[4] = parseFloat(m[4]) - (t.xOrigin - (t.xOrigin * m[0] + t.yOrigin * m[2]));
-					m[5] = parseFloat(m[5]) - (t.yOrigin - (t.xOrigin * m[1] + t.yOrigin * m[3]));
-				}
-				if (offsetOrigin) {
-					if (_svgBorderFactor === undefined) {
-						_setEnvironmentVariables();
-					}
-					offsets = (cache.isSVG || cache.isSVGRoot) ? _getSVGOffsets(e) : e;
-					if (cache.isSVG) { //don't just rely on "instanceof _SVGElement" because if the SVG is embedded via an object tag, it won't work (SVGElement is mapped to a different object))
-						rect = e.getBBox();
-						parentRect = (parentCache.isSVGRoot) ? {x:0, y:0} : parent.getBBox();
-						offsets = {offsetLeft:rect.x - parentRect.x, offsetTop:rect.y - parentRect.y, offsetParent:cache.offsetParent};
-					} else if (cache.isSVGRoot) {
-						borderTop = parseInt(cs.borderTopWidth, 10) || 0;
-						borderLeft = parseInt(cs.borderLeftWidth, 10) || 0;
-						borderTranslateX = ((m[0] - _svgBorderFactor) * borderLeft + m[2] * borderTop);
-						borderTranslateY = (m[1] * borderLeft + (m[3] - _svgBorderFactor) * borderTop);
-
-						sx = offsetOrigin.x;
-						sy = offsetOrigin.y;
-						offsetX = (sx - (sx * m[0] + sy * m[2])); //accommodate the SVG root's transforms when the origin isn't in the top left.
-						offsetY = (sy - (sx * m[1] + sy * m[3]));
-
-						m[4] = parseFloat(m[4]) + offsetX;
-						m[5] = parseFloat(m[5]) + offsetY;
-						offsetOrigin.x -= offsetX;
-						offsetOrigin.y -= offsetY;
-						sx = offsets.scaleX;
-						sy = offsets.scaleY;
-						if (!isBase) { //when getting the matrix for a root <svg> element itself (NOT in the context of an SVG element that's nested inside of it like a <path>), we do NOT apply the scaling!
-							offsetOrigin.x *= sx;
-							offsetOrigin.y *= sy;
-						}
-						m[0] *= sx;
-						m[1] *= sy;
-						m[2] *= sx;
-						m[3] *= sy;
-						if (!_isIE10orBelow) {
-							offsetOrigin.x += borderTranslateX;
-							offsetOrigin.y += borderTranslateY;
-						}
-						if (parentOffsetParent === _doc.body && offsets.offsetParent === _docElement) { //to avoid issues with margin/padding on the <body>, we always set the offsetParent to _docElement in the _getSVGOffsets() function but there's a condition we check later in this function for (parentOffsetParent === offsets.offsetParent) which would fail if we don't run this logic. In other words, parentOffsetParent may be <body> and the <svg>'s offsetParent is also <body> but artificially set to _docElement to avoid margin/padding issues.
-							parentOffsetParent = _docElement;
-						}
-					} else if (!_hasBorderBug && e.offsetParent) {
-						offsetOrigin.x += parseInt(_getStyle(e.offsetParent, "borderLeftWidth"), 10) || 0;
-						offsetOrigin.y += parseInt(_getStyle(e.offsetParent, "borderTopWidth"), 10) || 0;
-					}
-					isRoot = (parent === _docElement || parent === _doc.body);
-					m[4] = Number(m[4]) + offsetOrigin.x + (offsets.offsetLeft || 0) - parentOffsetOrigin.x - (isRoot ? 0 : parent.scrollLeft || 0);
-					m[5] = Number(m[5]) + offsetOrigin.y + (offsets.offsetTop || 0) - parentOffsetOrigin.y - (isRoot ? 0 : parent.scrollTop || 0);
-					if (parent && _getStyle(e, "position", cs) === "fixed") { //fixed position elements should factor in the scroll position of the document.
-						m[4] += _getDocScrollLeft();
-						m[5] += _getDocScrollTop();
-					}
-					if (parent && parent !== _docElement && parentOffsetParent === offsets.offsetParent && !parentCache.isSVG && (!_hasReparentBug || _getOffset2DMatrix(parent).join("") === "100100")) {
-						offsets = (parentCache.isSVGRoot) ? _getSVGOffsets(parent) : parent;
-						m[4] -= offsets.offsetLeft || 0;
-						m[5] -= offsets.offsetTop || 0;
-						if (!_hasBorderBug && parentCache.offsetParent && !cache.isSVG && !cache.isSVGRoot) {
-							m[4] -= parseInt(_getStyle(parentCache.offsetParent, "borderLeftWidth"), 10) || 0;
-							m[5] -= parseInt(_getStyle(parentCache.offsetParent, "borderTopWidth"), 10) || 0;
-						}
-					}
-				}
-				return m;
-			},
-			_getConcatenatedMatrix = function(e, invert) {
-				if (!e || e === window || !e.parentNode) {
-					return [1,0,0,1,0,0];
-				}
-				//note: we keep reusing _point1 and _point2 in order to minimize memory usage and garbage collection chores.
-				var originOffset = _getOffsetTransformOrigin(e, _point1),
-					parentOriginOffset = _getOffsetTransformOrigin(e.parentNode, _point2),
-					m = _getOffset2DMatrix(e, originOffset, parentOriginOffset, false, !invert),
-					a, b, c, d, tx, ty, m2, determinant;
-				while ((e = e.parentNode) && e.parentNode && e !== _docElement) {
-					originOffset = parentOriginOffset;
-					parentOriginOffset = _getOffsetTransformOrigin(e.parentNode, (originOffset === _point1) ? _point2 : _point1);
-					m2 = _getOffset2DMatrix(e, originOffset, parentOriginOffset);
-					a = m[0];
-					b = m[1];
-					c = m[2];
-					d = m[3];
-					tx = m[4];
-					ty = m[5];
-					m[0] = a * m2[0] + b * m2[2];
-					m[1] = a * m2[1] + b * m2[3];
-					m[2] = c * m2[0] + d * m2[2];
-					m[3] = c * m2[1] + d * m2[3];
-					m[4] = tx * m2[0] + ty * m2[2] + m2[4];
-					m[5] = tx * m2[1] + ty * m2[3] + m2[5];
-				}
-				if (invert) {
-					a = m[0];
-					b = m[1];
-					c = m[2];
-					d = m[3];
-					tx = m[4];
-					ty = m[5];
-					determinant = (a * d - b * c);
-					m[0] = d / determinant;
-					m[1] = -b / determinant;
-					m[2] = -c / determinant;
-					m[3] = a / determinant;
-					m[4] = (c * ty - d * tx) / determinant;
-					m[5] = -(a * ty - b * tx) / determinant;
-				}
-				return m;
-			},
-			_localToGlobal = function(e, p, fromTopLeft, decoratee, zeroOrigin) {
-				e = _unwrapElement(e);
-				var m = _getConcatenatedMatrix(e, false, zeroOrigin),
-					x = p.x,
-					y = p.y;
-				if (fromTopLeft) {
-					_getOffsetTransformOrigin(e, p);
-					x -= p.x;
-					y -= p.y;
-				}
-				decoratee = (decoratee === true) ? p : decoratee || {};
-				decoratee.x = x * m[0] + y * m[2] + m[4];
-				decoratee.y = x * m[1] + y * m[3] + m[5];
-				return decoratee;
-			},
-			_localizePoint = function(p, localToGlobal, globalToLocal) {
-				var x = p.x * localToGlobal[0] + p.y * localToGlobal[2] + localToGlobal[4],
-					y = p.x * localToGlobal[1] + p.y * localToGlobal[3] + localToGlobal[5];
-				p.x = x * globalToLocal[0] + y * globalToLocal[2] + globalToLocal[4];
-				p.y = x * globalToLocal[1] + y * globalToLocal[3] + globalToLocal[5];
-				return p;
-			},
-
-			_getElementBounds = function(e, context, fromTopLeft) {
-				if (!(e = _unwrapElement(e))) {
-					return null;
-				}
-				context = _unwrapElement(context);
-				var isSVG = (e.getBBox && _isSVG(e)),
-					origin, left, right, top, bottom, mLocalToGlobal, mGlobalToLocal, p1, p2, p3, p4, bbox, width, height, cache, borderLeft, borderTop, viewBox, viewBoxX, viewBoxY, computedDimensions, cs;
-				if (e === window) {
-					top = _getDocScrollTop();
-					left = _getDocScrollLeft();
-					right = left + (_docElement.clientWidth || e.innerWidth || _doc.body.clientWidth || 0);
-					bottom = top + (((e.innerHeight || 0) - 20 < _docElement.clientHeight) ? _docElement.clientHeight : e.innerHeight || _doc.body.clientHeight || 0); //some browsers (like Firefox) ignore absolutely positioned elements, and collapse the height of the documentElement, so it could be 8px, for example, if you have just an absolutely positioned div. In that case, we use the innerHeight to resolve this.
-				} else if (context === undefined || context === window) {
-					return e.getBoundingClientRect();
-				} else {
-					origin = _getOffsetTransformOrigin(e);
-					left = -origin.x;
-					top = -origin.y;
-					if (isSVG) {
-						bbox = e.getBBox();
-						width = bbox.width;
-						height = bbox.height;
-					} else if ((e.nodeName + "").toLowerCase() !== "svg" && e.offsetWidth) { //Chrome dropped support for "offsetWidth" on SVG elements
-						width = e.offsetWidth;
-						height = e.offsetHeight;
-					} else {
-						computedDimensions = _getComputedStyle(e);
-						width = parseFloat(computedDimensions.width);
-						height = parseFloat(computedDimensions.height);
-					}
-					right = left + width;
-					bottom = top + height;
-					if (e.nodeName.toLowerCase() === "svg" && !_isOldIE) { //root SVG elements are a special beast because they have 2 types of scaling - transforms on themselves as well as the stretching of the SVG canvas itself based on the outer size and the viewBox. If, for example, the SVG's viewbox is "0 0 100 100" but the CSS is set to width:200px; height:200px, that'd make it appear at 2x scale even though the element itself has no CSS transforms but the offsetWidth/offsetHeight are based on that css, not the viewBox so we need to adjust them accordingly.
-						cache = _getSVGOffsets(e);
-						cs = cache.computedStyle || {};
-						viewBox = (e.getAttribute("viewBox") || "0 0").split(" ");
-						viewBoxX = parseFloat(viewBox[0]);
-						viewBoxY = parseFloat(viewBox[1]);
-						borderLeft = parseFloat(cs.borderLeftWidth) || 0;
-						borderTop = parseFloat(cs.borderTopWidth) || 0;
-						right -= width - ((width - borderLeft) / cache.scaleX) - viewBoxX;
-						bottom -= height - ((height - borderTop) / cache.scaleY) - viewBoxY;
-						left -= borderLeft / cache.scaleX - viewBoxX;
-						top -= borderTop / cache.scaleY - viewBoxY;
-						if (computedDimensions) { //when we had to use computed styles, factor in the border now.
-							right += (parseFloat(cs.borderRightWidth) + borderLeft) / cache.scaleX;
-							bottom += (borderTop + parseFloat(cs.borderBottomWidth)) / cache.scaleY;
-						}
-					}
-				}
-				if (e === context) {
-					return {left:left, top:top, width: right - left, height: bottom - top};
-				}
-				mLocalToGlobal = _getConcatenatedMatrix(e);
-				mGlobalToLocal = _getConcatenatedMatrix(context, true);
-				p1 = _localizePoint({x:left, y:top}, mLocalToGlobal, mGlobalToLocal);
-				p2 = _localizePoint({x:right, y:top}, mLocalToGlobal, mGlobalToLocal);
-				p3 = _localizePoint({x:right, y:bottom}, mLocalToGlobal, mGlobalToLocal);
-				p4 = _localizePoint({x:left, y:bottom}, mLocalToGlobal, mGlobalToLocal);
-				left = Math.min(p1.x, p2.x, p3.x, p4.x);
-				top = Math.min(p1.y, p2.y, p3.y, p4.y);
-				_temp1.x = _temp1.y = 0;
-				if (fromTopLeft) {
-					_getOffsetTransformOrigin(context, _temp1);
-				}
-				return {left:left + _temp1.x, top:top + _temp1.y, width:Math.max(p1.x, p2.x, p3.x, p4.x) - left, height:Math.max(p1.y, p2.y, p3.y, p4.y) - top};
-			},
-			// end matrix and point conversion methods
-
-
-
-			_isArrayLike = function(e) {
-				return (e && e.length && e[0] && ((e[0].nodeType && e[0].style && !e.nodeType) || (e[0].length && e[0][0]))) ? true : false; //could be an array of jQuery objects too, so accommodate that.
-			},
-
-			_flattenArray = function(a) {
-				var result = [],
-					l = a.length,
-					i, e, j;
-				for (i = 0; i < l; i++) {
-					e = a[i];
-					if (_isArrayLike(e)) {
-						j = e.length;
-						for (j = 0; j < e.length; j++) {
-							result.push(e[j]);
-						}
-					} else if (e && e.length !== 0) {
-						result.push(e);
-					}
-				}
-				return result;
-			},
-
-			_isTouchDevice = (("ontouchstart" in _docElement) && ("orientation" in window)),
-			_touchEventLookup = (function(types) { //we create an object that makes it easy to translate touch event types into their "pointer" counterparts if we're in a browser that uses those instead. Like IE10 uses "MSPointerDown" instead of "touchstart", for example.
-				var standard = types.split(","),
-					converted = ((_tempDiv.onpointerdown !== undefined) ? "pointerdown,pointermove,pointerup,pointercancel" : (_tempDiv.onmspointerdown !== undefined) ? "MSPointerDown,MSPointerMove,MSPointerUp,MSPointerCancel" : types).split(","),
-					obj = {},
-					i = 4;
-				while (--i > -1) {
-					obj[standard[i]] = converted[i];
-					obj[converted[i]] = standard[i];
-				}
-				return obj;
-			}("touchstart,touchmove,touchend,touchcancel")),
-
-			_addListener = function(element, type, func, capture) {
-				if (element.addEventListener) {
-					var touchType = _touchEventLookup[type];
-					capture = capture || {passive:false};
-					element.addEventListener(touchType || type, func, capture);
-					if (touchType && type !== touchType) { //some browsers actually support both, so must we.
-						element.addEventListener(type, func, capture);
-					}
-				} else if (element.attachEvent) {
-					element.attachEvent("on" + type, func);
-				}
-			},
-
-			_removeListener = function(element, type, func) {
-				if (element.removeEventListener) {
-					var touchType = _touchEventLookup[type];
-					element.removeEventListener(touchType || type, func);
-					if (touchType && type !== touchType) {
-						element.removeEventListener(type, func);
-					}
-				} else if (element.detachEvent) {
-					element.detachEvent("on" + type, func);
-				}
-			},
-
-			_hasTouchID = function(list, ID) {
-				var i = list.length;
-				while (--i > -1) {
-					if (list[i].identifier === ID) {
-						return true;
-					}
-				}
-				return false;
-			},
-
-			_onMultiTouchDocumentEnd = function(e) {
-				_isMultiTouching = (e.touches && _dragCount < e.touches.length);
-				_removeListener(e.target, "touchend", _onMultiTouchDocumentEnd);
-			},
-
-			_onMultiTouchDocument = function(e) {
-				_isMultiTouching = (e.touches && _dragCount < e.touches.length);
-				_addListener(e.target, "touchend", _onMultiTouchDocumentEnd);
-			},
-
-			_parseThrowProps = function(draggable, snap, max, min, factor, forceZeroVelocity) {
-				var vars = {},
-					a, i, l;
-				if (snap) {
-					if (factor !== 1 && snap instanceof Array) { //some data must be altered to make sense, like if the user passes in an array of rotational values in degrees, we must convert it to radians. Or for scrollLeft and scrollTop, we invert the values.
-						vars.end = a = [];
-						l = snap.length;
-						if (typeof(snap[0]) === "object") { //if the array is populated with objects, like points ({x:100, y:200}), make copies before multiplying by the factor, otherwise we'll mess up the originals and the user may reuse it elsewhere.
-							for (i = 0; i < l; i++) {
-								a[i] = _copy(snap[i], factor);
-							}
-						} else {
-							for (i = 0; i < l; i++) {
-								a[i] = snap[i] * factor;
-							}
-						}
-						max += 1.1; //allow 1.1 pixels of wiggle room when snapping in order to work around some browser inconsistencies in the way bounds are reported which can make them roughly a pixel off. For example, if "snap:[-$('#menu').width(), 0]" was defined and #menu had a wrapper that was used as the bounds, some browsers would be one pixel off, making the minimum -752 for example when snap was [-753,0], thus instead of snapping to -753, it would snap to 0 since -753 was below the minimum.
-						min -= 1.1;
-					} else if (typeof(snap) === "function") {
-						vars.end = function(value) {
-							var result = snap.call(draggable, value),
-								copy, p;
-							if (factor !== 1) {
-								if (typeof(result) === "object") {
-									copy = {};
-									for (p in result) {
-										copy[p] = result[p] * factor;
-									}
-									result = copy;
-								} else {
-									result *= factor;
-								}
-							}
-							return result; //we need to ensure that we can scope the function call to the Draggable instance itself so that users can access important values like maxX, minX, maxY, minY, x, and y from within that function.
-						};
-					} else {
-						vars.end = snap;
-					}
-				}
-				if (max || max === 0) {
-					vars.max = max;
-				}
-				if (min || min === 0) {
-					vars.min = min;
-				}
-				if (forceZeroVelocity) {
-					vars.velocity = 0;
-				}
-				return vars;
-			},
-
-			_isClickable = function(e) { //sometimes it's convenient to mark an element as clickable by adding a data-clickable="true" attribute (in which case we won't preventDefault() the mouse/touch event). This method checks if the element is an <a>, <input>, or <button> or has an onclick or has the data-clickable or contentEditable attribute set to true (or any of its parent elements).
-				var data;
-				return (!e || !e.getAttribute || e.nodeName === "BODY") ? false : ((data = e.getAttribute("data-clickable")) === "true" || (data !== "false" && (e.onclick || _clickableTagExp.test(e.nodeName + "") || e.getAttribute("contentEditable") === "true"))) ? true : _isClickable(e.parentNode);
-			},
-
-			_setSelectable = function(elements, selectable) {
-				var i = elements.length,
-					e;
-				while (--i > -1) {
-					e = elements[i];
-					e.ondragstart = e.onselectstart = selectable ? null : _emptyFunc;
-					_setStyle(e, "userSelect", (selectable ? "text" : "none"));
-				}
-			},
-
-			_addPaddingBR = (function() { //this function is in charge of analyzing browser behavior related to padding. It sets the _addPaddingBR to true if the browser doesn't normally factor in the bottom or right padding on the element inside the scrolling area, and it sets _addPaddingLeft to true if it's a browser that requires the extra offset (offsetLeft) to be added to the paddingRight (like Opera).
-				var div = _doc.createElement("div"),
-					child = _doc.createElement("div"),
-					childStyle = child.style,
-					parent = _doc.body || _tempDiv,
-					val;
-				childStyle.display = "inline-block";
-				childStyle.position = "relative";
-				div.style.cssText = child.innerHTML = "width:90px; height:40px; padding:10px; overflow:auto; visibility: hidden";
-				div.appendChild(child);
-				parent.appendChild(div);
-				val = (child.offsetHeight + 18 > div.scrollHeight); //div.scrollHeight should be child.offsetHeight + 20 because of the 10px of padding on each side, but some browsers ignore one side. We allow a 2px margin of error.
-				parent.removeChild(div);
-				return val;
-			}()),
-
-
-
-
-			//The ScrollProxy class wraps an element's contents into another div (we call it "content") that we either add padding when necessary or apply a translate3d() transform in order to overscroll (scroll past the boundaries). This allows us to simply set the scrollTop/scrollLeft (or top/left for easier reverse-axis orientation, which is what we do in Draggable) and it'll do all the work for us. For example, if we tried setting scrollTop to -100 on a normal DOM element, it wouldn't work - it'd look the same as setting it to 0, but if we set scrollTop of a ScrollProxy to -100, it'll give the correct appearance by either setting paddingTop of the wrapper to 100 or applying a 100-pixel translateY.
-			ScrollProxy = function(element, vars) {
-				element = _unwrapElement(element);
-				vars = vars || {};
-				var content = _doc.createElement("div"),
-					style = content.style,
-					node = element.firstChild,
-					offsetTop = 0,
-					offsetLeft = 0,
-					prevTop = element.scrollTop,
-					prevLeft = element.scrollLeft,
-					scrollWidth = element.scrollWidth,
-					scrollHeight = element.scrollHeight,
-					extraPadRight = 0,
-					maxLeft = 0,
-					maxTop = 0,
-					elementWidth, elementHeight, contentHeight, nextNode, transformStart, transformEnd;
-
-				if (_supports3D && vars.force3D !== false) {
-					transformStart = "translate3d(";
-					transformEnd = "px,0px)";
-				} else if (_transformProp) {
-					transformStart = "translate(";
-					transformEnd = "px)";
-				}
-
-				this.scrollTop = function(value, force) {
-					if (!arguments.length) {
-						return -this.top();
-					}
-					this.top(-value, force);
-				};
-
-				this.scrollLeft = function(value, force) {
-					if (!arguments.length) {
-						return -this.left();
-					}
-					this.left(-value, force);
-				};
-
-				this.left = function(value, force) {
-					if (!arguments.length) {
-						return -(element.scrollLeft + offsetLeft);
-					}
-					var dif = element.scrollLeft - prevLeft,
-						oldOffset = offsetLeft;
-					if ((dif > 2 || dif < -2) && !force) { //if the user interacts with the scrollbar (or something else scrolls it, like the mouse wheel), we should kill any tweens of the ScrollProxy.
-						prevLeft = element.scrollLeft;
-						__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].killTweensOf(this, true, {left:1, scrollLeft:1});
-						this.left(-prevLeft);
-						if (vars.onKill) {
-							vars.onKill();
-						}
-						return;
-					}
-					value = -value; //invert because scrolling works in the opposite direction
-					if (value < 0) {
-						offsetLeft = (value - 0.5) | 0;
-						value = 0;
-					} else if (value > maxLeft) {
-						offsetLeft = (value - maxLeft) | 0;
-						value = maxLeft;
-					} else {
-						offsetLeft = 0;
-					}
-					if (offsetLeft || oldOffset) {
-						if (transformStart) {
-							if (!this._suspendTransforms) {
-								style[_transformProp] = transformStart + -offsetLeft + "px," + -offsetTop + transformEnd;
-							}
-						} else {
-							style.left = -offsetLeft + "px";
-						}
-						if (offsetLeft + extraPadRight >= 0) {
-							style.paddingRight = offsetLeft + extraPadRight + "px";
-						}
-					}
-					element.scrollLeft = value | 0;
-					prevLeft = element.scrollLeft; //don't merge this with the line above because some browsers adjsut the scrollLeft after it's set, so in order to be 100% accurate in tracking it, we need to ask the browser to report it.
-				};
-
-				this.top = function(value, force) {
-					if (!arguments.length) {
-						return -(element.scrollTop + offsetTop);
-					}
-					var dif = element.scrollTop - prevTop,
-						oldOffset = offsetTop;
-					if ((dif > 2 || dif < -2) && !force) { //if the user interacts with the scrollbar (or something else scrolls it, like the mouse wheel), we should kill any tweens of the ScrollProxy.
-						prevTop = element.scrollTop;
-						__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].killTweensOf(this, true, {top:1, scrollTop:1});
-						this.top(-prevTop);
-						if (vars.onKill) {
-							vars.onKill();
-						}
-						return;
-					}
-					value = -value; //invert because scrolling works in the opposite direction
-					if (value < 0) {
-						offsetTop = (value - 0.5) | 0;
-						value = 0;
-					} else if (value > maxTop) {
-						offsetTop = (value - maxTop) | 0;
-						value = maxTop;
-					} else {
-						offsetTop = 0;
-					}
-					if (offsetTop || oldOffset) {
-						if (transformStart) {
-							if (!this._suspendTransforms) {
-								style[_transformProp] = transformStart + -offsetLeft + "px," + -offsetTop + transformEnd;
-							}
-						} else {
-							style.top = -offsetTop + "px";
-						}
-					}
-					element.scrollTop = value | 0;
-					prevTop = element.scrollTop;
-				};
-
-				this.maxScrollTop = function() {
-					return maxTop;
-				};
-
-				this.maxScrollLeft = function() {
-					return maxLeft;
-				};
-
-				this.disable = function() {
-					node = content.firstChild;
-					while (node) {
-						nextNode = node.nextSibling;
-						element.appendChild(node);
-						node = nextNode;
-					}
-					if (element === content.parentNode) { //in case disable() is called when it's already disabled.
-						element.removeChild(content);
-					}
-				};
-
-				this.enable = function() {
-					node = element.firstChild;
-					if (node === content) {
-						return;
-					}
-					while (node) {
-						nextNode = node.nextSibling;
-						content.appendChild(node);
-						node = nextNode;
-					}
-					element.appendChild(content);
-					this.calibrate();
-				};
-
-				this.calibrate = function(force) {
-					var widthMatches = (element.clientWidth === elementWidth),
-						x, y;
-					prevTop = element.scrollTop;
-					prevLeft = element.scrollLeft;
-					if (widthMatches && element.clientHeight === elementHeight && content.offsetHeight === contentHeight && scrollWidth === element.scrollWidth && scrollHeight === element.scrollHeight && !force) {
-						return; //no need to recalculate things if the width and height haven't changed.
-					}
-					if (offsetTop || offsetLeft) {
-						x = this.left();
-						y = this.top();
-						this.left(-element.scrollLeft);
-						this.top(-element.scrollTop);
-					}
-					//first, we need to remove any width constraints to see how the content naturally flows so that we can see if it's wider than the containing element. If so, we've got to record the amount of overage so that we can apply that as padding in order for browsers to correctly handle things. Then we switch back to a width of 100% (without that, some browsers don't flow the content correctly)
-					if (!widthMatches || force) {
-						style.display = "block";
-						style.width = "auto";
-						style.paddingRight = "0px";
-						extraPadRight = Math.max(0, element.scrollWidth - element.clientWidth);
-						//if the content is wider than the container, we need to add the paddingLeft and paddingRight in order for things to behave correctly.
-						if (extraPadRight) {
-							extraPadRight += _getStyle(element, "paddingLeft") + (_addPaddingBR ? _getStyle(element, "paddingRight") : 0);
-						}
-					}
-					style.display = "inline-block";
-					style.position = "relative";
-					style.overflow = "visible";
-					style.verticalAlign = "top";
-					style.width = "100%";
-					style.paddingRight = extraPadRight + "px";
-					//some browsers neglect to factor in the bottom padding when calculating the scrollHeight, so we need to add that padding to the content when that happens. Allow a 2px margin for error
-					if (_addPaddingBR) {
-						style.paddingBottom = _getStyle(element, "paddingBottom", true);
-					}
-					if (_isOldIE) {
-						style.zoom = "1";
-					}
-					elementWidth = element.clientWidth;
-					elementHeight = element.clientHeight;
-					scrollWidth = element.scrollWidth;
-					scrollHeight = element.scrollHeight;
-					maxLeft = element.scrollWidth - elementWidth;
-					maxTop = element.scrollHeight - elementHeight;
-					contentHeight = content.offsetHeight;
-					style.display = "block";
-					if (x || y) {
-						this.left(x);
-						this.top(y);
-					}
-				};
-
-				this.content = content;
-				this.element = element;
-				this._suspendTransforms = false;
-				this.enable();
-			},
-
-
-
-
-
-			Draggable = function(target, vars) {
-				__WEBPACK_IMPORTED_MODULE_0__TweenLite__["c" /* EventDispatcher */].call(this, target);
-				target = _unwrapElement(target); //in case the target is a selector object or selector text
-				if (!ThrowPropsPlugin) {
-					ThrowPropsPlugin = _globals.com.greensock.plugins.ThrowPropsPlugin;
-				}
-				this.vars = vars = _copy(vars || {});
-				this.target = target;
-				this.x = this.y = this.rotation = 0;
-				this.dragResistance = parseFloat(vars.dragResistance) || 0;
-				this.edgeResistance = isNaN(vars.edgeResistance) ? 1 : parseFloat(vars.edgeResistance) || 0;
-				this.lockAxis = vars.lockAxis;
-				this.autoScroll = vars.autoScroll || 0;
-				this.lockedAxis = null;
-				this.allowEventDefault = !!vars.allowEventDefault;
-				var type = (vars.type || (_isOldIE ? "top,left" : "x,y")).toLowerCase(),
-					xyMode = (type.indexOf("x") !== -1 || type.indexOf("y") !== -1),
-					rotationMode = (type.indexOf("rotation") !== -1),
-					xProp = rotationMode ? "rotation" : xyMode ? "x" : "left",
-					yProp = xyMode ? "y" : "top",
-					allowX = (type.indexOf("x") !== -1 || type.indexOf("left") !== -1 || type === "scroll"),
-					allowY = (type.indexOf("y") !== -1 || type.indexOf("top") !== -1 || type === "scroll"),
-					minimumMovement = vars.minimumMovement || 2,
-					self = this,
-					triggers = _slice(vars.trigger || vars.handle || target),
-					killProps = {},
-					dragEndTime = 0,
-					checkAutoScrollBounds = false,
-					autoScrollMarginTop = vars.autoScrollMarginTop || 40,
-					autoScrollMarginRight = vars.autoScrollMarginRight || 40,
-					autoScrollMarginBottom = vars.autoScrollMarginBottom || 40,
-					autoScrollMarginLeft = vars.autoScrollMarginLeft || 40,
-					isClickable = vars.clickableTest || _isClickable,
-					clickTime = 0,
-					enabled, scrollProxy, startPointerX, startPointerY, startElementX, startElementY, hasBounds, hasDragCallback, maxX, minX, maxY, minY, tempVars, cssVars, touch, touchID, rotationOrigin, dirty, old, snapX, snapY, snapXY, isClicking, touchEventTarget, matrix, interrupted, startScrollTop, startScrollLeft, applyObj, allowNativeTouchScrolling, touchDragAxis, isDispatching, clickDispatch, trustedClickDispatch,
-
-					onContextMenu = function(e) { //used to prevent long-touch from triggering a context menu.
-						if (self.isPressed && e.which < 2) {
-							self.endDrag();
-						} else {
-							e.preventDefault();
-							e.stopPropagation();
-							return false;
-						}
-					},
-
-					//this method gets called on every tick of TweenLite.ticker which allows us to synchronize the renders to the core engine (which is typically synchronized with the display refresh via requestAnimationFrame). This is an optimization - it's better than applying the values inside the "mousemove" or "touchmove" event handler which may get called many times inbetween refreshes.
-					render = function(suppressEvents) {
-						if (self.autoScroll && self.isDragging && (checkAutoScrollBounds || dirty)) {
-							var e = target,
-								autoScrollFactor = self.autoScroll * 15, //multiplying by 15 just gives us a better "feel" speed-wise.
-								parent, isRoot, rect, pointerX, pointerY, changeX, changeY, gap;
-							checkAutoScrollBounds = false;
-							_windowProxy.scrollTop = ((window.pageYOffset != null) ? window.pageYOffset : (_docElement.scrollTop != null) ? _docElement.scrollTop : _doc.body.scrollTop);
-							_windowProxy.scrollLeft = ((window.pageXOffset != null) ? window.pageXOffset : (_docElement.scrollLeft != null) ? _docElement.scrollLeft : _doc.body.scrollLeft);
-							pointerX = self.pointerX - _windowProxy.scrollLeft;
-							pointerY = self.pointerY - _windowProxy.scrollTop;
-							while (e && !isRoot) { //walk up the chain and sense wherever the pointer is within 40px of an edge that's scrollable.
-								isRoot = _isRoot(e.parentNode);
-								parent = isRoot ? _windowProxy : e.parentNode;
-								rect = isRoot ? {bottom:Math.max(_docElement.clientHeight, window.innerHeight || 0), right: Math.max(_docElement.clientWidth, window.innerWidth || 0), left:0, top:0} : parent.getBoundingClientRect();
-								changeX = changeY = 0;
-								if (allowY) {
-									gap = parent._gsMaxScrollY - parent.scrollTop;
-									if (gap < 0) {
-										changeY = gap;
-									} else if (pointerY > rect.bottom - autoScrollMarginBottom && gap) {
-										checkAutoScrollBounds = true;
-										changeY = Math.min(gap, (autoScrollFactor * (1 - Math.max(0, (rect.bottom - pointerY)) / autoScrollMarginBottom)) | 0);
-									} else if (pointerY < rect.top + autoScrollMarginTop && parent.scrollTop) {
-										checkAutoScrollBounds = true;
-										changeY = -Math.min(parent.scrollTop, (autoScrollFactor * (1 - Math.max(0, (pointerY - rect.top)) / autoScrollMarginTop)) | 0);
-									}
-									if (changeY) {
-										parent.scrollTop += changeY;
-									}
-								}
-								if (allowX) {
-									gap = parent._gsMaxScrollX - parent.scrollLeft;
-									if (gap < 0) {
-										changeX = gap;
-									} else if (pointerX > rect.right - autoScrollMarginRight && gap) {
-										checkAutoScrollBounds = true;
-										changeX = Math.min(gap, (autoScrollFactor * (1 - Math.max(0, (rect.right - pointerX)) / autoScrollMarginRight)) | 0);
-									} else if (pointerX < rect.left + autoScrollMarginLeft && parent.scrollLeft) {
-										checkAutoScrollBounds = true;
-										changeX = -Math.min(parent.scrollLeft, (autoScrollFactor * (1 - Math.max(0, (pointerX - rect.left)) / autoScrollMarginLeft)) | 0);
-									}
-									if (changeX) {
-										parent.scrollLeft += changeX;
-									}
-								}
-
-								if (isRoot && (changeX || changeY)) {
-									window.scrollTo(parent.scrollLeft, parent.scrollTop);
-									setPointerPosition(self.pointerX + changeX, self.pointerY + changeY);
-								}
-								e = parent;
-							}
-						}
-						if (dirty) {
-							var x = self.x,
-								y = self.y,
-								min = 0.000001;
-							if (x < min && x > -min) { //browsers don't handle super small decimals well.
-								x = 0;
-							}
-							if (y < min && y > -min) {
-								y = 0;
-							}
-							if (rotationMode) {
-								self.deltaX = x - applyObj.data.rotation;
-								applyObj.data.rotation = self.rotation = x;
-								applyObj.setRatio(1); //note: instead of doing TweenLite.set(), as a performance optimization we skip right to the method that renders the transforms inside CSSPlugin. For old versions of IE, though, we do a normal TweenLite.set() to leverage its ability to re-reroute to an IE-specific 2D renderer.
-							} else {
-								if (scrollProxy) {
-									if (allowY) {
-										self.deltaY = y - scrollProxy.top();
-										scrollProxy.top(y);
-									}
-									if (allowX) {
-										self.deltaX = x - scrollProxy.left();
-										scrollProxy.left(x);
-									}
-								} else if (xyMode) {
-									if (allowY) {
-										self.deltaY = y - applyObj.data.y;
-										applyObj.data.y = y;
-									}
-									if (allowX) {
-										self.deltaX = x - applyObj.data.x;
-										applyObj.data.x = x;
-									}
-									applyObj.setRatio(1); //note: instead of doing TweenLite.set(), as a performance optimization we skip right to the method that renders the transforms inside CSSPlugin. For old versions of IE, though, we do a normal TweenLite.set() to leverage its ability to re-reroute to an IE-specific 2D renderer.
-								} else {
-									if (allowY) {
-										self.deltaY = y - parseFloat(target.style.top || 0);
-										target.style.top = y + "px";
-									}
-									if (allowX) {
-										self.deltaY = x - parseFloat(target.style.left || 0);
-										target.style.left = x + "px";
-									}
-								}
-							}
-							if (hasDragCallback && !suppressEvents && !isDispatching) {
-								isDispatching = true; //in case onDrag has an update() call (avoid endless loop)
-								_dispatchEvent(self, "drag", "onDrag");
-								isDispatching = false;
-							}
-						}
-						dirty = false;
-					},
-
-					//copies the x/y from the element (whether that be transforms, top/left, or ScrollProxy's top/left) to the Draggable's x and y (and rotation if necessary) properties so that they reflect reality and it also (optionally) applies any snapping necessary. This is used by the ThrowPropsPlugin tween in an onUpdate to ensure things are synced and snapped.
-					syncXY = function(skipOnUpdate, skipSnap) {
-						var x = self.x,
-							y = self.y,
-							snappedValue;
-						if (!target._gsTransform && (xyMode || rotationMode)) { //just in case the _gsTransform got wiped, like if the user called clearProps on the transform or something (very rare), doing an x tween forces a re-parsing of the transforms and population of the _gsTransform.
-							__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].set(target, {x:"+=0", overwrite:false, data:"_draggable"});
-						}
-						if (xyMode) {
-							self.y = target._gsTransform.y;
-							self.x = target._gsTransform.x;
-						} else if (rotationMode) {
-							self.x = self.rotation = target._gsTransform.rotation;
-						} else if (scrollProxy) {
-							self.y = scrollProxy.top();
-							self.x = scrollProxy.left();
-						} else {
-							self.y = parseInt(target.style.top, 10) || 0;
-							self.x = parseInt(target.style.left, 10) || 0;
-						}
-						if ((snapX || snapY || snapXY) && !skipSnap && (self.isDragging || self.isThrowing)) {
-							if (snapXY) {
-								_temp1.x = self.x;
-								_temp1.y = self.y;
-								snappedValue = snapXY(_temp1);
-								if (snappedValue.x !== self.x) {
-									self.x = snappedValue.x;
-									dirty = true;
-								}
-								if (snappedValue.y !== self.y) {
-									self.y = snappedValue.y;
-									dirty = true;
-								}
-							}
-							if (snapX) {
-								snappedValue = snapX(self.x);
-								if (snappedValue !== self.x) {
-									self.x = snappedValue;
-									if (rotationMode) {
-										self.rotation = snappedValue;
-									}
-									dirty = true;
-								}
-							}
-							if (snapY) {
-								snappedValue = snapY(self.y);
-								if (snappedValue !== self.y) {
-									self.y = snappedValue;
-								}
-								dirty = true;
-							}
-						}
-						if (dirty) {
-							render(true);
-						}
-						if (!skipOnUpdate) {
-							self.deltaX = self.x - x;
-							self.deltaY = self.y - y;
-							_dispatchEvent(self, "throwupdate", "onThrowUpdate");
-						}
-					},
-
-					calculateBounds = function() {
-						var bounds, targetBounds, snap, snapIsRaw;
-						hasBounds = false;
-						if (scrollProxy) {
-							scrollProxy.calibrate();
-							self.minX = minX = -scrollProxy.maxScrollLeft();
-							self.minY = minY = -scrollProxy.maxScrollTop();
-							self.maxX = maxX = self.maxY = maxY = 0;
-							hasBounds = true;
-						} else if (!!vars.bounds) {
-							bounds = _getBounds(vars.bounds, target.parentNode); //could be a selector/jQuery object or a DOM element or a generic object like {top:0, left:100, width:1000, height:800} or {minX:100, maxX:1100, minY:0, maxY:800}
-							if (rotationMode) {
-								self.minX = minX = bounds.left;
-								self.maxX = maxX = bounds.left + bounds.width;
-								self.minY = minY = self.maxY = maxY = 0;
-							} else if (vars.bounds.maxX !== undefined || vars.bounds.maxY !== undefined) {
-								bounds = vars.bounds;
-								self.minX = minX = bounds.minX;
-								self.minY = minY = bounds.minY;
-								self.maxX = maxX = bounds.maxX;
-								self.maxY = maxY = bounds.maxY;
-							} else {
-								targetBounds = _getBounds(target, target.parentNode);
-								self.minX = minX = _getStyle(target, xProp) + bounds.left - targetBounds.left;
-								self.minY = minY = _getStyle(target, yProp) + bounds.top - targetBounds.top;
-								self.maxX = maxX = minX + (bounds.width - targetBounds.width);
-								self.maxY = maxY = minY + (bounds.height - targetBounds.height);
-							}
-							if (minX > maxX) {
-								self.minX = maxX;
-								self.maxX = maxX = minX;
-								minX = self.minX;
-							}
-							if (minY > maxY) {
-								self.minY = maxY;
-								self.maxY = maxY = minY;
-								minY = self.minY;
-							}
-							if (rotationMode) {
-								self.minRotation = minX;
-								self.maxRotation = maxX;
-							}
-							hasBounds = true;
-						}
-						if (vars.liveSnap) {
-							snap = (vars.liveSnap === true) ? (vars.snap || {}) : vars.liveSnap;
-							snapIsRaw = (snap instanceof Array || typeof(snap) === "function");
-							if (rotationMode) {
-								snapX = buildSnapFunc((snapIsRaw ? snap : snap.rotation), minX, maxX, 1);
-								snapY = null;
-							} else {
-								if (snap.points) {
-									snapXY = buildPointSnapFunc((snapIsRaw ? snap : snap.points), minX, maxX, minY, maxY, snap.radius, scrollProxy ? -1 : 1);
-								} else {
-									if (allowX) {
-										snapX = buildSnapFunc((snapIsRaw ? snap : snap.x || snap.left || snap.scrollLeft), minX, maxX, scrollProxy ? -1 : 1);
-									}
-									if (allowY) {
-										snapY = buildSnapFunc((snapIsRaw ? snap : snap.y || snap.top || snap.scrollTop), minY, maxY, scrollProxy ? -1 : 1);
-									}
-								}
-							}
-						}
-
-					},
-
-					onThrowComplete = function() {
-						self.isThrowing = false;
-						_dispatchEvent(self, "throwcomplete", "onThrowComplete");
-					},
-					onThrowOverwrite = function() {
-						self.isThrowing = false;
-					},
-
-					animate = function(throwProps, forceZeroVelocity) {
-						var snap, snapIsRaw, tween, overshootTolerance;
-						if (throwProps && ThrowPropsPlugin) {
-							if (throwProps === true) {
-								snap = vars.snap || vars.liveSnap || {};
-								snapIsRaw = (snap instanceof Array || typeof(snap) === "function");
-								throwProps = {resistance:(vars.throwResistance || vars.resistance || 1000) / (rotationMode ? 10 : 1)};
-								if (rotationMode) {
-									throwProps.rotation = _parseThrowProps(self, snapIsRaw ? snap : snap.rotation, maxX, minX, 1, forceZeroVelocity);
-								} else {
-									if (allowX) {
-										throwProps[xProp] = _parseThrowProps(self, snapIsRaw ? snap : snap.points || snap.x || snap.left || snap.scrollLeft, maxX, minX, scrollProxy ? -1 : 1, forceZeroVelocity || (self.lockedAxis === "x"));
-									}
-									if (allowY) {
-										throwProps[yProp] = _parseThrowProps(self, snapIsRaw ? snap : snap.points || snap.y || snap.top || snap.scrollTop, maxY, minY, scrollProxy ? -1 : 1, forceZeroVelocity || (self.lockedAxis === "y"));
-									}
-									if (snap.points || (snap instanceof Array && typeof(snap[0]) === "object")) {
-										throwProps.linkedProps = xProp + "," + yProp;
-										throwProps.radius = snap.radius; //note: we also disable liveSnapping while throwing if there's a "radius" defined, otherwise it looks weird to have the item thrown past a snapping point but live-snapping mid-tween. We do this by altering the onUpdateParams so that "skipSnap" parameter is true for syncXY.
-									}
-								}
-							}
-							self.isThrowing = true;
-							overshootTolerance = (!isNaN(vars.overshootTolerance)) ? vars.overshootTolerance : (vars.edgeResistance === 1) ? 0 : (1 - self.edgeResistance) + 0.2;
-							self.tween = tween = ThrowPropsPlugin.to(scrollProxy || target, {throwProps:throwProps, data:"_draggable", ease:(vars.ease || _globals.Power3.easeOut), onComplete:onThrowComplete, onOverwrite:onThrowOverwrite, onUpdate:(vars.fastMode ? _dispatchEvent : syncXY), onUpdateParams:(vars.fastMode ? [self, "onthrowupdate", "onThrowUpdate"] : (snap && snap.radius) ? [false, true] : _emptyArray)}, (isNaN(vars.maxDuration) ? 2 : vars.maxDuration), (!isNaN(vars.minDuration) ? vars.minDuration : (overshootTolerance === 0 || (typeof(throwProps) === "object" && throwProps.resistance > 1000)) ? 0 : 0.5), overshootTolerance);
-							if (!vars.fastMode) {
-								//to populate the end values, we just scrub the tween to the end, record the values, and then jump back to the beginning.
-								if (scrollProxy) {
-									scrollProxy._suspendTransforms = true; //Microsoft browsers have a bug that causes them to briefly render the position incorrectly (it flashes to the end state when we seek() the tween even though we jump right back to the current position, and this only seems to happen when we're affecting both top and left), so we set a _suspendTransforms flag to prevent it from actually applying the values in the ScrollProxy.
-								}
-								tween.render(tween.duration(), true, true);
-								syncXY(true, true);
-								self.endX = self.x;
-								self.endY = self.y;
-								if (rotationMode) {
-									self.endRotation = self.x;
-								}
-								tween.play(0);
-								syncXY(true, true);
-								if (scrollProxy) {
-									scrollProxy._suspendTransforms = false;
-								}
-							}
-						} else if (hasBounds) {
-							self.applyBounds();
-						}
-					},
-
-					updateMatrix = function(shiftStart) {
-						var start = matrix || [1,0,0,1,0,0],
-							a, b, c, d, tx, ty, determinant, pointerX, pointerY;
-						matrix = _getConcatenatedMatrix(target.parentNode, true);
-						if (shiftStart && self.isPressed && start.join(",") !== matrix.join(",")) { //if the matrix changes WHILE the element is pressed, we must adjust the startPointerX and startPointerY accordingly, so we invert the original matrix and figure out where the pointerX and pointerY were in the global space, then apply the new matrix to get the updated coordinates.
-							a = start[0];
-							b = start[1];
-							c = start[2];
-							d = start[3];
-							tx = start[4];
-							ty = start[5];
-							determinant = (a * d - b * c);
-							pointerX = startPointerX * (d / determinant) + startPointerY * (-c / determinant) + ((c * ty - d * tx) / determinant);
-							pointerY = startPointerX * (-b / determinant) + startPointerY * (a / determinant) + (-(a * ty - b * tx) / determinant);
-							startPointerY = pointerX * matrix[1] + pointerY * matrix[3] + matrix[5];
-							startPointerX = pointerX * matrix[0] + pointerY * matrix[2] + matrix[4];
-						}
-						if (!matrix[1] && !matrix[2] && matrix[0] == 1 && matrix[3] == 1 && matrix[4] == 0 && matrix[5] == 0) { //if there are no transforms, we can optimize performance by not factoring in the matrix
-							matrix = null;
-						}
-
-					},
-
-					recordStartPositions = function() {
-						var edgeTolerance = 1 - self.edgeResistance;
-						updateMatrix(false);
-						if (matrix) {
-							startPointerX = self.pointerX * matrix[0] + self.pointerY * matrix[2] + matrix[4]; //translate to local coordinate system
-							startPointerY = self.pointerX * matrix[1] + self.pointerY * matrix[3] + matrix[5];
-						}
-						if (dirty) {
-							setPointerPosition(self.pointerX, self.pointerY);
-							render(true);
-						}
-						if (scrollProxy) {
-							calculateBounds();
-							startElementY = scrollProxy.top();
-							startElementX = scrollProxy.left();
-						} else {
-							//if the element is in the process of tweening, don't force snapping to occur because it could make it jump. Imagine the user throwing, then before it's done, clicking on the element in its inbetween state.
-							if (isTweening()) {
-								syncXY(true, true);
-								calculateBounds();
-							} else {
-								self.applyBounds();
-							}
-							if (rotationMode) {
-								rotationOrigin = self.rotationOrigin = _localToGlobal(target, {x:0, y:0});
-								syncXY(true, true);
-								startElementX = self.x; //starting rotation (x always refers to rotation in type:"rotation", measured in degrees)
-								startElementY = self.y = Math.atan2(rotationOrigin.y - self.pointerY, self.pointerX - rotationOrigin.x) * _RAD2DEG;
-							} else {
-								startScrollTop = target.parentNode ? target.parentNode.scrollTop || 0 : 0;
-								startScrollLeft = target.parentNode ? target.parentNode.scrollLeft || 0 : 0;
-								startElementY = _getStyle(target, yProp); //record the starting top and left values so that we can just add the mouse's movement to them later.
-								startElementX = _getStyle(target, xProp);
-							}
-						}
-						if (hasBounds && edgeTolerance) {
-							if (startElementX > maxX) {
-								startElementX = maxX + (startElementX - maxX) / edgeTolerance;
-							} else if (startElementX < minX) {
-								startElementX = minX - (minX - startElementX) / edgeTolerance;
-							}
-							if (!rotationMode) {
-								if (startElementY > maxY) {
-									startElementY = maxY + (startElementY - maxY) / edgeTolerance;
-								} else if (startElementY < minY) {
-									startElementY = minY - (minY - startElementY) / edgeTolerance;
-								}
-							}
-						}
-						self.startX = startElementX;
-						self.startY = startElementY;
-					},
-
-					isTweening = function() {
-						return (self.tween && self.tween.isActive());
-					},
-
-					removePlaceholder = function() {
-						if (_placeholderDiv.parentNode && !isTweening() && !self.isDragging) { //_placeholderDiv just props open auto-scrolling containers so they don't collapse as the user drags left/up. We remove it after dragging (and throwing, if necessary) finishes.
-							_placeholderDiv.parentNode.removeChild(_placeholderDiv);
-						}
-					},
-
-					buildSnapFunc = function(snap, min, max, factor) {
-						if (typeof(snap) === "function") {
-							return function(n) {
-								var edgeTolerance = !self.isPressed ? 1 : 1 - self.edgeResistance; //if we're tweening, disable the edgeTolerance because it's already factored into the tweening values (we don't want to apply it multiple times)
-								return snap.call(self, (n > max ? max + (n - max) * edgeTolerance : (n < min) ? min + (n - min) * edgeTolerance : n)) * factor;
-							};
-						}
-						if (snap instanceof Array) {
-							return function(n) {
-								var i = snap.length,
-									closest = 0,
-									absDif = _max,
-									val, dif;
-								while (--i > -1) {
-									val = snap[i];
-									dif = val - n;
-									if (dif < 0) {
-										dif = -dif;
-									}
-									if (dif < absDif && val >= min && val <= max) {
-										closest = i;
-										absDif = dif;
-									}
-								}
-								return snap[closest];
-							};
-						}
-						return isNaN(snap) ? function(n) { return n; } : function() { return snap * factor; };
-					},
-
-					buildPointSnapFunc = function(snap, minX, maxX, minY, maxY, radius, factor) {
-						radius = (radius && radius < _max) ? radius * radius : _max; //so we don't have to Math.sqrt() in the functions. Performance optimization.
-						if (typeof(snap) === "function") {
-							return function(point) {
-								var edgeTolerance = !self.isPressed ? 1 : 1 - self.edgeResistance,
-									x = point.x,
-									y = point.y,
-									result, dx, dy; //if we're tweening, disable the edgeTolerance because it's already factored into the tweening values (we don't want to apply it multiple times)
-								point.x = x = (x > maxX ? maxX + (x - maxX) * edgeTolerance : (x < minX) ? minX + (x - minX) * edgeTolerance : x);
-								point.y = y = (y > maxY ? maxY + (y - maxY) * edgeTolerance : (y < minY) ? minY + (y - minY) * edgeTolerance : y);
-								result = snap.call(self, point);
-								if (result !== point) {
-									point.x = result.x;
-									point.y = result.y;
-								}
-								if (factor !== 1) {
-									point.x *= factor;
-									point.y *= factor;
-								}
-								if (radius < _max) {
-									dx = point.x - x;
-									dy = point.y - y;
-									if (dx * dx + dy * dy > radius) {
-										point.x = x;
-										point.y = y;
-									}
-								}
-								return point;
-							};
-						}
-						if (snap instanceof Array) {
-							return function(p) {
-								var i = snap.length,
-									closest = 0,
-									minDist = _max,
-									x, y, point, dist;
-								while (--i > -1) {
-									point = snap[i];
-									x = point.x - p.x;
-									y = point.y - p.y;
-									dist = x * x + y * y;
-									if (dist < minDist) {
-										closest = i;
-										minDist = dist;
-									}
-								}
-								return (minDist <= radius) ? snap[closest] : p;
-							};
-						}
-						return function(n) { return n; };
-					},
-
-					//called when the mouse is pressed (or touch starts)
-					onPress = function(e, force) {
-						var i;
-						if (!enabled || self.isPressed || !e || ((e.type === "mousedown" || e.type === "pointerdown") && !force && _getTime() - clickTime < 30 && _touchEventLookup[self.pointerEvent.type])) { //when we DON'T preventDefault() in order to accommodate touch-scrolling and the user just taps, many browsers also fire a mousedown/mouseup sequence AFTER the touchstart/touchend sequence, thus it'd result in two quick "click" events being dispatched. This line senses that condition and halts it on the subsequent mousedown.
-							return;
-						}
-						interrupted = isTweening();
-						self.pointerEvent = e;
-						if (_touchEventLookup[e.type]) { //note: on iOS, BOTH touchmove and mousemove are dispatched, but the mousemove has pageY and pageX of 0 which would mess up the calculations and needlessly hurt performance.
-							touchEventTarget = (e.type.indexOf("touch") !== -1) ? (e.currentTarget || e.target) : _doc; //pointer-based touches (for Microsoft browsers) don't remain locked to the original target like other browsers, so we must use the document instead. The event type would be "MSPointerDown" or "pointerdown".
-							_addListener(touchEventTarget, "touchend", onRelease);
-							_addListener(touchEventTarget, "touchmove", onMove);
-							_addListener(touchEventTarget, "touchcancel", onRelease);
-							_addListener(_doc, "touchstart", _onMultiTouchDocument);
-						} else {
-							touchEventTarget = null;
-							_addListener(_doc, "mousemove", onMove); //attach these to the document instead of the box itself so that if the user's mouse moves too quickly (and off of the box), things still work.
-						}
-						touchDragAxis = null;
-						_addListener(_doc, "mouseup", onRelease);
-						if (e && e.target) {
-							_addListener(e.target, "mouseup", onRelease); //we also have to listen directly on the element because some browsers don't bubble up the event to the _doc on elements with contentEditable="true"
-						}
-						isClicking = (isClickable.call(self, e.target) && !vars.dragClickables && !force);
-						if (isClicking) {
-							_addListener(e.target, "change", onRelease); //in some browsers, when you mousedown on a <select> element, no mouseup gets dispatched! So we listen for a "change" event instead.
-							_dispatchEvent(self, "press", "onPress");
-							_setSelectable(triggers, true); //accommodates things like inputs and elements with contentEditable="true" (otherwise user couldn't drag to select text)
-							return;
-						}
-						allowNativeTouchScrolling = (!touchEventTarget || allowX === allowY || self.vars.allowNativeTouchScrolling === false || (self.vars.allowContextMenu && e && (e.ctrlKey || e.which > 2))) ? false : allowX ? "y" : "x"; //note: in Chrome, right-clicking (for a context menu) fires onPress and it doesn't have the event.which set properly, so we must look for event.ctrlKey. If the user wants to allow context menus we should of course sense it here and not allow native touch scrolling.
-						if (_isOldIE) {
-							e = _populateIEEvent(e, true);
-						} else if (!allowNativeTouchScrolling && !self.allowEventDefault) {
-							e.preventDefault();
-							if (e.preventManipulation) {
-								e.preventManipulation();  //for some Microsoft browsers
-							}
-						}
-						if (e.changedTouches) { //touch events store the data slightly differently
-							e = touch = e.changedTouches[0];
-							touchID = e.identifier;
-						} else if (e.pointerId) {
-							touchID = e.pointerId; //for some Microsoft browsers
-						} else {
-							touch = touchID = null;
-						}
-						_dragCount++;
-						_addToRenderQueue(render); //causes the Draggable to render on each "tick" of TweenLite.ticker (performance optimization - updating values in a mousemove can cause them to happen too frequently, like multiple times between frame redraws which is wasteful, and it also prevents values from updating properly in IE8)
-						startPointerY = self.pointerY = e.pageY; //record the starting x and y so that we can calculate the movement from the original in _onMouseMove
-						startPointerX = self.pointerX = e.pageX;
-						if (allowNativeTouchScrolling || self.autoScroll) {
-							_recordMaxScrolls(target.parentNode);
-						}
-						if (target.parentNode && self.autoScroll && !scrollProxy && !rotationMode && target.parentNode._gsMaxScrollX && !_placeholderDiv.parentNode && !target.getBBox) { //add a placeholder div to prevent the parent container from collapsing when the user drags the element left.
-							_placeholderDiv.style.width = target.parentNode.scrollWidth + "px";
-							target.parentNode.appendChild(_placeholderDiv);
-						}
-						recordStartPositions();
-						if (self.tween) {
-							self.tween.kill();
-						}
-						self.isThrowing = false;
-						__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].killTweensOf(scrollProxy || target, true, killProps); //in case the user tries to drag it before the last tween is done.
-						if (scrollProxy) {
-							__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].killTweensOf(target, true, {scrollTo:1}); //just in case the original target's scroll position is being tweened somewhere else.
-						}
-						self.tween = self.lockedAxis = null;
-						if (vars.zIndexBoost || (!rotationMode && !scrollProxy && vars.zIndexBoost !== false)) {
-							target.style.zIndex = Draggable.zIndex++;
-						}
-						self.isPressed = true;
-						hasDragCallback = !!(vars.onDrag || self._listeners.drag);
-						if (!rotationMode) {
-							i = triggers.length;
-							while (--i > -1) {
-								_setStyle(triggers[i], "cursor", vars.cursor || "move");
-							}
-						}
-						_dispatchEvent(self, "press", "onPress");
-					},
-
-					//called every time the mouse/touch moves
-					onMove = function(e) {
-						var originalEvent = e,
-							touches, pointerX, pointerY, i, dx, dy;
-						if (!enabled || _isMultiTouching || !self.isPressed || !e) {
-							return;
-						}
-						self.pointerEvent = e;
-						touches = e.changedTouches;
-						if (touches) { //touch events store the data slightly differently
-							e = touches[0];
-							if (e !== touch && e.identifier !== touchID) { //Usually changedTouches[0] will be what we're looking for, but in case it's not, look through the rest of the array...(and Android browsers don't reuse the event like iOS)
-								i = touches.length;
-								while (--i > -1 && (e = touches[i]).identifier !== touchID) {}
-								if (i < 0) {
-									return;
-								}
-							}
-						} else if (e.pointerId && touchID && e.pointerId !== touchID) { //for some Microsoft browsers, we must attach the listener to the doc rather than the trigger so that when the finger moves outside the bounds of the trigger, things still work. So if the event we're receiving has a pointerId that doesn't match the touchID, ignore it (for multi-touch)
-							return;
-						}
-						if (_isOldIE) {
-							e = _populateIEEvent(e, true);
-						} else {
-							if (touchEventTarget && allowNativeTouchScrolling && !touchDragAxis) { //Android browsers force us to decide on the first "touchmove" event if we should allow the default (scrolling) behavior or preventDefault(). Otherwise, a "touchcancel" will be fired and then no "touchmove" or "touchend" will fire during the scrolling (no good).
-								pointerX = e.pageX;
-								pointerY = e.pageY;
-								if (matrix) {
-									i = pointerX * matrix[0] + pointerY * matrix[2] + matrix[4];
-									pointerY = pointerX * matrix[1] + pointerY * matrix[3] + matrix[5];
-									pointerX = i;
-								}
-								dx = Math.abs(pointerX - startPointerX);
-								dy = Math.abs(pointerY - startPointerY);
-								if ((dx !== dy && (dx > minimumMovement || dy > minimumMovement)) || (_isAndroid && allowNativeTouchScrolling === touchDragAxis)) {
-									touchDragAxis = (dx > dy && allowX) ? "x" : "y";
-									if (self.vars.lockAxisOnTouchScroll !== false) {
-										self.lockedAxis = (touchDragAxis === "x") ? "y" : "x";
-										if (typeof(self.vars.onLockAxis) === "function") {
-											self.vars.onLockAxis.call(self, originalEvent);
-										}
-									}
-									if (_isAndroid && allowNativeTouchScrolling === touchDragAxis) {
-										onRelease(originalEvent);
-										return;
-									}
-								}
-							}
-							if (!self.allowEventDefault && (!allowNativeTouchScrolling || (touchDragAxis && allowNativeTouchScrolling !== touchDragAxis)) && originalEvent.cancelable !== false) {
-								originalEvent.preventDefault();
-								if (originalEvent.preventManipulation) { //for some Microsoft browsers
-									originalEvent.preventManipulation();
-								}
-							}
-						}
-						if (self.autoScroll) {
-							checkAutoScrollBounds = true;
-						}
-						setPointerPosition(e.pageX, e.pageY);
-					},
-
-					setPointerPosition = function(pointerX, pointerY) {
-						var dragTolerance = 1 - self.dragResistance,
-							edgeTolerance = 1 - self.edgeResistance,
-							xChange, yChange, x, y, dif, temp;
-
-						self.pointerX = pointerX;
-						self.pointerY = pointerY;
-						if (rotationMode) {
-							y = Math.atan2(rotationOrigin.y - pointerY, pointerX - rotationOrigin.x) * _RAD2DEG;
-							dif = self.y - y;
-							if (dif > 180) {
-								startElementY -= 360;
-								self.y = y;
-							} else if (dif < -180) {
-								startElementY += 360;
-								self.y = y;
-							}
-							if (self.x !== startElementX || Math.abs(startElementY - y) > minimumMovement) {
-								self.y = y;
-								x = startElementX + (startElementY - y) * dragTolerance;
-							} else {
-								x = startElementX;
-							}
-
-						} else {
-							if (matrix) {
-								temp = pointerX * matrix[0] + pointerY * matrix[2] + matrix[4];
-								pointerY = pointerX * matrix[1] + pointerY * matrix[3] + matrix[5];
-								pointerX = temp;
-							}
-							yChange = (pointerY - startPointerY);
-							xChange = (pointerX - startPointerX);
-							if (yChange < minimumMovement && yChange > -minimumMovement) {
-								yChange = 0;
-							}
-							if (xChange < minimumMovement && xChange > -minimumMovement) {
-								xChange = 0;
-							}
-							if ((self.lockAxis || self.lockedAxis) && (xChange || yChange)) {
-								temp = self.lockedAxis;
-								if (!temp) {
-									self.lockedAxis = temp = (allowX && Math.abs(xChange) > Math.abs(yChange)) ? "y" : allowY ? "x" : null;
-									if (temp && typeof(self.vars.onLockAxis) === "function") {
-										self.vars.onLockAxis.call(self, self.pointerEvent);
-									}
-								}
-								if (temp === "y") {
-									yChange = 0;
-								} else if (temp === "x") {
-									xChange = 0;
-								}
-							}
-							x = startElementX + xChange * dragTolerance;
-							y = startElementY + yChange * dragTolerance;
-						}
-
-						if ((snapX || snapY || snapXY) && (self.x !== x || (self.y !== y && !rotationMode))) {
-							if (snapXY) {
-								_temp1.x = x;
-								_temp1.y = y;
-								temp = snapXY(_temp1);
-								x = temp.x;
-								y = temp.y;
-							}
-							if (snapX) {
-								x = snapX(x);
-							}
-							if (snapY) {
-								y = snapY(y);
-							}
-						} else if (hasBounds) {
-							if (x > maxX) {
-								x = maxX + (x - maxX) * edgeTolerance;
-							} else if (x < minX) {
-								x = minX + (x - minX) * edgeTolerance;
-							}
-							if (!rotationMode) {
-								if (y > maxY) {
-									y = maxY + (y - maxY) * edgeTolerance;
-								} else if (y < minY) {
-									y = minY + (y - minY) * edgeTolerance;
-								}
-							}
-						}
-						if (!rotationMode && !matrix) {
-							x = Math.round(x); //helps work around an issue with some Win Touch devices
-							y = Math.round(y);
-						}
-						if (self.x !== x || (self.y !== y && !rotationMode)) {
-							if (rotationMode) {
-								self.endRotation = self.x = self.endX = x;
-								dirty = true;
-							} else {
-								if (allowY) {
-									self.y = self.endY = y;
-									dirty = true; //a flag that indicates we need to render the target next time the TweenLite.ticker dispatches a "tick" event (typically on a requestAnimationFrame) - this is a performance optimization (we shouldn't render on every move because sometimes many move events can get dispatched between screen refreshes, and that'd be wasteful to render every time)
-								}
-								if (allowX) {
-									self.x = self.endX = x;
-									dirty = true;
-								}
-							}
-							if (!self.isDragging && self.isPressed) {
-								self.isDragging = true;
-								_dispatchEvent(self, "dragstart", "onDragStart");
-							}
-						}
-					},
-
-					//called when the mouse/touch is released
-					onRelease = function(e, force) {
-						if (!enabled || !self.isPressed || (e && touchID != null && !force && ((e.pointerId && e.pointerId !== touchID) || (e.changedTouches && !_hasTouchID(e.changedTouches, touchID))))) {  //for some Microsoft browsers, we must attach the listener to the doc rather than the trigger so that when the finger moves outside the bounds of the trigger, things still work. So if the event we're receiving has a pointerId that doesn't match the touchID, ignore it (for multi-touch)
-							return;
-						}
-						self.isPressed = false;
-						var originalEvent = e,
-							wasDragging = self.isDragging,
-							isContextMenuRelease = (self.vars.allowContextMenu && e && (e.ctrlKey || e.which > 2)),
-							placeholderDelayedCall = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].delayedCall(0.001, removePlaceholder),
-							touches, i, syntheticEvent, eventTarget, syntheticClick;
-						if (touchEventTarget) {
-							_removeListener(touchEventTarget, "touchend", onRelease);
-							_removeListener(touchEventTarget, "touchmove", onMove);
-							_removeListener(touchEventTarget, "touchcancel", onRelease);
-							_removeListener(_doc, "touchstart", _onMultiTouchDocument);
-						} else {
-							_removeListener(_doc, "mousemove", onMove);
-						}
-						_removeListener(_doc, "mouseup", onRelease);
-						if (e && e.target) {
-							_removeListener(e.target, "mouseup", onRelease);
-						}
-						dirty = false;
-						if (isClicking && !isContextMenuRelease) {
-							if (e) {
-								_removeListener(e.target, "change", onRelease);
-								self.pointerEvent = originalEvent;
-							}
-							_setSelectable(triggers, false);
-							_dispatchEvent(self, "release", "onRelease");
-							_dispatchEvent(self, "click", "onClick");
-							isClicking = false;
-							return;
-						}
-						_removeFromRenderQueue(render);
-						if (!rotationMode) {
-							i = triggers.length;
-							while (--i > -1) {
-								_setStyle(triggers[i], "cursor", vars.cursor || "move");
-							}
-						}
-						if (wasDragging) {
-							dragEndTime = _lastDragTime = _getTime();
-							self.isDragging = false;
-						}
-						_dragCount--;
-						if (e) {
-							if (_isOldIE) {
-								e = _populateIEEvent(e, false);
-							}
-							touches = e.changedTouches;
-							if (touches) { //touch events store the data slightly differently
-								e = touches[0];
-								if (e !== touch && e.identifier !== touchID) { //Usually changedTouches[0] will be what we're looking for, but in case it's not, look through the rest of the array...(and Android browsers don't reuse the event like iOS)
-									i = touches.length;
-									while (--i > -1 && (e = touches[i]).identifier !== touchID) {}
-									if (i < 0) {
-										return;
-									}
-								}
-							}
-							self.pointerEvent = originalEvent;
-							self.pointerX = e.pageX;
-							self.pointerY = e.pageY;
-						}
-						if (isContextMenuRelease && originalEvent) {
-							originalEvent.preventDefault();
-							if (originalEvent.preventManipulation) {
-								originalEvent.preventManipulation();  //for some Microsoft browsers
-							}
-							_dispatchEvent(self, "release", "onRelease");
-						} else if (originalEvent && !wasDragging) {
-							if (interrupted && (vars.snap || vars.bounds)) { //otherwise, if the user clicks on the object while it's animating to a snapped position, and then releases without moving 3 pixels, it will just stay there (it should animate/snap)
-								animate(vars.throwProps);
-							}
-							_dispatchEvent(self, "release", "onRelease");
-							if ((!_isAndroid || originalEvent.type !== "touchmove") && originalEvent.type.indexOf("cancel") === -1) { //to accommodate native scrolling on Android devices, we have to immediately call onRelease() on the first touchmove event, but that shouldn't trigger a "click".
-								_dispatchEvent(self, "click", "onClick");
-								if (_getTime() - clickTime < 300) {
-									_dispatchEvent(self, "doubleclick", "onDoubleClick");
-								}
-								eventTarget = originalEvent.target || originalEvent.srcElement || target; //old IE uses srcElement
-								clickTime = _getTime();
-								syntheticClick = function () { // some browsers (like Firefox) won't trust script-generated clicks, so if the user tries to click on a video to play it, for example, it simply won't work. Since a regular "click" event will most likely be generated anyway (one that has its isTrusted flag set to true), we must slightly delay our script-generated click so that the "real"/trusted one is prioritized. Remember, when there are duplicate events in quick succession, we suppress all but the first one. Some browsers don't even trigger the "real" one at all, so our synthetic one is a safety valve that ensures that no matter what, a click event does get dispatched.
-									if (clickTime !== clickDispatch && self.enabled() && !self.isPressed) {
-										if (eventTarget.click) { //some browsers (like mobile Safari) don't properly trigger the click event
-											eventTarget.click();
-										} else if (_doc.createEvent) {
-											syntheticEvent = _doc.createEvent("MouseEvents");
-											syntheticEvent.initMouseEvent("click", true, true, window, 1, self.pointerEvent.screenX, self.pointerEvent.screenY, self.pointerX, self.pointerY, false, false, false, false, 0, null);
-											eventTarget.dispatchEvent(syntheticEvent);
-										}
-									}
-								};
-								if (!_isAndroid && !originalEvent.defaultPrevented) { //iOS Safari requires the synthetic click to happen immediately or else it simply won't work, but Android doesn't play nice.
-									__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].delayedCall(0.00001, syntheticClick); //in addition to the iOS bug workaround, there's a Firefox issue with clicking on things like a video to play, so we must fake a click event in a slightly delayed fashion. Previously, we listened for the "click" event with "capture" false which solved the video-click-to-play issue, but it would allow the "click" event to be dispatched twice like if you were using a jQuery.click() because that was handled in the capture phase, thus we had to switch to the capture phase to avoid the double-dispatching, but do the delayed synthetic click.
-								}
-							}
-						} else {
-							animate(vars.throwProps); //will skip if throwProps isn't defined or ThrowPropsPlugin isn't loaded.
-							if (!_isOldIE && !self.allowEventDefault && originalEvent && (vars.dragClickables || !isClickable.call(self, originalEvent.target)) && wasDragging && (!allowNativeTouchScrolling || (touchDragAxis && allowNativeTouchScrolling === touchDragAxis)) && originalEvent.cancelable !== false) {
-								originalEvent.preventDefault();
-								if (originalEvent.preventManipulation) {
-									originalEvent.preventManipulation();  //for some Microsoft browsers
-								}
-							}
-							_dispatchEvent(self, "release", "onRelease");
-						}
-						if (isTweening()) {
-							placeholderDelayedCall.duration( self.tween.duration() ); //sync the timing so that the placeholder DIV gets
-						}
-						if (wasDragging) {
-							_dispatchEvent(self, "dragend", "onDragEnd");
-						}
-						return true;
-					},
-
-					updateScroll = function(e) {
-						if (e && self.isDragging && !scrollProxy) {
-							var parent = e.target || e.srcElement || target.parentNode,
-								deltaX = parent.scrollLeft - parent._gsScrollX,
-								deltaY = parent.scrollTop - parent._gsScrollY;
-							if (deltaX || deltaY) {
-								if (matrix) {
-									startPointerX -= deltaX * matrix[0] + deltaY * matrix[2];
-									startPointerY -= deltaY * matrix[3] + deltaX * matrix[1];
-								} else {
-									startPointerX -= deltaX;
-									startPointerY -= deltaY;
-								}
-								parent._gsScrollX += deltaX;
-								parent._gsScrollY += deltaY;
-								setPointerPosition(self.pointerX, self.pointerY);
-							}
-						}
-					},
-
-					onClick = function(e) { //this was a huge pain in the neck to align all the various browsers and their behaviors. Chrome, Firefox, Safari, Opera, Android, and Microsoft Edge all handle events differently! Some will only trigger native behavior (like checkbox toggling) from trusted events. Others don't even support isTrusted, but require 2 events to flow through before triggering native behavior. Edge treats everything as trusted but also mandates that 2 flow through to trigger the correct native behavior.
-						var time = _getTime(),
-							recentlyClicked = (time - clickTime < 40),
-							recentlyDragged = (time - dragEndTime < 40),
-							alreadyDispatched = (recentlyClicked && clickDispatch === clickTime),
-							isModern = !!e.preventDefault,
-							defaultPrevented = (self.pointerEvent && self.pointerEvent.defaultPrevented),
-							alreadyDispatchedTrusted = (recentlyClicked && trustedClickDispatch === clickTime),
-							trusted = e.isTrusted || (e.isTrusted == null && recentlyClicked && alreadyDispatched); //note: Safari doesn't support isTrusted, and it won't properly execute native behavior (like toggling checkboxes) on the first synthetic "click" event - we must wait for the 2nd and treat it as trusted (but stop propagation at that point). Confusing, I know. Don't you love cross-browser compatibility challenges?
-						if (isModern && (alreadyDispatched || (recentlyDragged && self.vars.suppressClickOnDrag !== false) )) {
-							e.stopImmediatePropagation();
-						}
-						if (recentlyClicked && !(self.pointerEvent && self.pointerEvent.defaultPrevented) && (!alreadyDispatched || (trusted !== alreadyDispatchedTrusted))) { //let the first click pass through unhindered. Let the next one only if it's trusted, then no more (stop quick-succession ones)
-							if (trusted && alreadyDispatched) {
-								trustedClickDispatch = clickTime;
-							}
-							clickDispatch = clickTime;
-							return;
-						}
-						if (self.isPressed || recentlyDragged || recentlyClicked) {
-							if (!isModern) {
-								e.returnValue = false;
-							} else if (!trusted || !e.detail || !recentlyClicked || defaultPrevented) {
-								e.preventDefault();
-								if (e.preventManipulation) {
-									e.preventManipulation();  //for some Microsoft browsers
-								}
-							}
-						}
-					},
-
-					localizePoint = function(p) {
-						return matrix ? {x:p.x * matrix[0] + p.y * matrix[2] + matrix[4], y:p.x * matrix[1] + p.y * matrix[3] + matrix[5]} : {x:p.x, y:p.y};
-					};
-
-				old = Draggable.get(this.target);
-				if (old) {
-					old.kill(); // avoids duplicates (an element can only be controlled by one Draggable)
-				}
-
-				//give the user access to start/stop dragging...
-				this.startDrag = function(e, align) {
-					var r1, r2, p1, p2;
-					onPress(e || self.pointerEvent, true);
-					//if the pointer isn't on top of the element, adjust things accordingly
-					if (align && !self.hitTest(e || self.pointerEvent)) {
-						r1 = _parseRect(e || self.pointerEvent);
-						r2 = _parseRect(target);
-						p1 = localizePoint({x:r1.left + r1.width / 2, y:r1.top + r1.height / 2});
-						p2 = localizePoint({x:r2.left + r2.width / 2, y:r2.top + r2.height / 2});
-						startPointerX -= p1.x - p2.x;
-						startPointerY -= p1.y - p2.y;
-					}
-					if (!self.isDragging) {
-						self.isDragging = true;
-						_dispatchEvent(self, "dragstart", "onDragStart");
-					}
-				};
-				this.drag = onMove;
-				this.endDrag = function(e) {
-					onRelease(e || self.pointerEvent, true);
-				};
-				this.timeSinceDrag = function() {
-					return self.isDragging ? 0 : (_getTime() - dragEndTime) / 1000;
-				};
-				this.timeSinceClick = function() {
-					return (_getTime() - clickTime) / 1000;
-				};
-				this.hitTest = function(target, threshold) {
-					return Draggable.hitTest(self.target, target, threshold);
-				};
-
-				this.getDirection = function(from, diagonalThreshold) { //from can be "start" (default), "velocity", or an element
-					var mode = (from === "velocity" && ThrowPropsPlugin) ? from : (typeof(from) === "object" && !rotationMode) ? "element" : "start",
-						xChange, yChange, ratio, direction, r1, r2;
-					if (mode === "element") {
-						r1 = _parseRect(self.target);
-						r2 = _parseRect(from);
-					}
-					xChange = (mode === "start") ? self.x - startElementX : (mode === "velocity") ? ThrowPropsPlugin.getVelocity(this.target, xProp) : (r1.left + r1.width / 2) - (r2.left + r2.width / 2);
-					if (rotationMode) {
-						return xChange < 0 ? "counter-clockwise" : "clockwise";
-					} else {
-						diagonalThreshold = diagonalThreshold || 2;
-						yChange = (mode === "start") ? self.y - startElementY : (mode === "velocity") ? ThrowPropsPlugin.getVelocity(this.target, yProp) : (r1.top + r1.height / 2) - (r2.top + r2.height / 2);
-						ratio = Math.abs(xChange / yChange);
-						direction = (ratio < 1 / diagonalThreshold) ? "" : (xChange < 0) ? "left" : "right";
-						if (ratio < diagonalThreshold) {
-							if (direction !== "") {
-								direction += "-";
-							}
-							direction += (yChange < 0) ? "up" : "down";
-						}
-					}
-					return direction;
-				};
-
-
-				this.applyBounds = function(newBounds) {
-					var x, y, forceZeroVelocity, e, parent, isRoot;
-					if (newBounds && vars.bounds !== newBounds) {
-						vars.bounds = newBounds;
-						return self.update(true);
-					}
-					syncXY(true);
-					calculateBounds();
-					if (hasBounds) {
-						x = self.x;
-						y = self.y;
-						if (x > maxX) {
-							x = maxX;
-						} else if (x < minX) {
-							x = minX;
-						}
-						if (y > maxY) {
-							y = maxY;
-						} else if (y < minY) {
-							y = minY;
-						}
-						if (self.x !== x || self.y !== y) {
-							forceZeroVelocity = true;
-							self.x = self.endX = x;
-							if (rotationMode) {
-								self.endRotation = x;
-							} else {
-								self.y = self.endY = y;
-							}
-							dirty = true;
-							render(true);
-							if (self.autoScroll && !self.isDragging) {
-								_recordMaxScrolls(target.parentNode);
-								e = target;
-								_windowProxy.scrollTop = ((window.pageYOffset != null) ? window.pageYOffset : (_docElement.scrollTop != null) ? _docElement.scrollTop : _doc.body.scrollTop);
-								_windowProxy.scrollLeft = ((window.pageXOffset != null) ? window.pageXOffset : (_docElement.scrollLeft != null) ? _docElement.scrollLeft : _doc.body.scrollLeft);
-								while (e && !isRoot) { //walk up the chain and sense wherever the scrollTop/scrollLeft exceeds the maximum.
-									isRoot = _isRoot(e.parentNode);
-									parent = isRoot ? _windowProxy : e.parentNode;
-									if (allowY && parent.scrollTop > parent._gsMaxScrollY) {
-										parent.scrollTop = parent._gsMaxScrollY;
-									}
-									if (allowX && parent.scrollLeft > parent._gsMaxScrollX) {
-										parent.scrollLeft = parent._gsMaxScrollX;
-									}
-									e = parent;
-								}
-							}
-						}
-						if (self.isThrowing && (forceZeroVelocity || self.endX > maxX || self.endX < minX || self.endY > maxY || self.endY < minY)) {
-							animate(vars.throwProps, forceZeroVelocity);
-						}
-					}
-					return self;
-				};
-
-				this.update = function(applyBounds, sticky, ignoreExternalChanges) {
-					var x = self.x,
-						y = self.y;
-					updateMatrix(!sticky);
-					if (applyBounds) {
-						self.applyBounds();
-					} else {
-						if (dirty && ignoreExternalChanges) {
-							render(true);
-						}
-						syncXY(true);
-					}
-					if (sticky) {
-						setPointerPosition(self.pointerX, self.pointerY);
-						if (dirty) {
-							render(true);
-						}
-					}
-					if (self.isPressed && !sticky && ((allowX && Math.abs(x - self.x) > 0.01) || (allowY && (Math.abs(y - self.y) > 0.01 && !rotationMode)))) {
-						recordStartPositions();
-					}
-					if (self.autoScroll) {
-						_recordMaxScrolls(target.parentNode);
-						checkAutoScrollBounds = self.isDragging;
-						render(true);
-					}
-					if (self.autoScroll) { //in case reparenting occurred.
-						_removeScrollListener(target, updateScroll);
-						_addScrollListener(target, updateScroll);
-					}
-					return self;
-				};
-
-				this.enable = function(type) {
-					var id, i, trigger;
-					if (type !== "soft") {
-						i = triggers.length;
-						while (--i > -1) {
-							trigger = triggers[i];
-							_addListener(trigger, "mousedown", onPress);
-							_addListener(trigger, "touchstart", onPress);
-							_addListener(trigger, "click", onClick, true); //note: used to pass true for capture but it prevented click-to-play-video functionality in Firefox.
-							if (!rotationMode) {
-								_setStyle(trigger, "cursor", vars.cursor || "move");
-							}
-							_setStyle(trigger, "touchCallout", "none");
-							_setStyle(trigger, "touchAction", (allowX === allowY) ? "none" : allowX ? "pan-y" : "pan-x");
-							if (_isSVG(trigger)) { // a bug in chrome doesn't respect touch-action on SVG elements - it only works if we set it on the parent SVG.
-								_setStyle(trigger.ownerSVGElement || trigger, "touchAction", (allowX === allowY) ? "none" : allowX ? "pan-y" : "pan-x");
-							}
-							if (!this.vars.allowContextMenu) {
-								_addListener(trigger, "contextmenu", onContextMenu);
-							}
-						}
-						_setSelectable(triggers, false);
-					}
-					_addScrollListener(target, updateScroll);
-					enabled = true;
-					if (ThrowPropsPlugin && type !== "soft") {
-						ThrowPropsPlugin.track(scrollProxy || target, (xyMode ? "x,y" : rotationMode ? "rotation" : "top,left"));
-					}
-					if (scrollProxy) {
-						scrollProxy.enable();
-					}
-					target._gsDragID = id = "d" + (_lookupCount++);
-					_lookup[id] = this;
-					if (scrollProxy) {
-						scrollProxy.element._gsDragID = id;
-					}
-					__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].set(target, {x:"+=0", overwrite:false, data:"_draggable"}); //simply ensures that there's a _gsTransform on the element.
-					applyObj = {
-						t:target,
-						data:_isOldIE ? cssVars : target._gsTransform,
-						tween:{},
-						setRatio:(_isOldIE ? function() { __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].set(target, tempVars); } : __WEBPACK_IMPORTED_MODULE_1__CSSPlugin__["a" /* default */]._internals.setTransformRatio || __WEBPACK_IMPORTED_MODULE_1__CSSPlugin__["a" /* default */]._internals.set3DTransformRatio)
-					};
-					recordStartPositions();
-					self.update(true);
-					return self;
-				};
-
-				this.disable = function(type) {
-					var dragging = self.isDragging,
-						i, trigger;
-					if (!rotationMode) {
-						i = triggers.length;
-						while (--i > -1) {
-							_setStyle(triggers[i], "cursor", null);
-						}
-					}
-					if (type !== "soft") {
-						i = triggers.length;
-						while (--i > -1) {
-							trigger = triggers[i];
-							_setStyle(trigger, "touchCallout", null);
-							_setStyle(trigger, "touchAction", null);
-							_removeListener(trigger, "mousedown", onPress);
-							_removeListener(trigger, "touchstart", onPress);
-							_removeListener(trigger, "click", onClick);
-							_removeListener(trigger, "contextmenu", onContextMenu);
-						}
-						_setSelectable(triggers, true);
-						if (touchEventTarget) {
-							_removeListener(touchEventTarget, "touchcancel", onRelease);
-							_removeListener(touchEventTarget, "touchend", onRelease);
-							_removeListener(touchEventTarget, "touchmove", onMove);
-						}
-						_removeListener(_doc, "mouseup", onRelease);
-						_removeListener(_doc, "mousemove", onMove);
-					}
-					_removeScrollListener(target, updateScroll);
-					enabled = false;
-					if (ThrowPropsPlugin && type !== "soft") {
-						ThrowPropsPlugin.untrack(scrollProxy || target, (xyMode ? "x,y" : rotationMode ? "rotation" : "top,left"));
-					}
-					if (scrollProxy) {
-						scrollProxy.disable();
-					}
-					_removeFromRenderQueue(render);
-					self.isDragging = self.isPressed = isClicking = false;
-					if (dragging) {
-						_dispatchEvent(self, "dragend", "onDragEnd");
-					}
-					return self;
-				};
-
-				this.enabled = function(value, type) {
-					return arguments.length ? (value ? self.enable(type) : self.disable(type)) : enabled;
-				};
-
-				this.kill = function() {
-					self.isThrowing = false;
-					__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].killTweensOf(scrollProxy || target, true, killProps);
-					self.disable();
-					delete _lookup[target._gsDragID];
-					return self;
-				};
-
-				if (type.indexOf("scroll") !== -1) {
-					scrollProxy = this.scrollProxy = new ScrollProxy(target, _extend({onKill:function() { //ScrollProxy's onKill() gets called if/when the ScrollProxy senses that the user interacted with the scroll position manually (like using the scrollbar). IE9 doesn't fire the "mouseup" properly when users drag the scrollbar of an element, so this works around that issue.
-						if (self.isPressed) {
-							onRelease(null);
-						}}}, vars));
-					//a bug in many Android devices' stock browser causes scrollTop to get forced back to 0 after it is altered via JS, so we set overflow to "hidden" on mobile/touch devices (they hide the scroll bar anyway). That works around the bug. (This bug is discussed at https://code.google.com/p/android/issues/detail?id=19625)
-					target.style.overflowY = (allowY && !_isTouchDevice) ? "auto" : "hidden";
-					target.style.overflowX = (allowX && !_isTouchDevice) ? "auto" : "hidden";
-					target = scrollProxy.content;
-				}
-
-				if (vars.force3D !== false) {
-					__WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].set(target, {force3D:true}); //improve performance by forcing a GPU layer when possible
-				}
-				if (rotationMode) {
-					killProps.rotation = 1;
-				} else {
-					if (allowX) {
-						killProps[xProp] = 1;
-					}
-					if (allowY) {
-						killProps[yProp] = 1;
-					}
-				}
-				if (rotationMode) {
-					tempVars = _tempVarsRotation;
-					cssVars = tempVars.css;
-					tempVars.overwrite = false;
-				} else if (xyMode) {
-					tempVars = (allowX && allowY) ? _tempVarsXY : allowX ? _tempVarsX : _tempVarsY;
-					cssVars = tempVars.css;
-					tempVars.overwrite = false;
-				}
-
-				this.enable();
-			},
-			p = Draggable.prototype = new __WEBPACK_IMPORTED_MODULE_0__TweenLite__["c" /* EventDispatcher */]();
-
-		p.constructor = Draggable;
-		p.pointerX = p.pointerY = p.startX = p.startY = p.deltaX = p.deltaY = 0;
-		p.isDragging = p.isPressed = false;
-		Draggable.version = "0.16.3";
-		Draggable.zIndex = 1000;
-
-		_addListener(_doc, "touchcancel", function() {
-			//some older Android devices intermittently stop dispatching "touchmove" events if we don't listen for "touchcancel" on the document. Very strange indeed.
-		});
-		_addListener(_doc, "contextmenu", function(e) {
-			var p;
-			for (p in _lookup) {
-				if (_lookup[p].isPressed) {
-					_lookup[p].endDrag();
-				}
-			}
-		});
-
-		Draggable.create = function(targets, vars) {
-			if (typeof(targets) === "string") {
-				targets = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["m" /* default */].selector(targets);
-			}
-			var a = (!targets || targets.length === 0) ? [] : _isArrayLike(targets) ? _flattenArray(targets) : [targets],
-				i = a.length;
-			while (--i > -1) {
-				a[i] = new Draggable(a[i], vars);
-			}
-			return a;
-		};
-
-		Draggable.get = function(target) {
-			return _lookup[(_unwrapElement(target) || {})._gsDragID];
-		};
-
-		Draggable.timeSinceDrag = function() {
-			return (_getTime() - _lastDragTime) / 1000;
-		};
-
-		var _tempRect = {}, //reuse to reduce garbage collection tasks
-			_oldIERect = function(e) { //IE8 doesn't support getBoundingClientRect(), so we use this as a backup.
-				var top = 0,
-					left = 0,
-					width, height;
-				e = _unwrapElement(e);
-				width = e.offsetWidth;
-				height = e.offsetHeight;
-				while(e) {
-					top += e.offsetTop;
-					left += e.offsetLeft;
-					e = e.offsetParent;
-				}
-				return {top: top, left: left, width: width, height: height};
-			},
-			_parseRect = function(e, undefined) { //accepts a DOM element, a mouse event, or a rectangle object and returns the corresponding rectangle with left, right, width, height, top, and bottom properties
-				if (e === window) {
-					_tempRect.left = _tempRect.top = 0;
-					_tempRect.width = _tempRect.right = _docElement.clientWidth || e.innerWidth || _doc.body.clientWidth || 0;
-					_tempRect.height = _tempRect.bottom = ((e.innerHeight || 0) - 20 < _docElement.clientHeight) ? _docElement.clientHeight : e.innerHeight || _doc.body.clientHeight || 0;
-					return _tempRect;
-				}
-				var r = (e.pageX !== undefined) ? {left:e.pageX - _getDocScrollLeft(), top:e.pageY - _getDocScrollTop(), right:e.pageX - _getDocScrollLeft() + 1, bottom:e.pageY - _getDocScrollTop() + 1} : (!e.nodeType && e.left !== undefined && e.top !== undefined) ? e : _isOldIE ? _oldIERect(e) : _unwrapElement(e).getBoundingClientRect();
-				if (r.right === undefined && r.width !== undefined) {
-					r.right = r.left + r.width;
-					r.bottom = r.top + r.height;
-				} else if (r.width === undefined) { //some browsers don't include width and height properties. We can't just set them directly on r because some browsers throw errors, so create a new generic object.
-					r = {width: r.right - r.left, height: r.bottom - r.top, right: r.right, left: r.left, bottom: r.bottom, top: r.top};
-				}
-				return r;
-			};
-
-		Draggable.hitTest = function(obj1, obj2, threshold) {
-			if (obj1 === obj2) {
-				return false;
-			}
-			var r1 = _parseRect(obj1),
-				r2 = _parseRect(obj2),
-				isOutside = (r2.left > r1.right || r2.right < r1.left || r2.top > r1.bottom || r2.bottom < r1.top),
-				overlap, area, isRatio;
-			if (isOutside || !threshold) {
-				return !isOutside;
-			}
-			isRatio = ((threshold + "").indexOf("%") !== -1);
-			threshold = parseFloat(threshold) || 0;
-			overlap = {left:Math.max(r1.left, r2.left), top:Math.max(r1.top, r2.top)};
-			overlap.width = Math.min(r1.right, r2.right) - overlap.left;
-			overlap.height = Math.min(r1.bottom, r2.bottom) - overlap.top;
-			if (overlap.width < 0 || overlap.height < 0) {
-				return false;
-			}
-			if (isRatio) {
-				threshold *= 0.01;
-				area = overlap.width * overlap.height;
-				return (area >= r1.width * r1.height * threshold || area >= r2.width * r2.height * threshold);
-			}
-			return (overlap.width > threshold && overlap.height > threshold);
-		};
-
-		_placeholderDiv.style.cssText = "visibility:hidden;height:1px;top:-1px;pointer-events:none;position:relative;clear:both;";
-
-		return Draggable;
-
-	}, true);
-
-const Draggable = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].Draggable;
-/* harmony export (immutable) */ __webpack_exports__["Draggable"] = Draggable;
-
-
-
-/***/ }),
-/* 345 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ScrollToPlugin", function() { return ScrollToPlugin; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ScrollToPlugin; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TweenLite__ = __webpack_require__(15);
-/*!
- * VERSION: 1.9.1
- * DATE: 2018-05-14
- * UPDATES AND DOCS AT: http://greensock.com
- *
- * @license Copyright (c) 2008-2018, GreenSock. All rights reserved.
- * This work is subject to the terms at http://greensock.com/standard-license or for
- * Club GreenSock members, the software agreement that was issued with your membership.
- * 
- * @author: Jack Doyle, jack@greensock.com
- **/
-
-
-
-var _doc = (__WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */].document || {}).documentElement,
-		_window = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */],
-		_max = function(element, axis) {
-			var dim = (axis === "x") ? "Width" : "Height",
-				scroll = "scroll" + dim,
-				client = "client" + dim,
-				body = document.body;
-			return (element === _window || element === _doc || element === body) ? Math.max(_doc[scroll], body[scroll]) - (_window["inner" + dim] || _doc[client] || body[client]) : element[scroll] - element["offset" + dim];
-		},
-		_unwrapElement = function(value) {
-			if (typeof(value) === "string") {
-				value = TweenLite.selector(value);
-			}
-			if (value.length && value !== _window && value[0] && value[0].style && !value.nodeType) {
-				value = value[0];
-			}
-			return (value === _window || (value.nodeType && value.style)) ? value : null;
-		},
-		_buildGetter = function(e, axis) { //pass in an element and an axis ("x" or "y") and it'll return a getter function for the scroll position of that element (like scrollTop or scrollLeft, although if the element is the window, it'll use the pageXOffset/pageYOffset or the documentElement's scrollTop/scrollLeft or document.body's. Basically this streamlines things and makes a very fast getter across browsers.
-			var p = "scroll" + ((axis === "x") ? "Left" : "Top");
-			if (e === _window) {
-				if (e.pageXOffset != null) {
-					p = "page" + axis.toUpperCase() + "Offset";
-				} else if (_doc[p] != null) {
-					e = _doc;
-				} else {
-					e = document.body;
-				}
-			}
-			return function() {
-				return e[p];
-			};
-		},
-		_getOffset = function(element, container) {
-			var rect = _unwrapElement(element).getBoundingClientRect(),
-				b = document.body,
-				isRoot = (!container || container === _window || container === b),
-				cRect = isRoot ? {top:_doc.clientTop - (window.pageYOffset || _doc.scrollTop || b.scrollTop || 0), left:_doc.clientLeft - (window.pageXOffset || _doc.scrollLeft || b.scrollLeft || 0)} : container.getBoundingClientRect(),
-				offsets = {x: rect.left - cRect.left, y: rect.top - cRect.top};
-			if (!isRoot && container) { //only add the current scroll position if it's not the window/body.
-				offsets.x += _buildGetter(container, "x")();
-				offsets.y += _buildGetter(container, "y")();
-			}
-			return offsets;
-			/*	PREVIOUS
-			var rect = _unwrapElement(element).getBoundingClientRect(),
-				isRoot = (!container || container === _window || container === document.body),
-				cRect = (isRoot ? _doc : container).getBoundingClientRect(),
-				offsets = {x: rect.left - cRect.left, y: rect.top - cRect.top};
-			if (!isRoot && container) { //only add the current scroll position if it's not the window/body.
-				offsets.x += _buildGetter(container, "x")();
-				offsets.y += _buildGetter(container, "y")();
-			}
-			return offsets;
-			*/
-		},
-		_parseVal = function(value, target, axis) {
-			var type = typeof(value);
-			return !isNaN(value) ? parseFloat(value) : (type === "number" || (type === "string" && value.charAt(1) === "=")) ? value : (value === "max") ? _max(target, axis) : Math.min(_max(target, axis), _getOffset(value, target)[axis]);
-		},
-
-		ScrollToPlugin = __WEBPACK_IMPORTED_MODULE_0__TweenLite__["l" /* _gsScope */]._gsDefine.plugin({
-			propName: "scrollTo",
-			API: 2,
-			global: true,
-			version:"1.9.1",
-
-			//called when the tween renders for the first time. This is where initial values should be recorded and any setup routines should run.
-			init: function(target, value, tween) {
-				this._wdw = (target === _window);
-				this._target = target;
-				this._tween = tween;
-				if (typeof(value) !== "object") {
-					value = {y:value}; //if we don't receive an object as the parameter, assume the user intends "y".
-					if (typeof(value.y) === "string" && value.y !== "max" && value.y.charAt(1) !== "=") {
-						value.x = value.y;
-					}
-				} else if (value.nodeType) {
-					value = {y:value, x:value};
-				}
-				this.vars = value;
-				this._autoKill = (value.autoKill !== false);
-				this.getX = _buildGetter(target, "x");
-				this.getY = _buildGetter(target, "y");
-				this.x = this.xPrev = this.getX();
-				this.y = this.yPrev = this.getY();
-				if (value.x != null) {
-					this._addTween(this, "x", this.x, _parseVal(value.x, target, "x") - (value.offsetX || 0), "scrollTo_x", true);
-					this._overwriteProps.push("scrollTo_x");
-				} else {
-					this.skipX = true;
-				}
-				if (value.y != null) {
-					this._addTween(this, "y", this.y, _parseVal(value.y, target, "y") - (value.offsetY || 0), "scrollTo_y", true);
-					this._overwriteProps.push("scrollTo_y");
-				} else {
-					this.skipY = true;
-				}
-				return true;
-			},
-
-			//called each time the values should be updated, and the ratio gets passed as the only parameter (typically it's a value between 0 and 1, but it can exceed those when using an ease like Elastic.easeOut or Back.easeOut, etc.)
-			set: function(v) {
-				this._super.setRatio.call(this, v);
-
-				var x = (this._wdw || !this.skipX) ? this.getX() : this.xPrev,
-					y = (this._wdw || !this.skipY) ? this.getY() : this.yPrev,
-					yDif = y - this.yPrev,
-					xDif = x - this.xPrev,
-					threshold = ScrollToPlugin.autoKillThreshold;
-
-				if (this.x < 0) { //can't scroll to a position less than 0! Might happen if someone uses a Back.easeOut or Elastic.easeOut when scrolling back to the top of the page (for example)
-					this.x = 0;
-				}
-				if (this.y < 0) {
-					this.y = 0;
-				}
-				if (this._autoKill) {
-					//note: iOS has a bug that throws off the scroll by several pixels, so we need to check if it's within 7 pixels of the previous one that we set instead of just looking for an exact match.
-					if (!this.skipX && (xDif > threshold || xDif < -threshold) && x < _max(this._target, "x")) {
-						this.skipX = true; //if the user scrolls separately, we should stop tweening!
-					}
-					if (!this.skipY && (yDif > threshold || yDif < -threshold) && y < _max(this._target, "y")) {
-						this.skipY = true; //if the user scrolls separately, we should stop tweening!
-					}
-					if (this.skipX && this.skipY) {
-						this._tween.kill();
-						if (this.vars.onAutoKill) {
-							this.vars.onAutoKill.apply(this.vars.onAutoKillScope || this._tween, this.vars.onAutoKillParams || []);
-						}
-					}
-				}
-				if (this._wdw) {
-					_window.scrollTo((!this.skipX) ? this.x : x, (!this.skipY) ? this.y : y);
-				} else {
-					if (!this.skipY) {
-						this._target.scrollTop = this.y;
-					}
-					if (!this.skipX) {
-						this._target.scrollLeft = this.x;
-					}
-				}
-				this.xPrev = this.x;
-				this.yPrev = this.y;
-			}
-
-		}),
-		p = ScrollToPlugin.prototype;
-
-	ScrollToPlugin.max = _max;
-	ScrollToPlugin.getOffset = _getOffset;
-	ScrollToPlugin.buildGetter = _buildGetter;
-	ScrollToPlugin.autoKillThreshold = 7;
-
-	p._kill = function(lookup) {
-		if (lookup.scrollTo_x) {
-			this.skipX = true;
-		}
-		if (lookup.scrollTo_y) {
-			this.skipY = true;
-		}
-		return this._super._kill.call(this, lookup);
-	};
-
-
-
-
-/***/ }),
-/* 346 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
-     _ _      _       _
- ___| (_) ___| | __  (_)___
-/ __| | |/ __| |/ /  | / __|
-\__ \ | | (__|   < _ | \__ \
-|___/_|_|\___|_|\_(_)/ |___/
-                   |__/
-
- Version: 1.8.1
-  Author: Ken Wheeler
- Website: http://kenwheeler.github.io
-    Docs: http://kenwheeler.github.io/slick
-    Repo: http://github.com/kenwheeler/slick
-  Issues: http://github.com/kenwheeler/slick/issues
-
- */
-/* global window, document, define, jQuery, setInterval, clearInterval */
-;(function(factory) {
-    'use strict';
-    if (true) {
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(51)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-    } else if (typeof exports !== 'undefined') {
-        module.exports = factory(require('jquery'));
-    } else {
-        factory(jQuery);
-    }
-
-}(function($) {
-    'use strict';
-    var Slick = window.Slick || {};
-
-    Slick = (function() {
-
-        var instanceUid = 0;
-
-        function Slick(element, settings) {
-
-            var _ = this, dataSettings;
-
-            _.defaults = {
-                accessibility: true,
-                adaptiveHeight: false,
-                appendArrows: $(element),
-                appendDots: $(element),
-                arrows: true,
-                asNavFor: null,
-                prevArrow: '<button class="slick-prev" aria-label="Previous" type="button">Previous</button>',
-                nextArrow: '<button class="slick-next" aria-label="Next" type="button">Next</button>',
-                autoplay: false,
-                autoplaySpeed: 3000,
-                centerMode: false,
-                centerPadding: '50px',
-                cssEase: 'ease',
-                customPaging: function(slider, i) {
-                    return $('<button type="button" />').text(i + 1);
-                },
-                dots: false,
-                dotsClass: 'slick-dots',
-                draggable: true,
-                easing: 'linear',
-                edgeFriction: 0.35,
-                fade: false,
-                focusOnSelect: false,
-                focusOnChange: false,
-                infinite: true,
-                initialSlide: 0,
-                lazyLoad: 'ondemand',
-                mobileFirst: false,
-                pauseOnHover: true,
-                pauseOnFocus: true,
-                pauseOnDotsHover: false,
-                respondTo: 'window',
-                responsive: null,
-                rows: 1,
-                rtl: false,
-                slide: '',
-                slidesPerRow: 1,
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                speed: 500,
-                swipe: true,
-                swipeToSlide: false,
-                touchMove: true,
-                touchThreshold: 5,
-                useCSS: true,
-                useTransform: true,
-                variableWidth: false,
-                vertical: false,
-                verticalSwiping: false,
-                waitForAnimate: true,
-                zIndex: 1000
-            };
-
-            _.initials = {
-                animating: false,
-                dragging: false,
-                autoPlayTimer: null,
-                currentDirection: 0,
-                currentLeft: null,
-                currentSlide: 0,
-                direction: 1,
-                $dots: null,
-                listWidth: null,
-                listHeight: null,
-                loadIndex: 0,
-                $nextArrow: null,
-                $prevArrow: null,
-                scrolling: false,
-                slideCount: null,
-                slideWidth: null,
-                $slideTrack: null,
-                $slides: null,
-                sliding: false,
-                slideOffset: 0,
-                swipeLeft: null,
-                swiping: false,
-                $list: null,
-                touchObject: {},
-                transformsEnabled: false,
-                unslicked: false
-            };
-
-            $.extend(_, _.initials);
-
-            _.activeBreakpoint = null;
-            _.animType = null;
-            _.animProp = null;
-            _.breakpoints = [];
-            _.breakpointSettings = [];
-            _.cssTransitions = false;
-            _.focussed = false;
-            _.interrupted = false;
-            _.hidden = 'hidden';
-            _.paused = true;
-            _.positionProp = null;
-            _.respondTo = null;
-            _.rowCount = 1;
-            _.shouldClick = true;
-            _.$slider = $(element);
-            _.$slidesCache = null;
-            _.transformType = null;
-            _.transitionType = null;
-            _.visibilityChange = 'visibilitychange';
-            _.windowWidth = 0;
-            _.windowTimer = null;
-
-            dataSettings = $(element).data('slick') || {};
-
-            _.options = $.extend({}, _.defaults, settings, dataSettings);
-
-            _.currentSlide = _.options.initialSlide;
-
-            _.originalSettings = _.options;
-
-            if (typeof document.mozHidden !== 'undefined') {
-                _.hidden = 'mozHidden';
-                _.visibilityChange = 'mozvisibilitychange';
-            } else if (typeof document.webkitHidden !== 'undefined') {
-                _.hidden = 'webkitHidden';
-                _.visibilityChange = 'webkitvisibilitychange';
-            }
-
-            _.autoPlay = $.proxy(_.autoPlay, _);
-            _.autoPlayClear = $.proxy(_.autoPlayClear, _);
-            _.autoPlayIterator = $.proxy(_.autoPlayIterator, _);
-            _.changeSlide = $.proxy(_.changeSlide, _);
-            _.clickHandler = $.proxy(_.clickHandler, _);
-            _.selectHandler = $.proxy(_.selectHandler, _);
-            _.setPosition = $.proxy(_.setPosition, _);
-            _.swipeHandler = $.proxy(_.swipeHandler, _);
-            _.dragHandler = $.proxy(_.dragHandler, _);
-            _.keyHandler = $.proxy(_.keyHandler, _);
-
-            _.instanceUid = instanceUid++;
-
-            // A simple way to check for HTML strings
-            // Strict HTML recognition (must start with <)
-            // Extracted from jQuery v1.11 source
-            _.htmlExpr = /^(?:\s*(<[\w\W]+>)[^>]*)$/;
-
-
-            _.registerBreakpoints();
-            _.init(true);
-
-        }
-
-        return Slick;
-
-    }());
-
-    Slick.prototype.activateADA = function() {
-        var _ = this;
-
-        _.$slideTrack.find('.slick-active').attr({
-            'aria-hidden': 'false'
-        }).find('a, input, button, select').attr({
-            'tabindex': '0'
-        });
-
-    };
-
-    Slick.prototype.addSlide = Slick.prototype.slickAdd = function(markup, index, addBefore) {
-
-        var _ = this;
-
-        if (typeof(index) === 'boolean') {
-            addBefore = index;
-            index = null;
-        } else if (index < 0 || (index >= _.slideCount)) {
-            return false;
-        }
-
-        _.unload();
-
-        if (typeof(index) === 'number') {
-            if (index === 0 && _.$slides.length === 0) {
-                $(markup).appendTo(_.$slideTrack);
-            } else if (addBefore) {
-                $(markup).insertBefore(_.$slides.eq(index));
-            } else {
-                $(markup).insertAfter(_.$slides.eq(index));
-            }
-        } else {
-            if (addBefore === true) {
-                $(markup).prependTo(_.$slideTrack);
-            } else {
-                $(markup).appendTo(_.$slideTrack);
-            }
-        }
-
-        _.$slides = _.$slideTrack.children(this.options.slide);
-
-        _.$slideTrack.children(this.options.slide).detach();
-
-        _.$slideTrack.append(_.$slides);
-
-        _.$slides.each(function(index, element) {
-            $(element).attr('data-slick-index', index);
-        });
-
-        _.$slidesCache = _.$slides;
-
-        _.reinit();
-
-    };
-
-    Slick.prototype.animateHeight = function() {
-        var _ = this;
-        if (_.options.slidesToShow === 1 && _.options.adaptiveHeight === true && _.options.vertical === false) {
-            var targetHeight = _.$slides.eq(_.currentSlide).outerHeight(true);
-            _.$list.animate({
-                height: targetHeight
-            }, _.options.speed);
-        }
-    };
-
-    Slick.prototype.animateSlide = function(targetLeft, callback) {
-
-        var animProps = {},
-            _ = this;
-
-        _.animateHeight();
-
-        if (_.options.rtl === true && _.options.vertical === false) {
-            targetLeft = -targetLeft;
-        }
-        if (_.transformsEnabled === false) {
-            if (_.options.vertical === false) {
-                _.$slideTrack.animate({
-                    left: targetLeft
-                }, _.options.speed, _.options.easing, callback);
-            } else {
-                _.$slideTrack.animate({
-                    top: targetLeft
-                }, _.options.speed, _.options.easing, callback);
-            }
-
-        } else {
-
-            if (_.cssTransitions === false) {
-                if (_.options.rtl === true) {
-                    _.currentLeft = -(_.currentLeft);
-                }
-                $({
-                    animStart: _.currentLeft
-                }).animate({
-                    animStart: targetLeft
-                }, {
-                    duration: _.options.speed,
-                    easing: _.options.easing,
-                    step: function(now) {
-                        now = Math.ceil(now);
-                        if (_.options.vertical === false) {
-                            animProps[_.animType] = 'translate(' +
-                                now + 'px, 0px)';
-                            _.$slideTrack.css(animProps);
-                        } else {
-                            animProps[_.animType] = 'translate(0px,' +
-                                now + 'px)';
-                            _.$slideTrack.css(animProps);
-                        }
-                    },
-                    complete: function() {
-                        if (callback) {
-                            callback.call();
-                        }
-                    }
-                });
-
-            } else {
-
-                _.applyTransition();
-                targetLeft = Math.ceil(targetLeft);
-
-                if (_.options.vertical === false) {
-                    animProps[_.animType] = 'translate3d(' + targetLeft + 'px, 0px, 0px)';
-                } else {
-                    animProps[_.animType] = 'translate3d(0px,' + targetLeft + 'px, 0px)';
-                }
-                _.$slideTrack.css(animProps);
-
-                if (callback) {
-                    setTimeout(function() {
-
-                        _.disableTransition();
-
-                        callback.call();
-                    }, _.options.speed);
-                }
-
-            }
-
-        }
-
-    };
-
-    Slick.prototype.getNavTarget = function() {
-
-        var _ = this,
-            asNavFor = _.options.asNavFor;
-
-        if ( asNavFor && asNavFor !== null ) {
-            asNavFor = $(asNavFor).not(_.$slider);
-        }
-
-        return asNavFor;
-
-    };
-
-    Slick.prototype.asNavFor = function(index) {
-
-        var _ = this,
-            asNavFor = _.getNavTarget();
-
-        if ( asNavFor !== null && typeof asNavFor === 'object' ) {
-            asNavFor.each(function() {
-                var target = $(this).slick('getSlick');
-                if(!target.unslicked) {
-                    target.slideHandler(index, true);
-                }
-            });
-        }
-
-    };
-
-    Slick.prototype.applyTransition = function(slide) {
-
-        var _ = this,
-            transition = {};
-
-        if (_.options.fade === false) {
-            transition[_.transitionType] = _.transformType + ' ' + _.options.speed + 'ms ' + _.options.cssEase;
-        } else {
-            transition[_.transitionType] = 'opacity ' + _.options.speed + 'ms ' + _.options.cssEase;
-        }
-
-        if (_.options.fade === false) {
-            _.$slideTrack.css(transition);
-        } else {
-            _.$slides.eq(slide).css(transition);
-        }
-
-    };
-
-    Slick.prototype.autoPlay = function() {
-
-        var _ = this;
-
-        _.autoPlayClear();
-
-        if ( _.slideCount > _.options.slidesToShow ) {
-            _.autoPlayTimer = setInterval( _.autoPlayIterator, _.options.autoplaySpeed );
-        }
-
-    };
-
-    Slick.prototype.autoPlayClear = function() {
-
-        var _ = this;
-
-        if (_.autoPlayTimer) {
-            clearInterval(_.autoPlayTimer);
-        }
-
-    };
-
-    Slick.prototype.autoPlayIterator = function() {
-
-        var _ = this,
-            slideTo = _.currentSlide + _.options.slidesToScroll;
-
-        if ( !_.paused && !_.interrupted && !_.focussed ) {
-
-            if ( _.options.infinite === false ) {
-
-                if ( _.direction === 1 && ( _.currentSlide + 1 ) === ( _.slideCount - 1 )) {
-                    _.direction = 0;
-                }
-
-                else if ( _.direction === 0 ) {
-
-                    slideTo = _.currentSlide - _.options.slidesToScroll;
-
-                    if ( _.currentSlide - 1 === 0 ) {
-                        _.direction = 1;
-                    }
-
-                }
-
-            }
-
-            _.slideHandler( slideTo );
-
-        }
-
-    };
-
-    Slick.prototype.buildArrows = function() {
-
-        var _ = this;
-
-        if (_.options.arrows === true ) {
-
-            _.$prevArrow = $(_.options.prevArrow).addClass('slick-arrow');
-            _.$nextArrow = $(_.options.nextArrow).addClass('slick-arrow');
-
-            if( _.slideCount > _.options.slidesToShow ) {
-
-                _.$prevArrow.removeClass('slick-hidden').removeAttr('aria-hidden tabindex');
-                _.$nextArrow.removeClass('slick-hidden').removeAttr('aria-hidden tabindex');
-
-                if (_.htmlExpr.test(_.options.prevArrow)) {
-                    _.$prevArrow.prependTo(_.options.appendArrows);
-                }
-
-                if (_.htmlExpr.test(_.options.nextArrow)) {
-                    _.$nextArrow.appendTo(_.options.appendArrows);
-                }
-
-                if (_.options.infinite !== true) {
-                    _.$prevArrow
-                        .addClass('slick-disabled')
-                        .attr('aria-disabled', 'true');
-                }
-
-            } else {
-
-                _.$prevArrow.add( _.$nextArrow )
-
-                    .addClass('slick-hidden')
-                    .attr({
-                        'aria-disabled': 'true',
-                        'tabindex': '-1'
-                    });
-
-            }
-
-        }
-
-    };
-
-    Slick.prototype.buildDots = function() {
-
-        var _ = this,
-            i, dot;
-
-        if (_.options.dots === true && _.slideCount > _.options.slidesToShow) {
-
-            _.$slider.addClass('slick-dotted');
-
-            dot = $('<ul />').addClass(_.options.dotsClass);
-
-            for (i = 0; i <= _.getDotCount(); i += 1) {
-                dot.append($('<li />').append(_.options.customPaging.call(this, _, i)));
-            }
-
-            _.$dots = dot.appendTo(_.options.appendDots);
-
-            _.$dots.find('li').first().addClass('slick-active');
-
-        }
-
-    };
-
-    Slick.prototype.buildOut = function() {
-
-        var _ = this;
-
-        _.$slides =
-            _.$slider
-                .children( _.options.slide + ':not(.slick-cloned)')
-                .addClass('slick-slide');
-
-        _.slideCount = _.$slides.length;
-
-        _.$slides.each(function(index, element) {
-            $(element)
-                .attr('data-slick-index', index)
-                .data('originalStyling', $(element).attr('style') || '');
-        });
-
-        _.$slider.addClass('slick-slider');
-
-        _.$slideTrack = (_.slideCount === 0) ?
-            $('<div class="slick-track"/>').appendTo(_.$slider) :
-            _.$slides.wrapAll('<div class="slick-track"/>').parent();
-
-        _.$list = _.$slideTrack.wrap(
-            '<div class="slick-list"/>').parent();
-        _.$slideTrack.css('opacity', 0);
-
-        if (_.options.centerMode === true || _.options.swipeToSlide === true) {
-            _.options.slidesToScroll = 1;
-        }
-
-        $('img[data-lazy]', _.$slider).not('[src]').addClass('slick-loading');
-
-        _.setupInfinite();
-
-        _.buildArrows();
-
-        _.buildDots();
-
-        _.updateDots();
-
-
-        _.setSlideClasses(typeof _.currentSlide === 'number' ? _.currentSlide : 0);
-
-        if (_.options.draggable === true) {
-            _.$list.addClass('draggable');
-        }
-
-    };
-
-    Slick.prototype.buildRows = function() {
-
-        var _ = this, a, b, c, newSlides, numOfSlides, originalSlides,slidesPerSection;
-
-        newSlides = document.createDocumentFragment();
-        originalSlides = _.$slider.children();
-
-        if(_.options.rows > 0) {
-
-            slidesPerSection = _.options.slidesPerRow * _.options.rows;
-            numOfSlides = Math.ceil(
-                originalSlides.length / slidesPerSection
-            );
-
-            for(a = 0; a < numOfSlides; a++){
-                var slide = document.createElement('div');
-                for(b = 0; b < _.options.rows; b++) {
-                    var row = document.createElement('div');
-                    for(c = 0; c < _.options.slidesPerRow; c++) {
-                        var target = (a * slidesPerSection + ((b * _.options.slidesPerRow) + c));
-                        if (originalSlides.get(target)) {
-                            row.appendChild(originalSlides.get(target));
-                        }
-                    }
-                    slide.appendChild(row);
-                }
-                newSlides.appendChild(slide);
-            }
-
-            _.$slider.empty().append(newSlides);
-            _.$slider.children().children().children()
-                .css({
-                    'width':(100 / _.options.slidesPerRow) + '%',
-                    'display': 'inline-block'
-                });
-
-        }
-
-    };
-
-    Slick.prototype.checkResponsive = function(initial, forceUpdate) {
-
-        var _ = this,
-            breakpoint, targetBreakpoint, respondToWidth, triggerBreakpoint = false;
-        var sliderWidth = _.$slider.width();
-        var windowWidth = window.innerWidth || $(window).width();
-
-        if (_.respondTo === 'window') {
-            respondToWidth = windowWidth;
-        } else if (_.respondTo === 'slider') {
-            respondToWidth = sliderWidth;
-        } else if (_.respondTo === 'min') {
-            respondToWidth = Math.min(windowWidth, sliderWidth);
-        }
-
-        if ( _.options.responsive &&
-            _.options.responsive.length &&
-            _.options.responsive !== null) {
-
-            targetBreakpoint = null;
-
-            for (breakpoint in _.breakpoints) {
-                if (_.breakpoints.hasOwnProperty(breakpoint)) {
-                    if (_.originalSettings.mobileFirst === false) {
-                        if (respondToWidth < _.breakpoints[breakpoint]) {
-                            targetBreakpoint = _.breakpoints[breakpoint];
-                        }
-                    } else {
-                        if (respondToWidth > _.breakpoints[breakpoint]) {
-                            targetBreakpoint = _.breakpoints[breakpoint];
-                        }
-                    }
-                }
-            }
-
-            if (targetBreakpoint !== null) {
-                if (_.activeBreakpoint !== null) {
-                    if (targetBreakpoint !== _.activeBreakpoint || forceUpdate) {
-                        _.activeBreakpoint =
-                            targetBreakpoint;
-                        if (_.breakpointSettings[targetBreakpoint] === 'unslick') {
-                            _.unslick(targetBreakpoint);
-                        } else {
-                            _.options = $.extend({}, _.originalSettings,
-                                _.breakpointSettings[
-                                    targetBreakpoint]);
-                            if (initial === true) {
-                                _.currentSlide = _.options.initialSlide;
-                            }
-                            _.refresh(initial);
-                        }
-                        triggerBreakpoint = targetBreakpoint;
-                    }
-                } else {
-                    _.activeBreakpoint = targetBreakpoint;
-                    if (_.breakpointSettings[targetBreakpoint] === 'unslick') {
-                        _.unslick(targetBreakpoint);
-                    } else {
-                        _.options = $.extend({}, _.originalSettings,
-                            _.breakpointSettings[
-                                targetBreakpoint]);
-                        if (initial === true) {
-                            _.currentSlide = _.options.initialSlide;
-                        }
-                        _.refresh(initial);
-                    }
-                    triggerBreakpoint = targetBreakpoint;
-                }
-            } else {
-                if (_.activeBreakpoint !== null) {
-                    _.activeBreakpoint = null;
-                    _.options = _.originalSettings;
-                    if (initial === true) {
-                        _.currentSlide = _.options.initialSlide;
-                    }
-                    _.refresh(initial);
-                    triggerBreakpoint = targetBreakpoint;
-                }
-            }
-
-            // only trigger breakpoints during an actual break. not on initialize.
-            if( !initial && triggerBreakpoint !== false ) {
-                _.$slider.trigger('breakpoint', [_, triggerBreakpoint]);
-            }
-        }
-
-    };
-
-    Slick.prototype.changeSlide = function(event, dontAnimate) {
-
-        var _ = this,
-            $target = $(event.currentTarget),
-            indexOffset, slideOffset, unevenOffset;
-
-        // If target is a link, prevent default action.
-        if($target.is('a')) {
-            event.preventDefault();
-        }
-
-        // If target is not the <li> element (ie: a child), find the <li>.
-        if(!$target.is('li')) {
-            $target = $target.closest('li');
-        }
-
-        unevenOffset = (_.slideCount % _.options.slidesToScroll !== 0);
-        indexOffset = unevenOffset ? 0 : (_.slideCount - _.currentSlide) % _.options.slidesToScroll;
-
-        switch (event.data.message) {
-
-            case 'previous':
-                slideOffset = indexOffset === 0 ? _.options.slidesToScroll : _.options.slidesToShow - indexOffset;
-                if (_.slideCount > _.options.slidesToShow) {
-                    _.slideHandler(_.currentSlide - slideOffset, false, dontAnimate);
-                }
-                break;
-
-            case 'next':
-                slideOffset = indexOffset === 0 ? _.options.slidesToScroll : indexOffset;
-                if (_.slideCount > _.options.slidesToShow) {
-                    _.slideHandler(_.currentSlide + slideOffset, false, dontAnimate);
-                }
-                break;
-
-            case 'index':
-                var index = event.data.index === 0 ? 0 :
-                    event.data.index || $target.index() * _.options.slidesToScroll;
-
-                _.slideHandler(_.checkNavigable(index), false, dontAnimate);
-                $target.children().trigger('focus');
-                break;
-
-            default:
-                return;
-        }
-
-    };
-
-    Slick.prototype.checkNavigable = function(index) {
-
-        var _ = this,
-            navigables, prevNavigable;
-
-        navigables = _.getNavigableIndexes();
-        prevNavigable = 0;
-        if (index > navigables[navigables.length - 1]) {
-            index = navigables[navigables.length - 1];
-        } else {
-            for (var n in navigables) {
-                if (index < navigables[n]) {
-                    index = prevNavigable;
-                    break;
-                }
-                prevNavigable = navigables[n];
-            }
-        }
-
-        return index;
-    };
-
-    Slick.prototype.cleanUpEvents = function() {
-
-        var _ = this;
-
-        if (_.options.dots && _.$dots !== null) {
-
-            $('li', _.$dots)
-                .off('click.slick', _.changeSlide)
-                .off('mouseenter.slick', $.proxy(_.interrupt, _, true))
-                .off('mouseleave.slick', $.proxy(_.interrupt, _, false));
-
-            if (_.options.accessibility === true) {
-                _.$dots.off('keydown.slick', _.keyHandler);
-            }
-        }
-
-        _.$slider.off('focus.slick blur.slick');
-
-        if (_.options.arrows === true && _.slideCount > _.options.slidesToShow) {
-            _.$prevArrow && _.$prevArrow.off('click.slick', _.changeSlide);
-            _.$nextArrow && _.$nextArrow.off('click.slick', _.changeSlide);
-
-            if (_.options.accessibility === true) {
-                _.$prevArrow && _.$prevArrow.off('keydown.slick', _.keyHandler);
-                _.$nextArrow && _.$nextArrow.off('keydown.slick', _.keyHandler);
-            }
-        }
-
-        _.$list.off('touchstart.slick mousedown.slick', _.swipeHandler);
-        _.$list.off('touchmove.slick mousemove.slick', _.swipeHandler);
-        _.$list.off('touchend.slick mouseup.slick', _.swipeHandler);
-        _.$list.off('touchcancel.slick mouseleave.slick', _.swipeHandler);
-
-        _.$list.off('click.slick', _.clickHandler);
-
-        $(document).off(_.visibilityChange, _.visibility);
-
-        _.cleanUpSlideEvents();
-
-        if (_.options.accessibility === true) {
-            _.$list.off('keydown.slick', _.keyHandler);
-        }
-
-        if (_.options.focusOnSelect === true) {
-            $(_.$slideTrack).children().off('click.slick', _.selectHandler);
-        }
-
-        $(window).off('orientationchange.slick.slick-' + _.instanceUid, _.orientationChange);
-
-        $(window).off('resize.slick.slick-' + _.instanceUid, _.resize);
-
-        $('[draggable!=true]', _.$slideTrack).off('dragstart', _.preventDefault);
-
-        $(window).off('load.slick.slick-' + _.instanceUid, _.setPosition);
-
-    };
-
-    Slick.prototype.cleanUpSlideEvents = function() {
-
-        var _ = this;
-
-        _.$list.off('mouseenter.slick', $.proxy(_.interrupt, _, true));
-        _.$list.off('mouseleave.slick', $.proxy(_.interrupt, _, false));
-
-    };
-
-    Slick.prototype.cleanUpRows = function() {
-
-        var _ = this, originalSlides;
-
-        if(_.options.rows > 0) {
-            originalSlides = _.$slides.children().children();
-            originalSlides.removeAttr('style');
-            _.$slider.empty().append(originalSlides);
-        }
-
-    };
-
-    Slick.prototype.clickHandler = function(event) {
-
-        var _ = this;
-
-        if (_.shouldClick === false) {
-            event.stopImmediatePropagation();
-            event.stopPropagation();
-            event.preventDefault();
-        }
-
-    };
-
-    Slick.prototype.destroy = function(refresh) {
-
-        var _ = this;
-
-        _.autoPlayClear();
-
-        _.touchObject = {};
-
-        _.cleanUpEvents();
-
-        $('.slick-cloned', _.$slider).detach();
-
-        if (_.$dots) {
-            _.$dots.remove();
-        }
-
-        if ( _.$prevArrow && _.$prevArrow.length ) {
-
-            _.$prevArrow
-                .removeClass('slick-disabled slick-arrow slick-hidden')
-                .removeAttr('aria-hidden aria-disabled tabindex')
-                .css('display','');
-
-            if ( _.htmlExpr.test( _.options.prevArrow )) {
-                _.$prevArrow.remove();
-            }
-        }
-
-        if ( _.$nextArrow && _.$nextArrow.length ) {
-
-            _.$nextArrow
-                .removeClass('slick-disabled slick-arrow slick-hidden')
-                .removeAttr('aria-hidden aria-disabled tabindex')
-                .css('display','');
-
-            if ( _.htmlExpr.test( _.options.nextArrow )) {
-                _.$nextArrow.remove();
-            }
-        }
-
-
-        if (_.$slides) {
-
-            _.$slides
-                .removeClass('slick-slide slick-active slick-center slick-visible slick-current')
-                .removeAttr('aria-hidden')
-                .removeAttr('data-slick-index')
-                .each(function(){
-                    $(this).attr('style', $(this).data('originalStyling'));
-                });
-
-            _.$slideTrack.children(this.options.slide).detach();
-
-            _.$slideTrack.detach();
-
-            _.$list.detach();
-
-            _.$slider.append(_.$slides);
-        }
-
-        _.cleanUpRows();
-
-        _.$slider.removeClass('slick-slider');
-        _.$slider.removeClass('slick-initialized');
-        _.$slider.removeClass('slick-dotted');
-
-        _.unslicked = true;
-
-        if(!refresh) {
-            _.$slider.trigger('destroy', [_]);
-        }
-
-    };
-
-    Slick.prototype.disableTransition = function(slide) {
-
-        var _ = this,
-            transition = {};
-
-        transition[_.transitionType] = '';
-
-        if (_.options.fade === false) {
-            _.$slideTrack.css(transition);
-        } else {
-            _.$slides.eq(slide).css(transition);
-        }
-
-    };
-
-    Slick.prototype.fadeSlide = function(slideIndex, callback) {
-
-        var _ = this;
-
-        if (_.cssTransitions === false) {
-
-            _.$slides.eq(slideIndex).css({
-                zIndex: _.options.zIndex
-            });
-
-            _.$slides.eq(slideIndex).animate({
-                opacity: 1
-            }, _.options.speed, _.options.easing, callback);
-
-        } else {
-
-            _.applyTransition(slideIndex);
-
-            _.$slides.eq(slideIndex).css({
-                opacity: 1,
-                zIndex: _.options.zIndex
-            });
-
-            if (callback) {
-                setTimeout(function() {
-
-                    _.disableTransition(slideIndex);
-
-                    callback.call();
-                }, _.options.speed);
-            }
-
-        }
-
-    };
-
-    Slick.prototype.fadeSlideOut = function(slideIndex) {
-
-        var _ = this;
-
-        if (_.cssTransitions === false) {
-
-            _.$slides.eq(slideIndex).animate({
-                opacity: 0,
-                zIndex: _.options.zIndex - 2
-            }, _.options.speed, _.options.easing);
-
-        } else {
-
-            _.applyTransition(slideIndex);
-
-            _.$slides.eq(slideIndex).css({
-                opacity: 0,
-                zIndex: _.options.zIndex - 2
-            });
-
-        }
-
-    };
-
-    Slick.prototype.filterSlides = Slick.prototype.slickFilter = function(filter) {
-
-        var _ = this;
-
-        if (filter !== null) {
-
-            _.$slidesCache = _.$slides;
-
-            _.unload();
-
-            _.$slideTrack.children(this.options.slide).detach();
-
-            _.$slidesCache.filter(filter).appendTo(_.$slideTrack);
-
-            _.reinit();
-
-        }
-
-    };
-
-    Slick.prototype.focusHandler = function() {
-
-        var _ = this;
-
-        _.$slider
-            .off('focus.slick blur.slick')
-            .on('focus.slick blur.slick', '*', function(event) {
-
-            event.stopImmediatePropagation();
-            var $sf = $(this);
-
-            setTimeout(function() {
-
-                if( _.options.pauseOnFocus ) {
-                    _.focussed = $sf.is(':focus');
-                    _.autoPlay();
-                }
-
-            }, 0);
-
-        });
-    };
-
-    Slick.prototype.getCurrent = Slick.prototype.slickCurrentSlide = function() {
-
-        var _ = this;
-        return _.currentSlide;
-
-    };
-
-    Slick.prototype.getDotCount = function() {
-
-        var _ = this;
-
-        var breakPoint = 0;
-        var counter = 0;
-        var pagerQty = 0;
-
-        if (_.options.infinite === true) {
-            if (_.slideCount <= _.options.slidesToShow) {
-                 ++pagerQty;
-            } else {
-                while (breakPoint < _.slideCount) {
-                    ++pagerQty;
-                    breakPoint = counter + _.options.slidesToScroll;
-                    counter += _.options.slidesToScroll <= _.options.slidesToShow ? _.options.slidesToScroll : _.options.slidesToShow;
-                }
-            }
-        } else if (_.options.centerMode === true) {
-            pagerQty = _.slideCount;
-        } else if(!_.options.asNavFor) {
-            pagerQty = 1 + Math.ceil((_.slideCount - _.options.slidesToShow) / _.options.slidesToScroll);
-        }else {
-            while (breakPoint < _.slideCount) {
-                ++pagerQty;
-                breakPoint = counter + _.options.slidesToScroll;
-                counter += _.options.slidesToScroll <= _.options.slidesToShow ? _.options.slidesToScroll : _.options.slidesToShow;
-            }
-        }
-
-        return pagerQty - 1;
-
-    };
-
-    Slick.prototype.getLeft = function(slideIndex) {
-
-        var _ = this,
-            targetLeft,
-            verticalHeight,
-            verticalOffset = 0,
-            targetSlide,
-            coef;
-
-        _.slideOffset = 0;
-        verticalHeight = _.$slides.first().outerHeight(true);
-
-        if (_.options.infinite === true) {
-            if (_.slideCount > _.options.slidesToShow) {
-                _.slideOffset = (_.slideWidth * _.options.slidesToShow) * -1;
-                coef = -1
-
-                if (_.options.vertical === true && _.options.centerMode === true) {
-                    if (_.options.slidesToShow === 2) {
-                        coef = -1.5;
-                    } else if (_.options.slidesToShow === 1) {
-                        coef = -2
-                    }
-                }
-                verticalOffset = (verticalHeight * _.options.slidesToShow) * coef;
-            }
-            if (_.slideCount % _.options.slidesToScroll !== 0) {
-                if (slideIndex + _.options.slidesToScroll > _.slideCount && _.slideCount > _.options.slidesToShow) {
-                    if (slideIndex > _.slideCount) {
-                        _.slideOffset = ((_.options.slidesToShow - (slideIndex - _.slideCount)) * _.slideWidth) * -1;
-                        verticalOffset = ((_.options.slidesToShow - (slideIndex - _.slideCount)) * verticalHeight) * -1;
-                    } else {
-                        _.slideOffset = ((_.slideCount % _.options.slidesToScroll) * _.slideWidth) * -1;
-                        verticalOffset = ((_.slideCount % _.options.slidesToScroll) * verticalHeight) * -1;
-                    }
-                }
-            }
-        } else {
-            if (slideIndex + _.options.slidesToShow > _.slideCount) {
-                _.slideOffset = ((slideIndex + _.options.slidesToShow) - _.slideCount) * _.slideWidth;
-                verticalOffset = ((slideIndex + _.options.slidesToShow) - _.slideCount) * verticalHeight;
-            }
-        }
-
-        if (_.slideCount <= _.options.slidesToShow) {
-            _.slideOffset = 0;
-            verticalOffset = 0;
-        }
-
-        if (_.options.centerMode === true && _.slideCount <= _.options.slidesToShow) {
-            _.slideOffset = ((_.slideWidth * Math.floor(_.options.slidesToShow)) / 2) - ((_.slideWidth * _.slideCount) / 2);
-        } else if (_.options.centerMode === true && _.options.infinite === true) {
-            _.slideOffset += _.slideWidth * Math.floor(_.options.slidesToShow / 2) - _.slideWidth;
-        } else if (_.options.centerMode === true) {
-            _.slideOffset = 0;
-            _.slideOffset += _.slideWidth * Math.floor(_.options.slidesToShow / 2);
-        }
-
-        if (_.options.vertical === false) {
-            targetLeft = ((slideIndex * _.slideWidth) * -1) + _.slideOffset;
-        } else {
-            targetLeft = ((slideIndex * verticalHeight) * -1) + verticalOffset;
-        }
-
-        if (_.options.variableWidth === true) {
-
-            if (_.slideCount <= _.options.slidesToShow || _.options.infinite === false) {
-                targetSlide = _.$slideTrack.children('.slick-slide').eq(slideIndex);
-            } else {
-                targetSlide = _.$slideTrack.children('.slick-slide').eq(slideIndex + _.options.slidesToShow);
-            }
-
-            if (_.options.rtl === true) {
-                if (targetSlide[0]) {
-                    targetLeft = (_.$slideTrack.width() - targetSlide[0].offsetLeft - targetSlide.width()) * -1;
-                } else {
-                    targetLeft =  0;
-                }
-            } else {
-                targetLeft = targetSlide[0] ? targetSlide[0].offsetLeft * -1 : 0;
-            }
-
-            if (_.options.centerMode === true) {
-                if (_.slideCount <= _.options.slidesToShow || _.options.infinite === false) {
-                    targetSlide = _.$slideTrack.children('.slick-slide').eq(slideIndex);
-                } else {
-                    targetSlide = _.$slideTrack.children('.slick-slide').eq(slideIndex + _.options.slidesToShow + 1);
-                }
-
-                if (_.options.rtl === true) {
-                    if (targetSlide[0]) {
-                        targetLeft = (_.$slideTrack.width() - targetSlide[0].offsetLeft - targetSlide.width()) * -1;
-                    } else {
-                        targetLeft =  0;
-                    }
-                } else {
-                    targetLeft = targetSlide[0] ? targetSlide[0].offsetLeft * -1 : 0;
-                }
-
-                targetLeft += (_.$list.width() - targetSlide.outerWidth()) / 2;
-            }
-        }
-
-        return targetLeft;
-
-    };
-
-    Slick.prototype.getOption = Slick.prototype.slickGetOption = function(option) {
-
-        var _ = this;
-
-        return _.options[option];
-
-    };
-
-    Slick.prototype.getNavigableIndexes = function() {
-
-        var _ = this,
-            breakPoint = 0,
-            counter = 0,
-            indexes = [],
-            max;
-
-        if (_.options.infinite === false) {
-            max = _.slideCount;
-        } else {
-            breakPoint = _.options.slidesToScroll * -1;
-            counter = _.options.slidesToScroll * -1;
-            max = _.slideCount * 2;
-        }
-
-        while (breakPoint < max) {
-            indexes.push(breakPoint);
-            breakPoint = counter + _.options.slidesToScroll;
-            counter += _.options.slidesToScroll <= _.options.slidesToShow ? _.options.slidesToScroll : _.options.slidesToShow;
-        }
-
-        return indexes;
-
-    };
-
-    Slick.prototype.getSlick = function() {
-
-        return this;
-
-    };
-
-    Slick.prototype.getSlideCount = function() {
-
-        var _ = this,
-            slidesTraversed, swipedSlide, centerOffset;
-
-        centerOffset = _.options.centerMode === true ? _.slideWidth * Math.floor(_.options.slidesToShow / 2) : 0;
-
-        if (_.options.swipeToSlide === true) {
-            _.$slideTrack.find('.slick-slide').each(function(index, slide) {
-                if (slide.offsetLeft - centerOffset + ($(slide).outerWidth() / 2) > (_.swipeLeft * -1)) {
-                    swipedSlide = slide;
-                    return false;
-                }
-            });
-
-            slidesTraversed = Math.abs($(swipedSlide).attr('data-slick-index') - _.currentSlide) || 1;
-
-            return slidesTraversed;
-
-        } else {
-            return _.options.slidesToScroll;
-        }
-
-    };
-
-    Slick.prototype.goTo = Slick.prototype.slickGoTo = function(slide, dontAnimate) {
-
-        var _ = this;
-
-        _.changeSlide({
-            data: {
-                message: 'index',
-                index: parseInt(slide)
-            }
-        }, dontAnimate);
-
-    };
-
-    Slick.prototype.init = function(creation) {
-
-        var _ = this;
-
-        if (!$(_.$slider).hasClass('slick-initialized')) {
-
-            $(_.$slider).addClass('slick-initialized');
-
-            _.buildRows();
-            _.buildOut();
-            _.setProps();
-            _.startLoad();
-            _.loadSlider();
-            _.initializeEvents();
-            _.updateArrows();
-            _.updateDots();
-            _.checkResponsive(true);
-            _.focusHandler();
-
-        }
-
-        if (creation) {
-            _.$slider.trigger('init', [_]);
-        }
-
-        if (_.options.accessibility === true) {
-            _.initADA();
-        }
-
-        if ( _.options.autoplay ) {
-
-            _.paused = false;
-            _.autoPlay();
-
-        }
-
-    };
-
-    Slick.prototype.initADA = function() {
-        var _ = this,
-                numDotGroups = Math.ceil(_.slideCount / _.options.slidesToShow),
-                tabControlIndexes = _.getNavigableIndexes().filter(function(val) {
-                    return (val >= 0) && (val < _.slideCount);
-                });
-
-        _.$slides.add(_.$slideTrack.find('.slick-cloned')).attr({
-            'aria-hidden': 'true',
-            'tabindex': '-1'
-        }).find('a, input, button, select').attr({
-            'tabindex': '-1'
-        });
-
-        if (_.$dots !== null) {
-            _.$slides.not(_.$slideTrack.find('.slick-cloned')).each(function(i) {
-                var slideControlIndex = tabControlIndexes.indexOf(i);
-
-                $(this).attr({
-                    'role': 'tabpanel',
-                    'id': 'slick-slide' + _.instanceUid + i,
-                    'tabindex': -1
-                });
-
-                if (slideControlIndex !== -1) {
-                   var ariaButtonControl = 'slick-slide-control' + _.instanceUid + slideControlIndex
-                   if ($('#' + ariaButtonControl).length) {
-                     $(this).attr({
-                         'aria-describedby': ariaButtonControl
-                     });
-                   }
-                }
-            });
-
-            _.$dots.attr('role', 'tablist').find('li').each(function(i) {
-                var mappedSlideIndex = tabControlIndexes[i];
-
-                $(this).attr({
-                    'role': 'presentation'
-                });
-
-                $(this).find('button').first().attr({
-                    'role': 'tab',
-                    'id': 'slick-slide-control' + _.instanceUid + i,
-                    'aria-controls': 'slick-slide' + _.instanceUid + mappedSlideIndex,
-                    'aria-label': (i + 1) + ' of ' + numDotGroups,
-                    'aria-selected': null,
-                    'tabindex': '-1'
-                });
-
-            }).eq(_.currentSlide).find('button').attr({
-                'aria-selected': 'true',
-                'tabindex': '0'
-            }).end();
-        }
-
-        for (var i=_.currentSlide, max=i+_.options.slidesToShow; i < max; i++) {
-          if (_.options.focusOnChange) {
-            _.$slides.eq(i).attr({'tabindex': '0'});
-          } else {
-            _.$slides.eq(i).removeAttr('tabindex');
-          }
-        }
-
-        _.activateADA();
-
-    };
-
-    Slick.prototype.initArrowEvents = function() {
-
-        var _ = this;
-
-        if (_.options.arrows === true && _.slideCount > _.options.slidesToShow) {
-            _.$prevArrow
-               .off('click.slick')
-               .on('click.slick', {
-                    message: 'previous'
-               }, _.changeSlide);
-            _.$nextArrow
-               .off('click.slick')
-               .on('click.slick', {
-                    message: 'next'
-               }, _.changeSlide);
-
-            if (_.options.accessibility === true) {
-                _.$prevArrow.on('keydown.slick', _.keyHandler);
-                _.$nextArrow.on('keydown.slick', _.keyHandler);
-            }
-        }
-
-    };
-
-    Slick.prototype.initDotEvents = function() {
-
-        var _ = this;
-
-        if (_.options.dots === true && _.slideCount > _.options.slidesToShow) {
-            $('li', _.$dots).on('click.slick', {
-                message: 'index'
-            }, _.changeSlide);
-
-            if (_.options.accessibility === true) {
-                _.$dots.on('keydown.slick', _.keyHandler);
-            }
-        }
-
-        if (_.options.dots === true && _.options.pauseOnDotsHover === true && _.slideCount > _.options.slidesToShow) {
-
-            $('li', _.$dots)
-                .on('mouseenter.slick', $.proxy(_.interrupt, _, true))
-                .on('mouseleave.slick', $.proxy(_.interrupt, _, false));
-
-        }
-
-    };
-
-    Slick.prototype.initSlideEvents = function() {
-
-        var _ = this;
-
-        if ( _.options.pauseOnHover ) {
-
-            _.$list.on('mouseenter.slick', $.proxy(_.interrupt, _, true));
-            _.$list.on('mouseleave.slick', $.proxy(_.interrupt, _, false));
-
-        }
-
-    };
-
-    Slick.prototype.initializeEvents = function() {
-
-        var _ = this;
-
-        _.initArrowEvents();
-
-        _.initDotEvents();
-        _.initSlideEvents();
-
-        _.$list.on('touchstart.slick mousedown.slick', {
-            action: 'start'
-        }, _.swipeHandler);
-        _.$list.on('touchmove.slick mousemove.slick', {
-            action: 'move'
-        }, _.swipeHandler);
-        _.$list.on('touchend.slick mouseup.slick', {
-            action: 'end'
-        }, _.swipeHandler);
-        _.$list.on('touchcancel.slick mouseleave.slick', {
-            action: 'end'
-        }, _.swipeHandler);
-
-        _.$list.on('click.slick', _.clickHandler);
-
-        $(document).on(_.visibilityChange, $.proxy(_.visibility, _));
-
-        if (_.options.accessibility === true) {
-            _.$list.on('keydown.slick', _.keyHandler);
-        }
-
-        if (_.options.focusOnSelect === true) {
-            $(_.$slideTrack).children().on('click.slick', _.selectHandler);
-        }
-
-        $(window).on('orientationchange.slick.slick-' + _.instanceUid, $.proxy(_.orientationChange, _));
-
-        $(window).on('resize.slick.slick-' + _.instanceUid, $.proxy(_.resize, _));
-
-        $('[draggable!=true]', _.$slideTrack).on('dragstart', _.preventDefault);
-
-        $(window).on('load.slick.slick-' + _.instanceUid, _.setPosition);
-        $(_.setPosition);
-
-    };
-
-    Slick.prototype.initUI = function() {
-
-        var _ = this;
-
-        if (_.options.arrows === true && _.slideCount > _.options.slidesToShow) {
-
-            _.$prevArrow.show();
-            _.$nextArrow.show();
-
-        }
-
-        if (_.options.dots === true && _.slideCount > _.options.slidesToShow) {
-
-            _.$dots.show();
-
-        }
-
-    };
-
-    Slick.prototype.keyHandler = function(event) {
-
-        var _ = this;
-         //Dont slide if the cursor is inside the form fields and arrow keys are pressed
-        if(!event.target.tagName.match('TEXTAREA|INPUT|SELECT')) {
-            if (event.keyCode === 37 && _.options.accessibility === true) {
-                _.changeSlide({
-                    data: {
-                        message: _.options.rtl === true ? 'next' :  'previous'
-                    }
-                });
-            } else if (event.keyCode === 39 && _.options.accessibility === true) {
-                _.changeSlide({
-                    data: {
-                        message: _.options.rtl === true ? 'previous' : 'next'
-                    }
-                });
-            }
-        }
-
-    };
-
-    Slick.prototype.lazyLoad = function() {
-
-        var _ = this,
-            loadRange, cloneRange, rangeStart, rangeEnd;
-
-        function loadImages(imagesScope) {
-
-            $('img[data-lazy]', imagesScope).each(function() {
-
-                var image = $(this),
-                    imageSource = $(this).attr('data-lazy'),
-                    imageSrcSet = $(this).attr('data-srcset'),
-                    imageSizes  = $(this).attr('data-sizes') || _.$slider.attr('data-sizes'),
-                    imageToLoad = document.createElement('img');
-
-                imageToLoad.onload = function() {
-
-                    image
-                        .animate({ opacity: 0 }, 100, function() {
-
-                            if (imageSrcSet) {
-                                image
-                                    .attr('srcset', imageSrcSet );
-
-                                if (imageSizes) {
-                                    image
-                                        .attr('sizes', imageSizes );
-                                }
-                            }
-
-                            image
-                                .attr('src', imageSource)
-                                .animate({ opacity: 1 }, 200, function() {
-                                    image
-                                        .removeAttr('data-lazy data-srcset data-sizes')
-                                        .removeClass('slick-loading');
-                                });
-                            _.$slider.trigger('lazyLoaded', [_, image, imageSource]);
-                        });
-
-                };
-
-                imageToLoad.onerror = function() {
-
-                    image
-                        .removeAttr( 'data-lazy' )
-                        .removeClass( 'slick-loading' )
-                        .addClass( 'slick-lazyload-error' );
-
-                    _.$slider.trigger('lazyLoadError', [ _, image, imageSource ]);
-
-                };
-
-                imageToLoad.src = imageSource;
-
-            });
-
-        }
-
-        if (_.options.centerMode === true) {
-            if (_.options.infinite === true) {
-                rangeStart = _.currentSlide + (_.options.slidesToShow / 2 + 1);
-                rangeEnd = rangeStart + _.options.slidesToShow + 2;
-            } else {
-                rangeStart = Math.max(0, _.currentSlide - (_.options.slidesToShow / 2 + 1));
-                rangeEnd = 2 + (_.options.slidesToShow / 2 + 1) + _.currentSlide;
-            }
-        } else {
-            rangeStart = _.options.infinite ? _.options.slidesToShow + _.currentSlide : _.currentSlide;
-            rangeEnd = Math.ceil(rangeStart + _.options.slidesToShow);
-            if (_.options.fade === true) {
-                if (rangeStart > 0) rangeStart--;
-                if (rangeEnd <= _.slideCount) rangeEnd++;
-            }
-        }
-
-        loadRange = _.$slider.find('.slick-slide').slice(rangeStart, rangeEnd);
-
-        if (_.options.lazyLoad === 'anticipated') {
-            var prevSlide = rangeStart - 1,
-                nextSlide = rangeEnd,
-                $slides = _.$slider.find('.slick-slide');
-
-            for (var i = 0; i < _.options.slidesToScroll; i++) {
-                if (prevSlide < 0) prevSlide = _.slideCount - 1;
-                loadRange = loadRange.add($slides.eq(prevSlide));
-                loadRange = loadRange.add($slides.eq(nextSlide));
-                prevSlide--;
-                nextSlide++;
-            }
-        }
-
-        loadImages(loadRange);
-
-        if (_.slideCount <= _.options.slidesToShow) {
-            cloneRange = _.$slider.find('.slick-slide');
-            loadImages(cloneRange);
-        } else
-        if (_.currentSlide >= _.slideCount - _.options.slidesToShow) {
-            cloneRange = _.$slider.find('.slick-cloned').slice(0, _.options.slidesToShow);
-            loadImages(cloneRange);
-        } else if (_.currentSlide === 0) {
-            cloneRange = _.$slider.find('.slick-cloned').slice(_.options.slidesToShow * -1);
-            loadImages(cloneRange);
-        }
-
-    };
-
-    Slick.prototype.loadSlider = function() {
-
-        var _ = this;
-
-        _.setPosition();
-
-        _.$slideTrack.css({
-            opacity: 1
-        });
-
-        _.$slider.removeClass('slick-loading');
-
-        _.initUI();
-
-        if (_.options.lazyLoad === 'progressive') {
-            _.progressiveLazyLoad();
-        }
-
-    };
-
-    Slick.prototype.next = Slick.prototype.slickNext = function() {
-
-        var _ = this;
-
-        _.changeSlide({
-            data: {
-                message: 'next'
-            }
-        });
-
-    };
-
-    Slick.prototype.orientationChange = function() {
-
-        var _ = this;
-
-        _.checkResponsive();
-        _.setPosition();
-
-    };
-
-    Slick.prototype.pause = Slick.prototype.slickPause = function() {
-
-        var _ = this;
-
-        _.autoPlayClear();
-        _.paused = true;
-
-    };
-
-    Slick.prototype.play = Slick.prototype.slickPlay = function() {
-
-        var _ = this;
-
-        _.autoPlay();
-        _.options.autoplay = true;
-        _.paused = false;
-        _.focussed = false;
-        _.interrupted = false;
-
-    };
-
-    Slick.prototype.postSlide = function(index) {
-
-        var _ = this;
-
-        if( !_.unslicked ) {
-
-            _.$slider.trigger('afterChange', [_, index]);
-
-            _.animating = false;
-
-            if (_.slideCount > _.options.slidesToShow) {
-                _.setPosition();
-            }
-
-            _.swipeLeft = null;
-
-            if ( _.options.autoplay ) {
-                _.autoPlay();
-            }
-
-            if (_.options.accessibility === true) {
-                _.initADA();
-
-                if (_.options.focusOnChange) {
-                    var $currentSlide = $(_.$slides.get(_.currentSlide));
-                    $currentSlide.attr('tabindex', 0).focus();
-                }
-            }
-
-        }
-
-    };
-
-    Slick.prototype.prev = Slick.prototype.slickPrev = function() {
-
-        var _ = this;
-
-        _.changeSlide({
-            data: {
-                message: 'previous'
-            }
-        });
-
-    };
-
-    Slick.prototype.preventDefault = function(event) {
-
-        event.preventDefault();
-
-    };
-
-    Slick.prototype.progressiveLazyLoad = function( tryCount ) {
-
-        tryCount = tryCount || 1;
-
-        var _ = this,
-            $imgsToLoad = $( 'img[data-lazy]', _.$slider ),
-            image,
-            imageSource,
-            imageSrcSet,
-            imageSizes,
-            imageToLoad;
-
-        if ( $imgsToLoad.length ) {
-
-            image = $imgsToLoad.first();
-            imageSource = image.attr('data-lazy');
-            imageSrcSet = image.attr('data-srcset');
-            imageSizes  = image.attr('data-sizes') || _.$slider.attr('data-sizes');
-            imageToLoad = document.createElement('img');
-
-            imageToLoad.onload = function() {
-
-                if (imageSrcSet) {
-                    image
-                        .attr('srcset', imageSrcSet );
-
-                    if (imageSizes) {
-                        image
-                            .attr('sizes', imageSizes );
-                    }
-                }
-
-                image
-                    .attr( 'src', imageSource )
-                    .removeAttr('data-lazy data-srcset data-sizes')
-                    .removeClass('slick-loading');
-
-                if ( _.options.adaptiveHeight === true ) {
-                    _.setPosition();
-                }
-
-                _.$slider.trigger('lazyLoaded', [ _, image, imageSource ]);
-                _.progressiveLazyLoad();
-
-            };
-
-            imageToLoad.onerror = function() {
-
-                if ( tryCount < 3 ) {
-
-                    /**
-                     * try to load the image 3 times,
-                     * leave a slight delay so we don't get
-                     * servers blocking the request.
-                     */
-                    setTimeout( function() {
-                        _.progressiveLazyLoad( tryCount + 1 );
-                    }, 500 );
-
-                } else {
-
-                    image
-                        .removeAttr( 'data-lazy' )
-                        .removeClass( 'slick-loading' )
-                        .addClass( 'slick-lazyload-error' );
-
-                    _.$slider.trigger('lazyLoadError', [ _, image, imageSource ]);
-
-                    _.progressiveLazyLoad();
-
-                }
-
-            };
-
-            imageToLoad.src = imageSource;
-
-        } else {
-
-            _.$slider.trigger('allImagesLoaded', [ _ ]);
-
-        }
-
-    };
-
-    Slick.prototype.refresh = function( initializing ) {
-
-        var _ = this, currentSlide, lastVisibleIndex;
-
-        lastVisibleIndex = _.slideCount - _.options.slidesToShow;
-
-        // in non-infinite sliders, we don't want to go past the
-        // last visible index.
-        if( !_.options.infinite && ( _.currentSlide > lastVisibleIndex )) {
-            _.currentSlide = lastVisibleIndex;
-        }
-
-        // if less slides than to show, go to start.
-        if ( _.slideCount <= _.options.slidesToShow ) {
-            _.currentSlide = 0;
-
-        }
-
-        currentSlide = _.currentSlide;
-
-        _.destroy(true);
-
-        $.extend(_, _.initials, { currentSlide: currentSlide });
-
-        _.init();
-
-        if( !initializing ) {
-
-            _.changeSlide({
-                data: {
-                    message: 'index',
-                    index: currentSlide
-                }
-            }, false);
-
-        }
-
-    };
-
-    Slick.prototype.registerBreakpoints = function() {
-
-        var _ = this, breakpoint, currentBreakpoint, l,
-            responsiveSettings = _.options.responsive || null;
-
-        if ( $.type(responsiveSettings) === 'array' && responsiveSettings.length ) {
-
-            _.respondTo = _.options.respondTo || 'window';
-
-            for ( breakpoint in responsiveSettings ) {
-
-                l = _.breakpoints.length-1;
-
-                if (responsiveSettings.hasOwnProperty(breakpoint)) {
-                    currentBreakpoint = responsiveSettings[breakpoint].breakpoint;
-
-                    // loop through the breakpoints and cut out any existing
-                    // ones with the same breakpoint number, we don't want dupes.
-                    while( l >= 0 ) {
-                        if( _.breakpoints[l] && _.breakpoints[l] === currentBreakpoint ) {
-                            _.breakpoints.splice(l,1);
-                        }
-                        l--;
-                    }
-
-                    _.breakpoints.push(currentBreakpoint);
-                    _.breakpointSettings[currentBreakpoint] = responsiveSettings[breakpoint].settings;
-
-                }
-
-            }
-
-            _.breakpoints.sort(function(a, b) {
-                return ( _.options.mobileFirst ) ? a-b : b-a;
-            });
-
-        }
-
-    };
-
-    Slick.prototype.reinit = function() {
-
-        var _ = this;
-
-        _.$slides =
-            _.$slideTrack
-                .children(_.options.slide)
-                .addClass('slick-slide');
-
-        _.slideCount = _.$slides.length;
-
-        if (_.currentSlide >= _.slideCount && _.currentSlide !== 0) {
-            _.currentSlide = _.currentSlide - _.options.slidesToScroll;
-        }
-
-        if (_.slideCount <= _.options.slidesToShow) {
-            _.currentSlide = 0;
-        }
-
-        _.registerBreakpoints();
-
-        _.setProps();
-        _.setupInfinite();
-        _.buildArrows();
-        _.updateArrows();
-        _.initArrowEvents();
-        _.buildDots();
-        _.updateDots();
-        _.initDotEvents();
-        _.cleanUpSlideEvents();
-        _.initSlideEvents();
-
-        _.checkResponsive(false, true);
-
-        if (_.options.focusOnSelect === true) {
-            $(_.$slideTrack).children().on('click.slick', _.selectHandler);
-        }
-
-        _.setSlideClasses(typeof _.currentSlide === 'number' ? _.currentSlide : 0);
-
-        _.setPosition();
-        _.focusHandler();
-
-        _.paused = !_.options.autoplay;
-        _.autoPlay();
-
-        _.$slider.trigger('reInit', [_]);
-
-    };
-
-    Slick.prototype.resize = function() {
-
-        var _ = this;
-
-        if ($(window).width() !== _.windowWidth) {
-            clearTimeout(_.windowDelay);
-            _.windowDelay = window.setTimeout(function() {
-                _.windowWidth = $(window).width();
-                _.checkResponsive();
-                if( !_.unslicked ) { _.setPosition(); }
-            }, 50);
-        }
-    };
-
-    Slick.prototype.removeSlide = Slick.prototype.slickRemove = function(index, removeBefore, removeAll) {
-
-        var _ = this;
-
-        if (typeof(index) === 'boolean') {
-            removeBefore = index;
-            index = removeBefore === true ? 0 : _.slideCount - 1;
-        } else {
-            index = removeBefore === true ? --index : index;
-        }
-
-        if (_.slideCount < 1 || index < 0 || index > _.slideCount - 1) {
-            return false;
-        }
-
-        _.unload();
-
-        if (removeAll === true) {
-            _.$slideTrack.children().remove();
-        } else {
-            _.$slideTrack.children(this.options.slide).eq(index).remove();
-        }
-
-        _.$slides = _.$slideTrack.children(this.options.slide);
-
-        _.$slideTrack.children(this.options.slide).detach();
-
-        _.$slideTrack.append(_.$slides);
-
-        _.$slidesCache = _.$slides;
-
-        _.reinit();
-
-    };
-
-    Slick.prototype.setCSS = function(position) {
-
-        var _ = this,
-            positionProps = {},
-            x, y;
-
-        if (_.options.rtl === true) {
-            position = -position;
-        }
-        x = _.positionProp == 'left' ? Math.ceil(position) + 'px' : '0px';
-        y = _.positionProp == 'top' ? Math.ceil(position) + 'px' : '0px';
-
-        positionProps[_.positionProp] = position;
-
-        if (_.transformsEnabled === false) {
-            _.$slideTrack.css(positionProps);
-        } else {
-            positionProps = {};
-            if (_.cssTransitions === false) {
-                positionProps[_.animType] = 'translate(' + x + ', ' + y + ')';
-                _.$slideTrack.css(positionProps);
-            } else {
-                positionProps[_.animType] = 'translate3d(' + x + ', ' + y + ', 0px)';
-                _.$slideTrack.css(positionProps);
-            }
-        }
-
-    };
-
-    Slick.prototype.setDimensions = function() {
-
-        var _ = this;
-
-        if (_.options.vertical === false) {
-            if (_.options.centerMode === true) {
-                _.$list.css({
-                    padding: ('0px ' + _.options.centerPadding)
-                });
-            }
-        } else {
-            _.$list.height(_.$slides.first().outerHeight(true) * _.options.slidesToShow);
-            if (_.options.centerMode === true) {
-                _.$list.css({
-                    padding: (_.options.centerPadding + ' 0px')
-                });
-            }
-        }
-
-        _.listWidth = _.$list.width();
-        _.listHeight = _.$list.height();
-
-
-        if (_.options.vertical === false && _.options.variableWidth === false) {
-            _.slideWidth = Math.ceil(_.listWidth / _.options.slidesToShow);
-            _.$slideTrack.width(Math.ceil((_.slideWidth * _.$slideTrack.children('.slick-slide').length)));
-
-        } else if (_.options.variableWidth === true) {
-            _.$slideTrack.width(5000 * _.slideCount);
-        } else {
-            _.slideWidth = Math.ceil(_.listWidth);
-            _.$slideTrack.height(Math.ceil((_.$slides.first().outerHeight(true) * _.$slideTrack.children('.slick-slide').length)));
-        }
-
-        var offset = _.$slides.first().outerWidth(true) - _.$slides.first().width();
-        if (_.options.variableWidth === false) _.$slideTrack.children('.slick-slide').width(_.slideWidth - offset);
-
-    };
-
-    Slick.prototype.setFade = function() {
-
-        var _ = this,
-            targetLeft;
-
-        _.$slides.each(function(index, element) {
-            targetLeft = (_.slideWidth * index) * -1;
-            if (_.options.rtl === true) {
-                $(element).css({
-                    position: 'relative',
-                    right: targetLeft,
-                    top: 0,
-                    zIndex: _.options.zIndex - 2,
-                    opacity: 0
-                });
-            } else {
-                $(element).css({
-                    position: 'relative',
-                    left: targetLeft,
-                    top: 0,
-                    zIndex: _.options.zIndex - 2,
-                    opacity: 0
-                });
-            }
-        });
-
-        _.$slides.eq(_.currentSlide).css({
-            zIndex: _.options.zIndex - 1,
-            opacity: 1
-        });
-
-    };
-
-    Slick.prototype.setHeight = function() {
-
-        var _ = this;
-
-        if (_.options.slidesToShow === 1 && _.options.adaptiveHeight === true && _.options.vertical === false) {
-            var targetHeight = _.$slides.eq(_.currentSlide).outerHeight(true);
-            _.$list.css('height', targetHeight);
-        }
-
-    };
-
-    Slick.prototype.setOption =
-    Slick.prototype.slickSetOption = function() {
-
-        /**
-         * accepts arguments in format of:
-         *
-         *  - for changing a single option's value:
-         *     .slick("setOption", option, value, refresh )
-         *
-         *  - for changing a set of responsive options:
-         *     .slick("setOption", 'responsive', [{}, ...], refresh )
-         *
-         *  - for updating multiple values at once (not responsive)
-         *     .slick("setOption", { 'option': value, ... }, refresh )
-         */
-
-        var _ = this, l, item, option, value, refresh = false, type;
-
-        if( $.type( arguments[0] ) === 'object' ) {
-
-            option =  arguments[0];
-            refresh = arguments[1];
-            type = 'multiple';
-
-        } else if ( $.type( arguments[0] ) === 'string' ) {
-
-            option =  arguments[0];
-            value = arguments[1];
-            refresh = arguments[2];
-
-            if ( arguments[0] === 'responsive' && $.type( arguments[1] ) === 'array' ) {
-
-                type = 'responsive';
-
-            } else if ( typeof arguments[1] !== 'undefined' ) {
-
-                type = 'single';
-
-            }
-
-        }
-
-        if ( type === 'single' ) {
-
-            _.options[option] = value;
-
-
-        } else if ( type === 'multiple' ) {
-
-            $.each( option , function( opt, val ) {
-
-                _.options[opt] = val;
-
-            });
-
-
-        } else if ( type === 'responsive' ) {
-
-            for ( item in value ) {
-
-                if( $.type( _.options.responsive ) !== 'array' ) {
-
-                    _.options.responsive = [ value[item] ];
-
-                } else {
-
-                    l = _.options.responsive.length-1;
-
-                    // loop through the responsive object and splice out duplicates.
-                    while( l >= 0 ) {
-
-                        if( _.options.responsive[l].breakpoint === value[item].breakpoint ) {
-
-                            _.options.responsive.splice(l,1);
-
-                        }
-
-                        l--;
-
-                    }
-
-                    _.options.responsive.push( value[item] );
-
-                }
-
-            }
-
-        }
-
-        if ( refresh ) {
-
-            _.unload();
-            _.reinit();
-
-        }
-
-    };
-
-    Slick.prototype.setPosition = function() {
-
-        var _ = this;
-
-        _.setDimensions();
-
-        _.setHeight();
-
-        if (_.options.fade === false) {
-            _.setCSS(_.getLeft(_.currentSlide));
-        } else {
-            _.setFade();
-        }
-
-        _.$slider.trigger('setPosition', [_]);
-
-    };
-
-    Slick.prototype.setProps = function() {
-
-        var _ = this,
-            bodyStyle = document.body.style;
-
-        _.positionProp = _.options.vertical === true ? 'top' : 'left';
-
-        if (_.positionProp === 'top') {
-            _.$slider.addClass('slick-vertical');
-        } else {
-            _.$slider.removeClass('slick-vertical');
-        }
-
-        if (bodyStyle.WebkitTransition !== undefined ||
-            bodyStyle.MozTransition !== undefined ||
-            bodyStyle.msTransition !== undefined) {
-            if (_.options.useCSS === true) {
-                _.cssTransitions = true;
-            }
-        }
-
-        if ( _.options.fade ) {
-            if ( typeof _.options.zIndex === 'number' ) {
-                if( _.options.zIndex < 3 ) {
-                    _.options.zIndex = 3;
-                }
-            } else {
-                _.options.zIndex = _.defaults.zIndex;
-            }
-        }
-
-        if (bodyStyle.OTransform !== undefined) {
-            _.animType = 'OTransform';
-            _.transformType = '-o-transform';
-            _.transitionType = 'OTransition';
-            if (bodyStyle.perspectiveProperty === undefined && bodyStyle.webkitPerspective === undefined) _.animType = false;
-        }
-        if (bodyStyle.MozTransform !== undefined) {
-            _.animType = 'MozTransform';
-            _.transformType = '-moz-transform';
-            _.transitionType = 'MozTransition';
-            if (bodyStyle.perspectiveProperty === undefined && bodyStyle.MozPerspective === undefined) _.animType = false;
-        }
-        if (bodyStyle.webkitTransform !== undefined) {
-            _.animType = 'webkitTransform';
-            _.transformType = '-webkit-transform';
-            _.transitionType = 'webkitTransition';
-            if (bodyStyle.perspectiveProperty === undefined && bodyStyle.webkitPerspective === undefined) _.animType = false;
-        }
-        if (bodyStyle.msTransform !== undefined) {
-            _.animType = 'msTransform';
-            _.transformType = '-ms-transform';
-            _.transitionType = 'msTransition';
-            if (bodyStyle.msTransform === undefined) _.animType = false;
-        }
-        if (bodyStyle.transform !== undefined && _.animType !== false) {
-            _.animType = 'transform';
-            _.transformType = 'transform';
-            _.transitionType = 'transition';
-        }
-        _.transformsEnabled = _.options.useTransform && (_.animType !== null && _.animType !== false);
-    };
-
-
-    Slick.prototype.setSlideClasses = function(index) {
-
-        var _ = this,
-            centerOffset, allSlides, indexOffset, remainder;
-
-        allSlides = _.$slider
-            .find('.slick-slide')
-            .removeClass('slick-active slick-center slick-current')
-            .attr('aria-hidden', 'true');
-
-        _.$slides
-            .eq(index)
-            .addClass('slick-current');
-
-        if (_.options.centerMode === true) {
-
-            var evenCoef = _.options.slidesToShow % 2 === 0 ? 1 : 0;
-
-            centerOffset = Math.floor(_.options.slidesToShow / 2);
-
-            if (_.options.infinite === true) {
-
-                if (index >= centerOffset && index <= (_.slideCount - 1) - centerOffset) {
-                    _.$slides
-                        .slice(index - centerOffset + evenCoef, index + centerOffset + 1)
-                        .addClass('slick-active')
-                        .attr('aria-hidden', 'false');
-
-                } else {
-
-                    indexOffset = _.options.slidesToShow + index;
-                    allSlides
-                        .slice(indexOffset - centerOffset + 1 + evenCoef, indexOffset + centerOffset + 2)
-                        .addClass('slick-active')
-                        .attr('aria-hidden', 'false');
-
-                }
-
-                if (index === 0) {
-
-                    allSlides
-                        .eq(allSlides.length - 1 - _.options.slidesToShow)
-                        .addClass('slick-center');
-
-                } else if (index === _.slideCount - 1) {
-
-                    allSlides
-                        .eq(_.options.slidesToShow)
-                        .addClass('slick-center');
-
-                }
-
-            }
-
-            _.$slides
-                .eq(index)
-                .addClass('slick-center');
-
-        } else {
-
-            if (index >= 0 && index <= (_.slideCount - _.options.slidesToShow)) {
-
-                _.$slides
-                    .slice(index, index + _.options.slidesToShow)
-                    .addClass('slick-active')
-                    .attr('aria-hidden', 'false');
-
-            } else if (allSlides.length <= _.options.slidesToShow) {
-
-                allSlides
-                    .addClass('slick-active')
-                    .attr('aria-hidden', 'false');
-
-            } else {
-
-                remainder = _.slideCount % _.options.slidesToShow;
-                indexOffset = _.options.infinite === true ? _.options.slidesToShow + index : index;
-
-                if (_.options.slidesToShow == _.options.slidesToScroll && (_.slideCount - index) < _.options.slidesToShow) {
-
-                    allSlides
-                        .slice(indexOffset - (_.options.slidesToShow - remainder), indexOffset + remainder)
-                        .addClass('slick-active')
-                        .attr('aria-hidden', 'false');
-
-                } else {
-
-                    allSlides
-                        .slice(indexOffset, indexOffset + _.options.slidesToShow)
-                        .addClass('slick-active')
-                        .attr('aria-hidden', 'false');
-
-                }
-
-            }
-
-        }
-
-        if (_.options.lazyLoad === 'ondemand' || _.options.lazyLoad === 'anticipated') {
-            _.lazyLoad();
-        }
-    };
-
-    Slick.prototype.setupInfinite = function() {
-
-        var _ = this,
-            i, slideIndex, infiniteCount;
-
-        if (_.options.fade === true) {
-            _.options.centerMode = false;
-        }
-
-        if (_.options.infinite === true && _.options.fade === false) {
-
-            slideIndex = null;
-
-            if (_.slideCount > _.options.slidesToShow) {
-
-                if (_.options.centerMode === true) {
-                    infiniteCount = _.options.slidesToShow + 1;
-                } else {
-                    infiniteCount = _.options.slidesToShow;
-                }
-
-                for (i = _.slideCount; i > (_.slideCount -
-                        infiniteCount); i -= 1) {
-                    slideIndex = i - 1;
-                    $(_.$slides[slideIndex]).clone(true).attr('id', '')
-                        .attr('data-slick-index', slideIndex - _.slideCount)
-                        .prependTo(_.$slideTrack).addClass('slick-cloned');
-                }
-                for (i = 0; i < infiniteCount  + _.slideCount; i += 1) {
-                    slideIndex = i;
-                    $(_.$slides[slideIndex]).clone(true).attr('id', '')
-                        .attr('data-slick-index', slideIndex + _.slideCount)
-                        .appendTo(_.$slideTrack).addClass('slick-cloned');
-                }
-                _.$slideTrack.find('.slick-cloned').find('[id]').each(function() {
-                    $(this).attr('id', '');
-                });
-
-            }
-
-        }
-
-    };
-
-    Slick.prototype.interrupt = function( toggle ) {
-
-        var _ = this;
-
-        if( !toggle ) {
-            _.autoPlay();
-        }
-        _.interrupted = toggle;
-
-    };
-
-    Slick.prototype.selectHandler = function(event) {
-
-        var _ = this;
-
-        var targetElement =
-            $(event.target).is('.slick-slide') ?
-                $(event.target) :
-                $(event.target).parents('.slick-slide');
-
-        var index = parseInt(targetElement.attr('data-slick-index'));
-
-        if (!index) index = 0;
-
-        if (_.slideCount <= _.options.slidesToShow) {
-
-            _.slideHandler(index, false, true);
-            return;
-
-        }
-
-        _.slideHandler(index);
-
-    };
-
-    Slick.prototype.slideHandler = function(index, sync, dontAnimate) {
-
-        var targetSlide, animSlide, oldSlide, slideLeft, targetLeft = null,
-            _ = this, navTarget;
-
-        sync = sync || false;
-
-        if (_.animating === true && _.options.waitForAnimate === true) {
-            return;
-        }
-
-        if (_.options.fade === true && _.currentSlide === index) {
-            return;
-        }
-
-        if (sync === false) {
-            _.asNavFor(index);
-        }
-
-        targetSlide = index;
-        targetLeft = _.getLeft(targetSlide);
-        slideLeft = _.getLeft(_.currentSlide);
-
-        _.currentLeft = _.swipeLeft === null ? slideLeft : _.swipeLeft;
-
-        if (_.options.infinite === false && _.options.centerMode === false && (index < 0 || index > _.getDotCount() * _.options.slidesToScroll)) {
-            if (_.options.fade === false) {
-                targetSlide = _.currentSlide;
-                if (dontAnimate !== true && _.slideCount > _.options.slidesToShow) {
-                    _.animateSlide(slideLeft, function() {
-                        _.postSlide(targetSlide);
-                    });
-                } else {
-                    _.postSlide(targetSlide);
-                }
-            }
-            return;
-        } else if (_.options.infinite === false && _.options.centerMode === true && (index < 0 || index > (_.slideCount - _.options.slidesToScroll))) {
-            if (_.options.fade === false) {
-                targetSlide = _.currentSlide;
-                if (dontAnimate !== true && _.slideCount > _.options.slidesToShow) {
-                    _.animateSlide(slideLeft, function() {
-                        _.postSlide(targetSlide);
-                    });
-                } else {
-                    _.postSlide(targetSlide);
-                }
-            }
-            return;
-        }
-
-        if ( _.options.autoplay ) {
-            clearInterval(_.autoPlayTimer);
-        }
-
-        if (targetSlide < 0) {
-            if (_.slideCount % _.options.slidesToScroll !== 0) {
-                animSlide = _.slideCount - (_.slideCount % _.options.slidesToScroll);
-            } else {
-                animSlide = _.slideCount + targetSlide;
-            }
-        } else if (targetSlide >= _.slideCount) {
-            if (_.slideCount % _.options.slidesToScroll !== 0) {
-                animSlide = 0;
-            } else {
-                animSlide = targetSlide - _.slideCount;
-            }
-        } else {
-            animSlide = targetSlide;
-        }
-
-        _.animating = true;
-
-        _.$slider.trigger('beforeChange', [_, _.currentSlide, animSlide]);
-
-        oldSlide = _.currentSlide;
-        _.currentSlide = animSlide;
-
-        _.setSlideClasses(_.currentSlide);
-
-        if ( _.options.asNavFor ) {
-
-            navTarget = _.getNavTarget();
-            navTarget = navTarget.slick('getSlick');
-
-            if ( navTarget.slideCount <= navTarget.options.slidesToShow ) {
-                navTarget.setSlideClasses(_.currentSlide);
-            }
-
-        }
-
-        _.updateDots();
-        _.updateArrows();
-
-        if (_.options.fade === true) {
-            if (dontAnimate !== true) {
-
-                _.fadeSlideOut(oldSlide);
-
-                _.fadeSlide(animSlide, function() {
-                    _.postSlide(animSlide);
-                });
-
-            } else {
-                _.postSlide(animSlide);
-            }
-            _.animateHeight();
-            return;
-        }
-
-        if (dontAnimate !== true && _.slideCount > _.options.slidesToShow) {
-            _.animateSlide(targetLeft, function() {
-                _.postSlide(animSlide);
-            });
-        } else {
-            _.postSlide(animSlide);
-        }
-
-    };
-
-    Slick.prototype.startLoad = function() {
-
-        var _ = this;
-
-        if (_.options.arrows === true && _.slideCount > _.options.slidesToShow) {
-
-            _.$prevArrow.hide();
-            _.$nextArrow.hide();
-
-        }
-
-        if (_.options.dots === true && _.slideCount > _.options.slidesToShow) {
-
-            _.$dots.hide();
-
-        }
-
-        _.$slider.addClass('slick-loading');
-
-    };
-
-    Slick.prototype.swipeDirection = function() {
-
-        var xDist, yDist, r, swipeAngle, _ = this;
-
-        xDist = _.touchObject.startX - _.touchObject.curX;
-        yDist = _.touchObject.startY - _.touchObject.curY;
-        r = Math.atan2(yDist, xDist);
-
-        swipeAngle = Math.round(r * 180 / Math.PI);
-        if (swipeAngle < 0) {
-            swipeAngle = 360 - Math.abs(swipeAngle);
-        }
-
-        if ((swipeAngle <= 45) && (swipeAngle >= 0)) {
-            return (_.options.rtl === false ? 'left' : 'right');
-        }
-        if ((swipeAngle <= 360) && (swipeAngle >= 315)) {
-            return (_.options.rtl === false ? 'left' : 'right');
-        }
-        if ((swipeAngle >= 135) && (swipeAngle <= 225)) {
-            return (_.options.rtl === false ? 'right' : 'left');
-        }
-        if (_.options.verticalSwiping === true) {
-            if ((swipeAngle >= 35) && (swipeAngle <= 135)) {
-                return 'down';
-            } else {
-                return 'up';
-            }
-        }
-
-        return 'vertical';
-
-    };
-
-    Slick.prototype.swipeEnd = function(event) {
-
-        var _ = this,
-            slideCount,
-            direction;
-
-        _.dragging = false;
-        _.swiping = false;
-
-        if (_.scrolling) {
-            _.scrolling = false;
-            return false;
-        }
-
-        _.interrupted = false;
-        _.shouldClick = ( _.touchObject.swipeLength > 10 ) ? false : true;
-
-        if ( _.touchObject.curX === undefined ) {
-            return false;
-        }
-
-        if ( _.touchObject.edgeHit === true ) {
-            _.$slider.trigger('edge', [_, _.swipeDirection() ]);
-        }
-
-        if ( _.touchObject.swipeLength >= _.touchObject.minSwipe ) {
-
-            direction = _.swipeDirection();
-
-            switch ( direction ) {
-
-                case 'left':
-                case 'down':
-
-                    slideCount =
-                        _.options.swipeToSlide ?
-                            _.checkNavigable( _.currentSlide + _.getSlideCount() ) :
-                            _.currentSlide + _.getSlideCount();
-
-                    _.currentDirection = 0;
-
-                    break;
-
-                case 'right':
-                case 'up':
-
-                    slideCount =
-                        _.options.swipeToSlide ?
-                            _.checkNavigable( _.currentSlide - _.getSlideCount() ) :
-                            _.currentSlide - _.getSlideCount();
-
-                    _.currentDirection = 1;
-
-                    break;
-
-                default:
-
-
-            }
-
-            if( direction != 'vertical' ) {
-
-                _.slideHandler( slideCount );
-                _.touchObject = {};
-                _.$slider.trigger('swipe', [_, direction ]);
-
-            }
-
-        } else {
-
-            if ( _.touchObject.startX !== _.touchObject.curX ) {
-
-                _.slideHandler( _.currentSlide );
-                _.touchObject = {};
-
-            }
-
-        }
-
-    };
-
-    Slick.prototype.swipeHandler = function(event) {
-
-        var _ = this;
-
-        if ((_.options.swipe === false) || ('ontouchend' in document && _.options.swipe === false)) {
-            return;
-        } else if (_.options.draggable === false && event.type.indexOf('mouse') !== -1) {
-            return;
-        }
-
-        _.touchObject.fingerCount = event.originalEvent && event.originalEvent.touches !== undefined ?
-            event.originalEvent.touches.length : 1;
-
-        _.touchObject.minSwipe = _.listWidth / _.options
-            .touchThreshold;
-
-        if (_.options.verticalSwiping === true) {
-            _.touchObject.minSwipe = _.listHeight / _.options
-                .touchThreshold;
-        }
-
-        switch (event.data.action) {
-
-            case 'start':
-                _.swipeStart(event);
-                break;
-
-            case 'move':
-                _.swipeMove(event);
-                break;
-
-            case 'end':
-                _.swipeEnd(event);
-                break;
-
-        }
-
-    };
-
-    Slick.prototype.swipeMove = function(event) {
-
-        var _ = this,
-            edgeWasHit = false,
-            curLeft, swipeDirection, swipeLength, positionOffset, touches, verticalSwipeLength;
-
-        touches = event.originalEvent !== undefined ? event.originalEvent.touches : null;
-
-        if (!_.dragging || _.scrolling || touches && touches.length !== 1) {
-            return false;
-        }
-
-        curLeft = _.getLeft(_.currentSlide);
-
-        _.touchObject.curX = touches !== undefined ? touches[0].pageX : event.clientX;
-        _.touchObject.curY = touches !== undefined ? touches[0].pageY : event.clientY;
-
-        _.touchObject.swipeLength = Math.round(Math.sqrt(
-            Math.pow(_.touchObject.curX - _.touchObject.startX, 2)));
-
-        verticalSwipeLength = Math.round(Math.sqrt(
-            Math.pow(_.touchObject.curY - _.touchObject.startY, 2)));
-
-        if (!_.options.verticalSwiping && !_.swiping && verticalSwipeLength > 4) {
-            _.scrolling = true;
-            return false;
-        }
-
-        if (_.options.verticalSwiping === true) {
-            _.touchObject.swipeLength = verticalSwipeLength;
-        }
-
-        swipeDirection = _.swipeDirection();
-
-        if (event.originalEvent !== undefined && _.touchObject.swipeLength > 4) {
-            _.swiping = true;
-            event.preventDefault();
-        }
-
-        positionOffset = (_.options.rtl === false ? 1 : -1) * (_.touchObject.curX > _.touchObject.startX ? 1 : -1);
-        if (_.options.verticalSwiping === true) {
-            positionOffset = _.touchObject.curY > _.touchObject.startY ? 1 : -1;
-        }
-
-
-        swipeLength = _.touchObject.swipeLength;
-
-        _.touchObject.edgeHit = false;
-
-        if (_.options.infinite === false) {
-            if ((_.currentSlide === 0 && swipeDirection === 'right') || (_.currentSlide >= _.getDotCount() && swipeDirection === 'left')) {
-                swipeLength = _.touchObject.swipeLength * _.options.edgeFriction;
-                _.touchObject.edgeHit = true;
-            }
-        }
-
-        if (_.options.vertical === false) {
-            _.swipeLeft = curLeft + swipeLength * positionOffset;
-        } else {
-            _.swipeLeft = curLeft + (swipeLength * (_.$list.height() / _.listWidth)) * positionOffset;
-        }
-        if (_.options.verticalSwiping === true) {
-            _.swipeLeft = curLeft + swipeLength * positionOffset;
-        }
-
-        if (_.options.fade === true || _.options.touchMove === false) {
-            return false;
-        }
-
-        if (_.animating === true) {
-            _.swipeLeft = null;
-            return false;
-        }
-
-        _.setCSS(_.swipeLeft);
-
-    };
-
-    Slick.prototype.swipeStart = function(event) {
-
-        var _ = this,
-            touches;
-
-        _.interrupted = true;
-
-        if (_.touchObject.fingerCount !== 1 || _.slideCount <= _.options.slidesToShow) {
-            _.touchObject = {};
-            return false;
-        }
-
-        if (event.originalEvent !== undefined && event.originalEvent.touches !== undefined) {
-            touches = event.originalEvent.touches[0];
-        }
-
-        _.touchObject.startX = _.touchObject.curX = touches !== undefined ? touches.pageX : event.clientX;
-        _.touchObject.startY = _.touchObject.curY = touches !== undefined ? touches.pageY : event.clientY;
-
-        _.dragging = true;
-
-    };
-
-    Slick.prototype.unfilterSlides = Slick.prototype.slickUnfilter = function() {
-
-        var _ = this;
-
-        if (_.$slidesCache !== null) {
-
-            _.unload();
-
-            _.$slideTrack.children(this.options.slide).detach();
-
-            _.$slidesCache.appendTo(_.$slideTrack);
-
-            _.reinit();
-
-        }
-
-    };
-
-    Slick.prototype.unload = function() {
-
-        var _ = this;
-
-        $('.slick-cloned', _.$slider).remove();
-
-        if (_.$dots) {
-            _.$dots.remove();
-        }
-
-        if (_.$prevArrow && _.htmlExpr.test(_.options.prevArrow)) {
-            _.$prevArrow.remove();
-        }
-
-        if (_.$nextArrow && _.htmlExpr.test(_.options.nextArrow)) {
-            _.$nextArrow.remove();
-        }
-
-        _.$slides
-            .removeClass('slick-slide slick-active slick-visible slick-current')
-            .attr('aria-hidden', 'true')
-            .css('width', '');
-
-    };
-
-    Slick.prototype.unslick = function(fromBreakpoint) {
-
-        var _ = this;
-        _.$slider.trigger('unslick', [_, fromBreakpoint]);
-        _.destroy();
-
-    };
-
-    Slick.prototype.updateArrows = function() {
-
-        var _ = this,
-            centerOffset;
-
-        centerOffset = Math.floor(_.options.slidesToShow / 2);
-
-        if ( _.options.arrows === true &&
-            _.slideCount > _.options.slidesToShow &&
-            !_.options.infinite ) {
-
-            _.$prevArrow.removeClass('slick-disabled').attr('aria-disabled', 'false');
-            _.$nextArrow.removeClass('slick-disabled').attr('aria-disabled', 'false');
-
-            if (_.currentSlide === 0) {
-
-                _.$prevArrow.addClass('slick-disabled').attr('aria-disabled', 'true');
-                _.$nextArrow.removeClass('slick-disabled').attr('aria-disabled', 'false');
-
-            } else if (_.currentSlide >= _.slideCount - _.options.slidesToShow && _.options.centerMode === false) {
-
-                _.$nextArrow.addClass('slick-disabled').attr('aria-disabled', 'true');
-                _.$prevArrow.removeClass('slick-disabled').attr('aria-disabled', 'false');
-
-            } else if (_.currentSlide >= _.slideCount - 1 && _.options.centerMode === true) {
-
-                _.$nextArrow.addClass('slick-disabled').attr('aria-disabled', 'true');
-                _.$prevArrow.removeClass('slick-disabled').attr('aria-disabled', 'false');
-
-            }
-
-        }
-
-    };
-
-    Slick.prototype.updateDots = function() {
-
-        var _ = this;
-
-        if (_.$dots !== null) {
-
-            _.$dots
-                .find('li')
-                    .removeClass('slick-active')
-                    .end();
-
-            _.$dots
-                .find('li')
-                .eq(Math.floor(_.currentSlide / _.options.slidesToScroll))
-                .addClass('slick-active');
-
-        }
-
-    };
-
-    Slick.prototype.visibility = function() {
-
-        var _ = this;
-
-        if ( _.options.autoplay ) {
-
-            if ( document[_.hidden] ) {
-
-                _.interrupted = true;
-
-            } else {
-
-                _.interrupted = false;
-
-            }
-
-        }
-
-    };
-
-    $.fn.slick = function() {
-        var _ = this,
-            opt = arguments[0],
-            args = Array.prototype.slice.call(arguments, 1),
-            l = _.length,
-            i,
-            ret;
-        for (i = 0; i < l; i++) {
-            if (typeof opt == 'object' || typeof opt == 'undefined')
-                _[i].slick = new Slick(_[i], opt);
-            else
-                ret = _[i].slick[opt].apply(_[i].slick, args);
-            if (typeof ret != 'undefined') return ret;
-        }
-        return _;
-    };
-
-}));
-
+"use strict";
+/**
+ *
+ * FULL TILT
+ * http://github.com/richtr/Full-Tilt
+ *
+ * A standalone DeviceOrientation + DeviceMotion JavaScript library that
+ * normalises orientation sensor input, applies relevant screen orientation
+ * transforms, returns Euler Angle, Quaternion and Rotation
+ * Matrix representations back to web developers and provides conversion
+ * between all supported orientation representation types.
+ *
+ * Copyright: 2014 Rich Tibbett
+ * License:   MIT
+ *
+ */(function(window){// Only initialize the FULLTILT API if it is not already attached to the DOM
+if(window.FULLTILT!==undefined&&window.FULLTILT!==null){return;}var M_PI=Math.PI;var M_PI_2=M_PI/2;var M_2_PI=2*M_PI;// Degree to Radian conversion
+var degToRad=M_PI/180;var radToDeg=180/M_PI;// Internal device orientation + motion variables
+var sensors={"orientation":{active:false,callbacks:[],data:undefined},"motion":{active:false,callbacks:[],data:undefined}};var screenActive=false;// Internal screen orientation variables
+var hasScreenOrientationAPI=window.screen&&window.screen.orientation&&window.screen.orientation.angle!==undefined&&window.screen.orientation.angle!==null?true:false;var screenOrientationAngle=(hasScreenOrientationAPI?window.screen.orientation.angle:window.orientation||0)*degToRad;var SCREEN_ROTATION_0=0,SCREEN_ROTATION_90=M_PI_2,SCREEN_ROTATION_180=M_PI,SCREEN_ROTATION_270=M_2_PI/3,SCREEN_ROTATION_MINUS_90=-M_PI_2;// Math.sign polyfill
+function sign(x){x=+x;// convert to a number
+if(x===0||isNaN(x))return x;return x>0?1:-1;}///// Promise-based Sensor Data checker //////
+function SensorCheck(sensorRootObj){var promise=new Promise(function(resolve,reject){var runCheck=function runCheck(tries){setTimeout(function(){if(sensorRootObj&&sensorRootObj.data){resolve();}else if(tries>=20){reject();}else{runCheck(++tries);}},50);};runCheck(0);});return promise;}////// Internal Event Handlers //////
+function handleScreenOrientationChange(){if(hasScreenOrientationAPI){screenOrientationAngle=(window.screen.orientation.angle||0)*degToRad;}else{screenOrientationAngle=(window.orientation||0)*degToRad;}}function handleDeviceOrientationChange(event){sensors.orientation.data=event;// Fire every callback function each time deviceorientation is updated
+for(var i in sensors.orientation.callbacks){sensors.orientation.callbacks[i].call(this);}}function handleDeviceMotionChange(event){sensors.motion.data=event;// Fire every callback function each time devicemotion is updated
+for(var i in sensors.motion.callbacks){sensors.motion.callbacks[i].call(this);}}///// FULLTILT API Root Object /////
+var FULLTILT={};FULLTILT.version="0.5.3";///// FULLTILT API Root Methods /////
+FULLTILT.getDeviceOrientation=function(options){var promise=new Promise(function(resolve,reject){var control=new FULLTILT.DeviceOrientation(options);control.start();var orientationSensorCheck=new SensorCheck(sensors.orientation);orientationSensorCheck.then(function(){resolve(control);}).catch(function(){control.stop();reject('DeviceOrientation is not supported');});});return promise;};FULLTILT.getDeviceMotion=function(options){var promise=new Promise(function(resolve,reject){var control=new FULLTILT.DeviceMotion(options);control.start();var motionSensorCheck=new SensorCheck(sensors.motion);motionSensorCheck.then(function(){resolve(control);}).catch(function(){control.stop();reject('DeviceMotion is not supported');});});return promise;};////// FULLTILT.Quaternion //////
+FULLTILT.Quaternion=function(x,y,z,w){var quat,outQuat;this.set=function(x,y,z,w){this.x=x||0;this.y=y||0;this.z=z||0;this.w=w||1;};this.copy=function(quaternion){this.x=quaternion.x;this.y=quaternion.y;this.z=quaternion.z;this.w=quaternion.w;};this.setFromEuler=function(){var _x,_y,_z;var _x_2,_y_2,_z_2;var cX,cY,cZ,sX,sY,sZ;return function(euler){euler=euler||{};_z=(euler.alpha||0)*degToRad;_x=(euler.beta||0)*degToRad;_y=(euler.gamma||0)*degToRad;_z_2=_z/2;_x_2=_x/2;_y_2=_y/2;cX=Math.cos(_x_2);cY=Math.cos(_y_2);cZ=Math.cos(_z_2);sX=Math.sin(_x_2);sY=Math.sin(_y_2);sZ=Math.sin(_z_2);this.set(sX*cY*cZ-cX*sY*sZ,// x
+cX*sY*cZ+sX*cY*sZ,// y
+cX*cY*sZ+sX*sY*cZ,// z
+cX*cY*cZ-sX*sY*sZ// w
+);this.normalize();return this;};}();this.setFromRotationMatrix=function(){var R;return function(matrix){R=matrix.elements;this.set(0.5*Math.sqrt(1+R[0]-R[4]-R[8])*sign(R[7]-R[5]),// x
+0.5*Math.sqrt(1-R[0]+R[4]-R[8])*sign(R[2]-R[6]),// y
+0.5*Math.sqrt(1-R[0]-R[4]+R[8])*sign(R[3]-R[1]),// z
+0.5*Math.sqrt(1+R[0]+R[4]+R[8])// w
+);return this;};}();this.multiply=function(quaternion){outQuat=FULLTILT.Quaternion.prototype.multiplyQuaternions(this,quaternion);this.copy(outQuat);return this;};this.rotateX=function(angle){outQuat=FULLTILT.Quaternion.prototype.rotateByAxisAngle(this,[1,0,0],angle);this.copy(outQuat);return this;};this.rotateY=function(angle){outQuat=FULLTILT.Quaternion.prototype.rotateByAxisAngle(this,[0,1,0],angle);this.copy(outQuat);return this;};this.rotateZ=function(angle){outQuat=FULLTILT.Quaternion.prototype.rotateByAxisAngle(this,[0,0,1],angle);this.copy(outQuat);return this;};this.normalize=function(){return FULLTILT.Quaternion.prototype.normalize(this);};// Initialize object values
+this.set(x,y,z,w);};FULLTILT.Quaternion.prototype={constructor:FULLTILT.Quaternion,multiplyQuaternions:function(){var multipliedQuat=new FULLTILT.Quaternion();return function(a,b){var qax=a.x,qay=a.y,qaz=a.z,qaw=a.w;var qbx=b.x,qby=b.y,qbz=b.z,qbw=b.w;multipliedQuat.set(qax*qbw+qaw*qbx+qay*qbz-qaz*qby,// x
+qay*qbw+qaw*qby+qaz*qbx-qax*qbz,// y
+qaz*qbw+qaw*qbz+qax*qby-qay*qbx,// z
+qaw*qbw-qax*qbx-qay*qby-qaz*qbz// w
+);return multipliedQuat;};}(),normalize:function normalize(q){var len=Math.sqrt(q.x*q.x+q.y*q.y+q.z*q.z+q.w*q.w);if(len===0){q.x=0;q.y=0;q.z=0;q.w=1;}else{len=1/len;q.x*=len;q.y*=len;q.z*=len;q.w*=len;}return q;},rotateByAxisAngle:function(){var outputQuaternion=new FULLTILT.Quaternion();var transformQuaternion=new FULLTILT.Quaternion();var halfAngle,sA;return function(targetQuaternion,axis,angle){halfAngle=(angle||0)/2;sA=Math.sin(halfAngle);transformQuaternion.set((axis[0]||0)*sA,// x
+(axis[1]||0)*sA,// y
+(axis[2]||0)*sA,// z
+Math.cos(halfAngle)// w
+);// Multiply quaternion by q
+outputQuaternion=FULLTILT.Quaternion.prototype.multiplyQuaternions(targetQuaternion,transformQuaternion);return FULLTILT.Quaternion.prototype.normalize(outputQuaternion);};}()};////// FULLTILT.RotationMatrix //////
+FULLTILT.RotationMatrix=function(m11,m12,m13,m21,m22,m23,m31,m32,m33){var outMatrix;this.elements=new Float32Array(9);this.identity=function(){this.set(1,0,0,0,1,0,0,0,1);return this;};this.set=function(m11,m12,m13,m21,m22,m23,m31,m32,m33){this.elements[0]=m11||1;this.elements[1]=m12||0;this.elements[2]=m13||0;this.elements[3]=m21||0;this.elements[4]=m22||1;this.elements[5]=m23||0;this.elements[6]=m31||0;this.elements[7]=m32||0;this.elements[8]=m33||1;};this.copy=function(matrix){this.elements[0]=matrix.elements[0];this.elements[1]=matrix.elements[1];this.elements[2]=matrix.elements[2];this.elements[3]=matrix.elements[3];this.elements[4]=matrix.elements[4];this.elements[5]=matrix.elements[5];this.elements[6]=matrix.elements[6];this.elements[7]=matrix.elements[7];this.elements[8]=matrix.elements[8];};this.setFromEuler=function(){var _x,_y,_z;var cX,cY,cZ,sX,sY,sZ;return function(euler){euler=euler||{};_z=(euler.alpha||0)*degToRad;_x=(euler.beta||0)*degToRad;_y=(euler.gamma||0)*degToRad;cX=Math.cos(_x);cY=Math.cos(_y);cZ=Math.cos(_z);sX=Math.sin(_x);sY=Math.sin(_y);sZ=Math.sin(_z);//
+// ZXY-ordered rotation matrix construction.
+//
+this.set(cZ*cY-sZ*sX*sY,// 1,1
+-cX*sZ,// 1,2
+cY*sZ*sX+cZ*sY,// 1,3
+cY*sZ+cZ*sX*sY,// 2,1
+cZ*cX,// 2,2
+sZ*sY-cZ*cY*sX,// 2,3
+-cX*sY,// 3,1
+sX,// 3,2
+cX*cY// 3,3
+);this.normalize();return this;};}();this.setFromQuaternion=function(){var sqw,sqx,sqy,sqz;return function(q){sqw=q.w*q.w;sqx=q.x*q.x;sqy=q.y*q.y;sqz=q.z*q.z;this.set(sqw+sqx-sqy-sqz,// 1,1
+2*(q.x*q.y-q.w*q.z),// 1,2
+2*(q.x*q.z+q.w*q.y),// 1,3
+2*(q.x*q.y+q.w*q.z),// 2,1
+sqw-sqx+sqy-sqz,// 2,2
+2*(q.y*q.z-q.w*q.x),// 2,3
+2*(q.x*q.z-q.w*q.y),// 3,1
+2*(q.y*q.z+q.w*q.x),// 3,2
+sqw-sqx-sqy+sqz// 3,3
+);return this;};}();this.multiply=function(m){outMatrix=FULLTILT.RotationMatrix.prototype.multiplyMatrices(this,m);this.copy(outMatrix);return this;};this.rotateX=function(angle){outMatrix=FULLTILT.RotationMatrix.prototype.rotateByAxisAngle(this,[1,0,0],angle);this.copy(outMatrix);return this;};this.rotateY=function(angle){outMatrix=FULLTILT.RotationMatrix.prototype.rotateByAxisAngle(this,[0,1,0],angle);this.copy(outMatrix);return this;};this.rotateZ=function(angle){outMatrix=FULLTILT.RotationMatrix.prototype.rotateByAxisAngle(this,[0,0,1],angle);this.copy(outMatrix);return this;};this.normalize=function(){return FULLTILT.RotationMatrix.prototype.normalize(this);};// Initialize object values
+this.set(m11,m12,m13,m21,m22,m23,m31,m32,m33);};FULLTILT.RotationMatrix.prototype={constructor:FULLTILT.RotationMatrix,multiplyMatrices:function(){var matrix=new FULLTILT.RotationMatrix();var aE,bE;return function(a,b){aE=a.elements;bE=b.elements;matrix.set(aE[0]*bE[0]+aE[1]*bE[3]+aE[2]*bE[6],aE[0]*bE[1]+aE[1]*bE[4]+aE[2]*bE[7],aE[0]*bE[2]+aE[1]*bE[5]+aE[2]*bE[8],aE[3]*bE[0]+aE[4]*bE[3]+aE[5]*bE[6],aE[3]*bE[1]+aE[4]*bE[4]+aE[5]*bE[7],aE[3]*bE[2]+aE[4]*bE[5]+aE[5]*bE[8],aE[6]*bE[0]+aE[7]*bE[3]+aE[8]*bE[6],aE[6]*bE[1]+aE[7]*bE[4]+aE[8]*bE[7],aE[6]*bE[2]+aE[7]*bE[5]+aE[8]*bE[8]);return matrix;};}(),normalize:function normalize(matrix){var R=matrix.elements;// Calculate matrix determinant
+var determinant=R[0]*R[4]*R[8]-R[0]*R[5]*R[7]-R[1]*R[3]*R[8]+R[1]*R[5]*R[6]+R[2]*R[3]*R[7]-R[2]*R[4]*R[6];// Normalize matrix values
+R[0]/=determinant;R[1]/=determinant;R[2]/=determinant;R[3]/=determinant;R[4]/=determinant;R[5]/=determinant;R[6]/=determinant;R[7]/=determinant;R[8]/=determinant;matrix.elements=R;return matrix;},rotateByAxisAngle:function(){var outputMatrix=new FULLTILT.RotationMatrix();var transformMatrix=new FULLTILT.RotationMatrix();var sA,cA;var validAxis=false;return function(targetRotationMatrix,axis,angle){transformMatrix.identity();// reset transform matrix
+validAxis=false;sA=Math.sin(angle);cA=Math.cos(angle);if(axis[0]===1&&axis[1]===0&&axis[2]===0){// x
+validAxis=true;transformMatrix.elements[4]=cA;transformMatrix.elements[5]=-sA;transformMatrix.elements[7]=sA;transformMatrix.elements[8]=cA;}else if(axis[1]===1&&axis[0]===0&&axis[2]===0){// y
+validAxis=true;transformMatrix.elements[0]=cA;transformMatrix.elements[2]=sA;transformMatrix.elements[6]=-sA;transformMatrix.elements[8]=cA;}else if(axis[2]===1&&axis[0]===0&&axis[1]===0){// z
+validAxis=true;transformMatrix.elements[0]=cA;transformMatrix.elements[1]=-sA;transformMatrix.elements[3]=sA;transformMatrix.elements[4]=cA;}if(validAxis){outputMatrix=FULLTILT.RotationMatrix.prototype.multiplyMatrices(targetRotationMatrix,transformMatrix);outputMatrix=FULLTILT.RotationMatrix.prototype.normalize(outputMatrix);}else{outputMatrix=targetRotationMatrix;}return outputMatrix;};}()};////// FULLTILT.Euler //////
+FULLTILT.Euler=function(alpha,beta,gamma){this.set=function(alpha,beta,gamma){this.alpha=alpha||0;this.beta=beta||0;this.gamma=gamma||0;};this.copy=function(inEuler){this.alpha=inEuler.alpha;this.beta=inEuler.beta;this.gamma=inEuler.gamma;};this.setFromRotationMatrix=function(){var R,_alpha,_beta,_gamma;return function(matrix){R=matrix.elements;if(R[8]>0){// cos(beta) > 0
+_alpha=Math.atan2(-R[1],R[4]);_beta=Math.asin(R[7]);// beta (-pi/2, pi/2)
+_gamma=Math.atan2(-R[6],R[8]);// gamma (-pi/2, pi/2)
+}else if(R[8]<0){// cos(beta) < 0
+_alpha=Math.atan2(R[1],-R[4]);_beta=-Math.asin(R[7]);_beta+=_beta>=0?-M_PI:M_PI;// beta [-pi,-pi/2) U (pi/2,pi)
+_gamma=Math.atan2(R[6],-R[8]);// gamma (-pi/2, pi/2)
+}else{// R[8] == 0
+if(R[6]>0){// cos(gamma) == 0, cos(beta) > 0
+_alpha=Math.atan2(-R[1],R[4]);_beta=Math.asin(R[7]);// beta [-pi/2, pi/2]
+_gamma=-M_PI_2;// gamma = -pi/2
+}else if(R[6]<0){// cos(gamma) == 0, cos(beta) < 0
+_alpha=Math.atan2(R[1],-R[4]);_beta=-Math.asin(R[7]);_beta+=_beta>=0?-M_PI:M_PI;// beta [-pi,-pi/2) U (pi/2,pi)
+_gamma=-M_PI_2;// gamma = -pi/2
+}else{// R[6] == 0, cos(beta) == 0
+// gimbal lock discontinuity
+_alpha=Math.atan2(R[3],R[0]);_beta=R[7]>0?M_PI_2:-M_PI_2;// beta = +-pi/2
+_gamma=0;// gamma = 0
+}}// alpha is in [-pi, pi], make sure it is in [0, 2*pi).
+if(_alpha<0){_alpha+=M_2_PI;// alpha [0, 2*pi)
+}// Convert to degrees
+_alpha*=radToDeg;_beta*=radToDeg;_gamma*=radToDeg;// apply derived euler angles to current object
+this.set(_alpha,_beta,_gamma);};}();this.setFromQuaternion=function(){var _alpha,_beta,_gamma;return function(q){var sqw=q.w*q.w;var sqx=q.x*q.x;var sqy=q.y*q.y;var sqz=q.z*q.z;var unitLength=sqw+sqx+sqy+sqz;// Normalised == 1, otherwise correction divisor.
+var wxyz=q.w*q.x+q.y*q.z;var epsilon=1e-6;// rounding factor
+if(wxyz>(0.5-epsilon)*unitLength){_alpha=2*Math.atan2(q.y,q.w);_beta=M_PI_2;_gamma=0;}else if(wxyz<(-0.5+epsilon)*unitLength){_alpha=-2*Math.atan2(q.y,q.w);_beta=-M_PI_2;_gamma=0;}else{var aX=sqw-sqx+sqy-sqz;var aY=2*(q.w*q.z-q.x*q.y);var gX=sqw-sqx-sqy+sqz;var gY=2*(q.w*q.y-q.x*q.z);if(gX>0){_alpha=Math.atan2(aY,aX);_beta=Math.asin(2*wxyz/unitLength);_gamma=Math.atan2(gY,gX);}else{_alpha=Math.atan2(-aY,-aX);_beta=-Math.asin(2*wxyz/unitLength);_beta+=_beta<0?M_PI:-M_PI;_gamma=Math.atan2(-gY,-gX);}}// alpha is in [-pi, pi], make sure it is in [0, 2*pi).
+if(_alpha<0){_alpha+=M_2_PI;// alpha [0, 2*pi)
+}// Convert to degrees
+_alpha*=radToDeg;_beta*=radToDeg;_gamma*=radToDeg;// apply derived euler angles to current object
+this.set(_alpha,_beta,_gamma);};}();this.rotateX=function(angle){FULLTILT.Euler.prototype.rotateByAxisAngle(this,[1,0,0],angle);return this;};this.rotateY=function(angle){FULLTILT.Euler.prototype.rotateByAxisAngle(this,[0,1,0],angle);return this;};this.rotateZ=function(angle){FULLTILT.Euler.prototype.rotateByAxisAngle(this,[0,0,1],angle);return this;};// Initialize object values
+this.set(alpha,beta,gamma);};FULLTILT.Euler.prototype={constructor:FULLTILT.Euler,rotateByAxisAngle:function(){var _matrix=new FULLTILT.RotationMatrix();var outEuler;return function(targetEuler,axis,angle){_matrix.setFromEuler(targetEuler);_matrix=FULLTILT.RotationMatrix.prototype.rotateByAxisAngle(_matrix,axis,angle);targetEuler.setFromRotationMatrix(_matrix);return targetEuler;};}()};///// FULLTILT.DeviceOrientation //////
+FULLTILT.DeviceOrientation=function(options){this.options=options||{};// by default use UA deviceorientation 'type' ("game" on iOS, "world" on Android)
+var tries=0;var maxTries=200;var successCount=0;var successThreshold=10;this.alphaOffsetScreen=0;this.alphaOffsetDevice=undefined;// Create a game-based deviceorientation object (initial alpha === 0 degrees)
+if(this.options.type==="game"){var setGameAlphaOffset=function(evt){if(evt.alpha!==null){// do regardless of whether 'evt.absolute' is also true
+this.alphaOffsetDevice=new FULLTILT.Euler(evt.alpha,0,0);this.alphaOffsetDevice.rotateZ(-screenOrientationAngle);// Discard first {successThreshold} responses while a better compass lock is found by UA
+if(++successCount>=successThreshold){window.removeEventListener('deviceorientation',setGameAlphaOffset,false);return;}}if(++tries>=maxTries){window.removeEventListener('deviceorientation',setGameAlphaOffset,false);}}.bind(this);window.addEventListener('deviceorientation',setGameAlphaOffset,false);// Create a compass-based deviceorientation object (initial alpha === compass degrees)
+}else if(this.options.type==="world"){var setCompassAlphaOffset=function(evt){if(evt.absolute!==true&&evt.webkitCompassAccuracy!==undefined&&evt.webkitCompassAccuracy!==null&&+evt.webkitCompassAccuracy>=0&&+evt.webkitCompassAccuracy<50){this.alphaOffsetDevice=new FULLTILT.Euler(evt.webkitCompassHeading,0,0);this.alphaOffsetDevice.rotateZ(screenOrientationAngle);this.alphaOffsetScreen=screenOrientationAngle;// Discard first {successThreshold} responses while a better compass lock is found by UA
+if(++successCount>=successThreshold){window.removeEventListener('deviceorientation',setCompassAlphaOffset,false);return;}}if(++tries>=maxTries){window.removeEventListener('deviceorientation',setCompassAlphaOffset,false);}}.bind(this);window.addEventListener('deviceorientation',setCompassAlphaOffset,false);}// else... use whatever orientation system the UA provides ("game" on iOS, "world" on Android)
+};FULLTILT.DeviceOrientation.prototype={constructor:FULLTILT.DeviceOrientation,start:function start(callback){if(callback&&Object.prototype.toString.call(callback)=='[object Function]'){sensors.orientation.callbacks.push(callback);}if(!screenActive){if(hasScreenOrientationAPI){window.screen.orientation.addEventListener('change',handleScreenOrientationChange,false);}else{window.addEventListener('orientationchange',handleScreenOrientationChange,false);}}if(!sensors.orientation.active){window.addEventListener('deviceorientation',handleDeviceOrientationChange,false);sensors.orientation.active=true;}},stop:function stop(){if(sensors.orientation.active){window.removeEventListener('deviceorientation',handleDeviceOrientationChange,false);sensors.orientation.active=false;}},listen:function listen(callback){this.start(callback);},getFixedFrameQuaternion:function(){var euler=new FULLTILT.Euler();var matrix=new FULLTILT.RotationMatrix();var quaternion=new FULLTILT.Quaternion();return function(){var orientationData=sensors.orientation.data||{alpha:0,beta:0,gamma:0};var adjustedAlpha=orientationData.alpha;if(this.alphaOffsetDevice){matrix.setFromEuler(this.alphaOffsetDevice);matrix.rotateZ(-this.alphaOffsetScreen);euler.setFromRotationMatrix(matrix);if(euler.alpha<0){euler.alpha+=360;}euler.alpha%=360;adjustedAlpha-=euler.alpha;}euler.set(adjustedAlpha,orientationData.beta,orientationData.gamma);quaternion.setFromEuler(euler);return quaternion;};}(),getScreenAdjustedQuaternion:function(){var quaternion;return function(){quaternion=this.getFixedFrameQuaternion();// Automatically apply screen orientation transform
+quaternion.rotateZ(-screenOrientationAngle);return quaternion;};}(),getFixedFrameMatrix:function(){var euler=new FULLTILT.Euler();var matrix=new FULLTILT.RotationMatrix();return function(){var orientationData=sensors.orientation.data||{alpha:0,beta:0,gamma:0};var adjustedAlpha=orientationData.alpha;if(this.alphaOffsetDevice){matrix.setFromEuler(this.alphaOffsetDevice);matrix.rotateZ(-this.alphaOffsetScreen);euler.setFromRotationMatrix(matrix);if(euler.alpha<0){euler.alpha+=360;}euler.alpha%=360;adjustedAlpha-=euler.alpha;}euler.set(adjustedAlpha,orientationData.beta,orientationData.gamma);matrix.setFromEuler(euler);return matrix;};}(),getScreenAdjustedMatrix:function(){var matrix;return function(){matrix=this.getFixedFrameMatrix();// Automatically apply screen orientation transform
+matrix.rotateZ(-screenOrientationAngle);return matrix;};}(),getFixedFrameEuler:function(){var euler=new FULLTILT.Euler();var matrix;return function(){matrix=this.getFixedFrameMatrix();euler.setFromRotationMatrix(matrix);return euler;};}(),getScreenAdjustedEuler:function(){var euler=new FULLTILT.Euler();var matrix;return function(){matrix=this.getScreenAdjustedMatrix();euler.setFromRotationMatrix(matrix);return euler;};}(),isAbsolute:function isAbsolute(){if(sensors.orientation.data&&sensors.orientation.data.absolute===true){return true;}return false;},getLastRawEventData:function getLastRawEventData(){return sensors.orientation.data||{};},ALPHA:'alpha',BETA:'beta',GAMMA:'gamma'};///// FULLTILT.DeviceMotion //////
+FULLTILT.DeviceMotion=function(options){this.options=options||{};// placeholder object since no options are currently supported
+};FULLTILT.DeviceMotion.prototype={constructor:FULLTILT.DeviceMotion,start:function start(callback){if(callback&&Object.prototype.toString.call(callback)=='[object Function]'){sensors.motion.callbacks.push(callback);}if(!screenActive){if(hasScreenOrientationAPI){window.screen.orientation.addEventListener('change',handleScreenOrientationChange,false);}else{window.addEventListener('orientationchange',handleScreenOrientationChange,false);}}if(!sensors.motion.active){window.addEventListener('devicemotion',handleDeviceMotionChange,false);sensors.motion.active=true;}},stop:function stop(){if(sensors.motion.active){window.removeEventListener('devicemotion',handleDeviceMotionChange,false);sensors.motion.active=false;}},listen:function listen(callback){this.start(callback);},getScreenAdjustedAcceleration:function getScreenAdjustedAcceleration(){var accData=sensors.motion.data&&sensors.motion.data.acceleration?sensors.motion.data.acceleration:{x:0,y:0,z:0};var screenAccData={};switch(screenOrientationAngle){case SCREEN_ROTATION_90:screenAccData.x=-accData.y;screenAccData.y=accData.x;break;case SCREEN_ROTATION_180:screenAccData.x=-accData.x;screenAccData.y=-accData.y;break;case SCREEN_ROTATION_270:case SCREEN_ROTATION_MINUS_90:screenAccData.x=accData.y;screenAccData.y=-accData.x;break;default:// SCREEN_ROTATION_0
+screenAccData.x=accData.x;screenAccData.y=accData.y;break;}screenAccData.z=accData.z;return screenAccData;},getScreenAdjustedAccelerationIncludingGravity:function getScreenAdjustedAccelerationIncludingGravity(){var accGData=sensors.motion.data&&sensors.motion.data.accelerationIncludingGravity?sensors.motion.data.accelerationIncludingGravity:{x:0,y:0,z:0};var screenAccGData={};switch(screenOrientationAngle){case SCREEN_ROTATION_90:screenAccGData.x=-accGData.y;screenAccGData.y=accGData.x;break;case SCREEN_ROTATION_180:screenAccGData.x=-accGData.x;screenAccGData.y=-accGData.y;break;case SCREEN_ROTATION_270:case SCREEN_ROTATION_MINUS_90:screenAccGData.x=accGData.y;screenAccGData.y=-accGData.x;break;default:// SCREEN_ROTATION_0
+screenAccGData.x=accGData.x;screenAccGData.y=accGData.y;break;}screenAccGData.z=accGData.z;return screenAccGData;},getScreenAdjustedRotationRate:function getScreenAdjustedRotationRate(){var rotRateData=sensors.motion.data&&sensors.motion.data.rotationRate?sensors.motion.data.rotationRate:{alpha:0,beta:0,gamma:0};var screenRotRateData={};switch(screenOrientationAngle){case SCREEN_ROTATION_90:screenRotRateData.beta=-rotRateData.gamma;screenRotRateData.gamma=rotRateData.beta;break;case SCREEN_ROTATION_180:screenRotRateData.beta=-rotRateData.beta;screenRotRateData.gamma=-rotRateData.gamma;break;case SCREEN_ROTATION_270:case SCREEN_ROTATION_MINUS_90:screenRotRateData.beta=rotRateData.gamma;screenRotRateData.gamma=-rotRateData.beta;break;default:// SCREEN_ROTATION_0
+screenRotRateData.beta=rotRateData.beta;screenRotRateData.gamma=rotRateData.gamma;break;}screenRotRateData.alpha=rotRateData.alpha;return screenRotRateData;},getLastRawEventData:function getLastRawEventData(){return sensors.motion.data||{};}};////// Attach FULLTILT to root DOM element //////
+window.FULLTILT=FULLTILT;})(window);
 
 /***/ })
 ],[137]);
