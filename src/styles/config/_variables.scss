@@ -10,11 +10,13 @@ $color-grey                   : #666;
 $color-grey-dark              : #333;
 $color-grey-light             : #efefef;
 $color-white                  : #fff;
+$color-tan                    : #b7a06e;
 
 $color-text-default           : $color-grey;
 $color-title                  : $color-grey-dark;
 $color-link                   : $color-blue;
 $color-link-hover             : $color-blue-dark;
+$color-text-header            : #481313;
 
 // Paths
 $image-path                   : '/assets/images';
@@ -23,7 +25,7 @@ $font-path                    : '/assets/fonts';
 // Fonts
 $font-main                    : 'Helvetica Neue', Helvetica, Arial, sans-serif;
 $font-alt                     : Georgia, 'Times New Roman', serif;
-$font-title                   : 'Lobster', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+$font-title                   : Georgia, 'Times New Roman', serif;
 
 // Animations
 $anim-speed                   : 0.3s;

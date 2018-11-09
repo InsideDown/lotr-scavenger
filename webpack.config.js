@@ -30,12 +30,13 @@ module.exports = {
 			'babel-polyfill',
 			'jquery',
 			'gsap',
-			'./node_modules/gsap/Draggable',
-			'./node_modules/gsap/ScrollToPlugin',
-			'slick-carousel'
+			//'./node_modules/gsap/Draggable',
+			//'./node_modules/gsap/ScrollToPlugin',
+			//'slick-carousel',
+			'./src/scripts/vendor/fulltilt.min'
 		],
 		base: [`${CONFIG_PATHS.src.scripts}/appBase.js`, `${CONFIG_PATHS.src.styles}/appBase.scss`],
-		components: [`${CONFIG_PATHS.src.scripts}/appComponents.js`, `${CONFIG_PATHS.src.styles}/appComponents.scss`],
+		// components: [`${CONFIG_PATHS.src.scripts}/appComponents.js`, `${CONFIG_PATHS.src.styles}/appComponents.scss`],
 		chrome: [`${CONFIG_PATHS.src.scripts}/appChrome.js`, `${CONFIG_PATHS.src.styles}/appChrome.scss`],
 		home: [`${CONFIG_PATHS.src.scripts}/appHome.js`, `${CONFIG_PATHS.src.styles}/appHome.scss`],
 		subpage: [`${CONFIG_PATHS.src.styles}/appSubpage.scss`],

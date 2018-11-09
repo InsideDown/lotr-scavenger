@@ -3,18 +3,19 @@
 // -----------------------------------------------------------------+
 
 html {
+	background: $color-tan url($image-path+'/background.jpg') no-repeat center center fixed;
+	background-size: cover;
 	overflow-x: hidden;
 }
 
 body {
-	background: $color-grey-light;
 	min-width: $container-width-mobile;
-	padding: 0;
+	padding: 4%;
 	width: 100%;
 }
 
 .site-content {
-	padding-top: 100px;
+	padding-top: 20px;
 }
 
 .container {
@@ -23,6 +24,12 @@ body {
 	padding-left: $gutter-width;
 	padding-right: $gutter-width;
 	width: 100%;
+}
+
+.scavenger-hunt-answers {
+	section {
+		margin-bottom: 50px;
+	}
 }
 
 .content {
@@ -41,4 +48,8 @@ body {
 img {
 	display: inline-block;
 	margin: auto;
+
+	&.scavenger-hunt {
+		border: 6px solid $color-white;
+	}
 }

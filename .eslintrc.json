@@ -67,6 +67,7 @@
 		"TweenMax": true,
 		"TimelineMax": true,
 		"Draggable": true,
+		"FULLTILT": true, 
 		"Linear": true,
 		"Back": true,
 		"Bounce": true,

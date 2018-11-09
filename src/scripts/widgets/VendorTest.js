@@ -11,7 +11,7 @@ class VendorTest {
 
 	initialize() {
 		console.log('VendorTest initialize');
-
+		console.log(FULLTILT);
 		Draggable.create("#draggable", {
 			onClick:function() {
 				console.log("clicked");
