@@ -5,6 +5,8 @@
 
 import Constants from 'scripts/config/Constants';
 import Events from 'scripts/config/Events';
+import ScavengerHunt from 'scripts/widgets/ScavengerHunt';
+
 
 const Home = {
 	initialize() {
@@ -19,4 +21,5 @@ const Home = {
 
 document.addEventListener('DOMContentLoaded', function(event) {
 	Home.initialize();
+	new ScavengerHunt();
 });
