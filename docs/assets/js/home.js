@@ -40,7 +40,7 @@ var ScavengerHunt=function(){function ScavengerHunt(){_classCallCheck(this,Scave
 
 // removed by extract-text-webpack-plugin
     if(false) {
-      // 1541872701447
+      // 1541884927722
       var cssReload = require("../../node_modules/css-hot-loader/hotModuleReplacement.js")(module.id, {"fileMap":"{fileName}"});
       module.hot.dispose(cssReload);
       module.hot.accept(undefined, cssReload);
